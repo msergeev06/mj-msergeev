@@ -1,5 +1,6 @@
 <?php
 
+/*
 use \MSergeev\Core\Lib\Config;
 
 $dir = Config::getConfig('PACKAGES_ROOT');
@@ -14,3 +15,4 @@ if (is_dir($dir)) {
 		@closedir($dh);
 	}
 }
+*/

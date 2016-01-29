@@ -7,16 +7,19 @@ class Loader {
 	protected static $arPackage;
 	protected static $packagesRoot;
 	protected static $publicRoot;
+	protected static $uploadRoot;
 
 	public static function init () {
 		static::$packagesRoot = Config::getConfig("PACKAGES_ROOT");
 		static::$publicRoot = Config::getConfig("PUBLIC_ROOT");
+		static::$uploadRoot = Config::getConfig("MSERGEEV_ROOT")."upload/";
 		if (is_dir(static::$packagesRoot)) {
 			if ($dh = opendir(static::$packagesRoot)) {
 				while (($file = @readdir($dh)) !== false) {
 					if ($file != "." && $file != ".." && $file != "packages.php") {
 						static::$arPackage[$file]["INCLUDE"] = static::$packagesRoot.$file."/include.php";
 						static::$arPackage[$file]["PUBLIC"] = static::$publicRoot.$file."/";
+						static::$arPackage[$file]["UPLOAD"] = static::$uploadRoot.$file."/";
 						if ($temp = Config::getConfig($file."_TEMPLATE")) {
 							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/".$temp."/";
 						}
@@ -61,6 +64,15 @@ class Loader {
 	public static function getTemplate ($namePackage=null) {
 		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage])) {
 			return static::$arPackage[$namePackage]["TEMPLATE"];
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static function getUpload ($namePackage=null) {
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage])) {
+			return static::$arPackage[$namePackage]["UPLOAD"];
 		}
 		else {
 			return false;

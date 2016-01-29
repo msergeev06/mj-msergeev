@@ -12,7 +12,21 @@ use MSergeev\Packages\Dates\Tables;
 use MSergeev\Packages\ICar\Tables\CarGearboxTable;
 use MSergeev\Core\Lib\Tools;
 use MSergeev\Core\Lib\Installer;
-
+use MSergeev\Core\Lib\Buffer;
+use MSergeev\Core\Lib\Config;
+Buffer::start("page");
+Buffer::addJS(Config::getConfig("CORE_ROOT")."js/jquery-1.11.3.js");
+?>
+<!DOCTYPE html>
+<html>
+<head>
+	<title><?=Buffer::showTitle("Главная");?></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?=Buffer::showCSS()?>
+	<?=Buffer::showJS()?>
+</head>
+<body>
+<?
 //WorkCalendar::createTable();
 /*
 $res = WorkCalendar::getNearestDates(array(
@@ -41,4 +55,8 @@ msDebug($res);
 $res = MSergeev\Packages\Products\Tables\FreezerTable::insertDefaultRows();
 msDebug($res);
 */
+?>
+
+
+</body></html>
 

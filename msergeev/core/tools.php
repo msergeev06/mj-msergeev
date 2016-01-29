@@ -1,7 +1,7 @@
 <?php
 
-require_once ("tools.msdebug.php");
-require_once ("tools.html.php");
+require_once ("tools/tools.msdebug.php");
+require_once ("tools/tools.html.php");
 
 function __include_once ($path)
 {

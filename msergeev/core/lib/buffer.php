@@ -7,6 +7,8 @@ class Buffer {
 	protected static $pageTitle;
 	protected static $includedCSS;
 	protected static $includedJS;
+	protected static $arIncludedCSS=array();
+	protected static $arIncludedJS=array();
 
 	public static function start($name) {
 		if ($name == "page") {
@@ -50,9 +52,16 @@ class Buffer {
 
 	public static function addCSS ($path) {
 		if (file_exists($path)) {
-			$path = str_replace(Config::getConfig("SITE_ROOT"), "", $path);
-			if (static::$includedCSS != "") static::$includedCSS .= "\t\t";
-			static::$includedCSS .= '<link href="'.$path.'" type="text/css"  rel="stylesheet" />'."\n";
+			$path = Tools::getSitePath($path);
+			if (!in_array($path,static::$arIncludedCSS))
+			{
+				static::$arIncludedCSS[] = $path;
+				if (static::$includedCSS != "")
+				{
+					static::$includedCSS .= "\t\t";
+				}
+				static::$includedCSS .= '<link href="'.$path.'" type="text/css"  rel="stylesheet" />'."\n";
+			}
 		}
 	}
 
@@ -66,8 +75,15 @@ class Buffer {
 	public static function addJS ($path) {
 		if (file_exists($path)) {
 			$path = Tools::getSitePath($path);
-			if (static::$includedJS != "") static::$includedJS .= "\t\t";
-			static::$includedJS .= '<script type="text/javascript" src="'.$path.'"></script>'."\n";
+			if (!in_array($path,static::$arIncludedJS))
+			{
+				static::$arIncludedJS[] = $path;
+				if (static::$includedJS != "")
+				{
+					static::$includedJS .= "\t\t";
+				}
+				static::$includedJS .= '<script type="text/javascript" src="'.$path.'"></script>'."\n";
+			}
 		}
 	}
 
