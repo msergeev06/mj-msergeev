@@ -1,0 +1,102 @@
+table {
+	border: 0;
+}
+.top_menu table{
+	width: 100%;
+}
+.top_menu table {
+	width: 100%;
+}
+.require {
+	color: orangered;
+}
+.weekend {
+	color: darkred;
+}
+.workday {
+	color: darkblue;
+}
+.center {
+	text-align: center;
+}
+.hidden {
+	display: none;
+}
+html {
+	min-height: 100%;
+}
+body {
+	min-height: 100%;
+	background: #fff;
+	font: 14px/125% Tahoma;
+}
+input {
+	border: 1px solid #000;
+}
+input[type=text] {
+	width: 100%;
+}
+select {
+	border: 1px solid #000;
+}
+
+.popup-box {
+	position: absolute;
+	border-radius: 5px;
+	background: #fff;
+	display: none;
+	box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+	font-family: Arial, sans-serif;
+	z-index: 9999999;
+	font-size: 14px;
+}
+
+.popup-box .close {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	cursor: pointer;
+	color: #434343;
+	padding: 20px;
+	font-size: 20px;
+}
+
+.popup-box .close:hover {
+	color: #000;
+}
+
+.popup-box h2 {
+	padding: 0;
+	margin: 0;
+	font-size: 18px;
+}
+.popup-box .top {
+	padding: 20px;
+}
+
+.popup-box .bottom {
+	background: #eee;
+	border-top: 1px solid #e5e5e5;
+	padding: 20px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+#blackout {
+	background: rgba(0,0,0,0.3);
+	position: absolute;
+	top: 0;
+	overflow: hidden;
+	z-index: 999999;
+	left: 0;
+	display: none;
+}
+
+.event_info {
+	border: 1px solid #000;
+	width: 100%;
+	background-color: #e5e5e5;
+	color: #000;
+}
