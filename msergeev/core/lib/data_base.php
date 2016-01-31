@@ -27,10 +27,10 @@ class DataBase {
 		$db_res = mysql_query($sql, $this->db_conn);
 
 		$res = new DBResult($db_res,$obQuery);
-		$res->setMysqlAffectedRows(mysql_affected_rows($this->db_conn));
+		$res->setAffectedRows(mysql_affected_rows($this->db_conn));
 		if ($obQuery->getType() == "insert")
 		{
-			$res->setMysqlInsertId(mysql_insert_id($this->db_conn));
+			$res->setInsertId(mysql_insert_id($this->db_conn));
 		}
 		if (!$res->getResult())
 		{

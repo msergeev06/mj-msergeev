@@ -15,7 +15,7 @@ class ArgumentNullException extends ArgumentException
 
 	public function showException()
 	{
-		$html = '<pre><b><i>SqlQueryException:</i></b> "'.$this->getMessage().'"'."\n";
+		$html = '<pre><b><i>ArgumentNullException:</i></b> "'.$this->getMessage().'"'."\n";
 		$html .= "<b>Stack trace:</b>\n".$this->getTraceAsString()."\n";
 		$html .= "<b>".$this->getFile()." ".$this->getLine()."</b>";
 		$html .= "</pre>";

@@ -21,9 +21,12 @@ class DBResult
 		$this->result = $res;
 		$this->table_map = $obQuery->getTableMap();
 		$this->query_type = $obQuery->getType();
-		if ($this->query_type == "select"){
-			$res->mysql_num_fields = mysql_num_fields($res);
-			$res->mysql_num_rows = mysql_num_rows($res);
+		if ($res)
+		{
+			if ($this->query_type == "select"){
+				$this->mysql_num_fields = mysql_num_fields($res);
+				$this->mysql_num_rows = mysql_num_rows($res);
+			}
 		}
 	}
 

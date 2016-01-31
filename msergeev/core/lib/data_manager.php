@@ -210,7 +210,25 @@ class DataManager {
 		}
 
 		if (!empty($arResult))
-			return $arResult;
+		{
+			$tmpResult = $arResult;
+			$arResult = array();
+			for ($i=0; $i<count($tmpResult); $i++)
+			{
+				foreach ($tmpResult[$i] as $field=>$value)
+				{
+					if(!is_numeric($field))
+					{
+						$arResult[$i][$field] = $value;
+					}
+				}
+			}
+
+			if (!empty($arResult))
+				return $arResult;
+			else
+				return false;
+		}
 		else
 			return false;
 

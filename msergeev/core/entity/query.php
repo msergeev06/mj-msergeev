@@ -433,25 +433,29 @@ class Query
 		$helper = new Lib\SqlHelper ();
 		$quote = $helper->getQuote();
 
-		$sql = 'SELECT ';
+		$sql = "SELECT\n\t";
 		$arSelect = $this->getSelect();
 		if (empty($arSelect)) {
-			$sql .= '*';
+			$sql .= "*";
 		}
 		else
 		{
-			$sql .= $quote.join ($quote.', '.$quote,$arSelect).$quote;
+			$sql .= $quote.join ($quote.",\n\t".$quote,$arSelect).$quote;
 		}
 
-		$sql .= ' FROM '.$helper->wrapQuotes($this->getTableName());
+		$sql .= "\nFROM\n\t".$helper->wrapQuotes($this->getTableName());
 		if ($this->getTableAliasPostfix() != '') {
-			$sql .= ' '.$this->getTableAliasPostfix().' ';
+			$sql .= ' '.$this->getTableAliasPostfix()."\n";
+		}
+		else
+		{
+			$sql .= "\n";
 		}
 
 		$arWhere = $this->getWhere();
 		if (!empty($arWhere))
 		{
-			$sql .= ' WHERE ';
+			$sql .= "WHERE\n\t";
 			$arMap = $this->getTableMap();
 			$bFirst = true;
 			foreach ($arWhere as $field=>$value)
@@ -521,7 +525,7 @@ class Query
 					}
 					else
 					{
-						$sql .= ' '.$this->getFilterLogic().' '.$helper->wrapQuotes($field).$equating;
+						$sql .= ' '.$this->getFilterLogic()."\n\t".$helper->wrapQuotes($field).$equating;
 						if ($bEquating_str)
 							$sql .= "'".$value."'";
 						else
@@ -533,10 +537,24 @@ class Query
 		$arGroup = $this->getGroup();
 		if (!empty($arGroup)) {
 			//TODO: Доделать
+			$sql .= "\nGROUP BY\n\t";
+			$bFirst = true;
+			foreach ($arGroup as $groupField=>$sort)
+			{
+				if($bFirst)
+				{
+					$bFirst = false;
+					$sql .= $helper->wrapQuotes($groupField).' '.$sort;
+				}
+				else
+				{
+					$sql .= ",\n\t".$helper->wrapQuotes($groupField).' '.$sort;
+				}
+			}
 		}
 		$arOrder = $this->getOrder();
 		if (!empty($arOrder)) {
-			$sql .= ' ORDER BY ';
+			$sql .= "\nORDER BY\n\t";
 			$bFirst = true;
 			foreach ($arOrder as $sort=>$by)
 			{
@@ -547,14 +565,14 @@ class Query
 				}
 				else
 				{
-					$sql .= ' AND '.$helper->wrapQuotes($sort).' '.$by;
+					$sql .= ",\n\t".$helper->wrapQuotes($sort).' '.$by;
 				}
 			}
 		}
 
 		if (!is_null($this->getLimit()))
 		{
-			$sql .= ' LIMIT ';
+			$sql .= "\nLIMIT ";
 			if (!is_null($this->getOffset()))
 				$sql .= $this->getOffset();
 			else

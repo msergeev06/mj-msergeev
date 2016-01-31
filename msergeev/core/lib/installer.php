@@ -3,12 +3,14 @@
 namespace MSergeev\Core\Lib;
 
 use MSergeev\Core\Exception\ObjectException;
+use MSergeev\Core\Lib\Loader;
 
 class Installer
 {
 	public function createPackageTables ($strPackageName)
 	{
 		$strPackageName = strtolower($strPackageName);
+		Loader::IncludePackage($strPackageName);
 		$strBigPackageName = strtoupper($strPackageName);
 		$strFirstBigPackageName = Tools::setFirstCharToBig ($strPackageName);
 		$strPackageRoot = Config::getConfig($strBigPackageName."_ROOT");
