@@ -54,7 +54,14 @@ function SelectBox($strBoxName, $arValues, $strDetText = "", $strSelectedVal = "
 {
 	$strReturnBox = "<select ".$field1." name=\"".$strBoxName."\" id=\"".$strBoxName."\">";
 	if ($strDetText <> '')
-		$strReturnBox = $strReturnBox."<option value=\"NULL\">".$strDetText."</option>";
+	{
+		$strReturnBox = $strReturnBox."<option value=\"NULL\"";
+		if (strtolower($strSelectedVal) == "null")
+		{
+			$strReturnBox.= " selected";
+		}
+		$strReturnBox.= ">".$strDetText."</option>";
+	}
 	foreach ($arValues as $arValue) {
 		$strReturnBox = $strReturnBox."<option ";
 		if (

@@ -47,7 +47,7 @@ class Groups
 				|| !$arItem['HIDDEN']
 			)
 			{
-				$arResult['ITEMS'][$arItem['ID']] = $arItem;
+				$arResult['ITEMS'][/*$arItem['ID']*/] = $arItem;
 			}
 		}
 
@@ -67,7 +67,7 @@ class Groups
 
 			$arSelect = array("LIST"=>array(),"SELECTED"=>null);
 
-			foreach ($arItems as $id=>$arItem)
+			foreach ($arItems as $arItem)
 			{
 				$newName = "";
 				if ($arItem['DEPTH_LEVEL']>0)
@@ -78,7 +78,7 @@ class Groups
 					}
 				}
 				$newName .= ' '.$arItem['NAME'];
-				$arSelect['LIST'][$arItem['ID']]['ID'] = $arItem['ID'];
+				$arSelect['LIST'][$arItem['ID']]['VALUE'] = $arItem['ID'];
 				$arSelect['LIST'][$arItem['ID']]['NAME'] = $newName;
 			}
 
