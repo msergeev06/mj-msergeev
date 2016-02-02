@@ -5,7 +5,7 @@ use MSergeev\Packages\Tasks\Lib;
 
 
 $arResult = Lib\Groups::getGroupTree();
-msDebug($arResult);
+//msDebug($arResult);
 /*
 1 Общие задачи 14
 	2 Домоводство 9
@@ -14,43 +14,55 @@ msDebug($arResult);
 		7 Обслуживание 8
 	10 Развлечения 13
 		11 Дни рождения 12
- */
 
+<ul>
+	1 <li>Общие задачи</li>
+	<ul>
+		2<li>Домоводство</li>
+		<ul>
+			3 <li>Ежедневные дела</li> 4
+			5 <li>Комунальные платежи</li> 6
+			7 <li>Обслуживание</li> 8
+		9 </ul>
+		<li>Развлечения</li>
+		10 <ul>
+			11 <li>Дни рождения</li> 12
+		13 </ul>
+	14 </ul>
+</ul>
+ */
+$arUl = array(0=>"");
+$strUl = "";
 ?>
 <div class="catalog_tree">
 	<ul>
-		<?for($i=0; $i<count($arResult["ITEMS"]);$i++):?>
-			<? $j=$i+1; ?>
-		<?endfor;?>
-	</ul>
-	<?/*
-	<?foreach($arResult["ITEMS"] as $key=>$arItem):?>
 		<?
-			$nowItem = $arItem;
-			if (empty($prevItem))
+		for($i=0; $i<count($arResult["ITEMS"]);$i++)
+		{
+			$intDepthLevel = $arResult["ITEMS"][$i]["DEPTH_LEVEL"]+2;
+			$arUl[$arResult["ITEMS"][$i]["LEFT_MARGIN"]] = "";
+			for ($j=0;$j<$intDepthLevel;$j++) $arUl[$arResult["ITEMS"][$i]["LEFT_MARGIN"]].="\t";
+			$arUl[$arResult["ITEMS"][$i]["LEFT_MARGIN"]] .= "<li><a class=\"show-parent\" data-id=\""
+				.$arResult["ITEMS"][$i]["ID"]."\" href=\"#\">".$arResult["ITEMS"][$i]["NAME"]."</a></li>\n";
+			if ($arResult["ITEMS"][$i]["RIGHT_MARGIN"]>($arResult["ITEMS"][$i]["LEFT_MARGIN"]+1))
 			{
-				$prevItem=$arItem;
-
-				continue;
+				for ($j=0;$j<$intDepthLevel;$j++)
+					$arUl[$arResult["ITEMS"][$i]["LEFT_MARGIN"]].="\t";
+				$arUl[$arResult["ITEMS"][$i]["LEFT_MARGIN"]].="<ul>\n";
+				$arUl[$arResult["ITEMS"][$i]["RIGHT_MARGIN"]] = "";
+				for ($j=0;$j<$intDepthLevel;$j++) $arUl[$arResult["ITEMS"][$i]["RIGHT_MARGIN"]].="\t";
+				$arUl[$arResult["ITEMS"][$i]["RIGHT_MARGIN"]] .= "</ul>\n";
 			}
 			else
 			{
-				?><li><a href=""><?=$prevItem["NAME"]?></a></li><?echo "\n";
-				if ($arItem["DEPTH_LEVEL"]>$prevItem["DEPTH_LEVEL"])
-				{
-					?><ul><?echo "\n";
-				}
-				elseif ($arItem["DEPTH_LEVEL"]<$prevItem["DEPTH_LEVEL"])
-				{
-					?></ul><?echo "\n";
-				}
-				$prevItem=$arItem;
+				$arUl[$arResult["ITEMS"][$i]["RIGHT_MARGIN"]] = "";
 			}
+		}
+		for($i=0; $i<count($arUl);$i++)
+			$strUl .= $arUl[$i];
+		echo $strUl;
 		?>
-	<?endforeach;?>
-		<li><a href=""><?=$nowItem["NAME"]?></a></li><?echo "\n";?>
 	</ul>
-*/?>
 </div>
 <div class="catalog_table">
 &nbsp;test

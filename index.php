@@ -62,7 +62,7 @@ msDebug($res);
 $arResult = TaskLib\Groups::getGroupTree();
 $arResult['SELECT'] = TaskLib\Groups::getSelectArray($arResult['ITEMS']);
 
-//msDebug($arResult);
+msDebug($arResult);
 ?>
 <?//echo InputCalendar("calendar"); ?>
 <? echo SelectBox("groups",$arResult['SELECT']['LIST'],"---Верхний уровень---","NULL"); ?>
