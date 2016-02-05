@@ -11,5 +11,5 @@ Config::addConfig('ICAR_PUBLIC_ROOT',Config::getConfig('PUBLIC_ROOT')."icar/");
 Loader::includeFiles(Config::getConfig('ICAR_ROOT')."tables/");
 
 //***** Lib ********
-//Loader::includeFiles(Config::getConfig('ICAR_ROOT')."lib/");
+Loader::includeFiles(Config::getConfig('ICAR_ROOT')."lib/");
 

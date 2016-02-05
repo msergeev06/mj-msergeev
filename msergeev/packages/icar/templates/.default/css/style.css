@@ -9,3 +9,8 @@ a:hover {
 a.selected {
 	text-decoration: underline !important;
 }
+
+.car_add {
+	width: 100%;
+	border: 0;
+}

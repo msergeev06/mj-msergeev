@@ -50,7 +50,7 @@ $res = WorkCalendarTable::getList(array(
 //$code = Tools::generateCode("Михаил Сергеев");
 //CarGearboxTable::insertDefaultRows();
 //$res = Tools::getClassNameByTableName("ms_icar_car_gearbox");
-Installer::createPackageTables("icar");
+//Installer::createPackageTables("icar");
 /*
 $res = MSergeev\Packages\Products\Tables\FreezerTable::createTable();
 msDebug($res);

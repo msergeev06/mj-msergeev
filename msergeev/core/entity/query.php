@@ -440,7 +440,27 @@ class Query
 		}
 		else
 		{
-			$sql .= $quote.join ($quote.",\n\t".$quote,$arSelect).$quote;
+			$bSelectFirst = true;
+			foreach ($arSelect as $key=>$value)
+			{
+				if ($bSelectFirst)
+				{
+					$bSelectFirst = false;
+				}
+				else
+				{
+					$sql .= ",\n\t";
+				}
+				if (is_numeric($key))
+				{
+					$sql .= $helper->wrapQuotes($value);
+				}
+				else
+				{
+					$sql .= $helper->wrapQuotes($key)." AS ".$helper->wrapQuotes($value);
+				}
+			}
+			//$sql .= $quote.join ($quote.",\n\t".$quote,$arSelect).$quote;
 		}
 
 		$sql .= "\nFROM\n\t".$helper->wrapQuotes($this->getTableName());

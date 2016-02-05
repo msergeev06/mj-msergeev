@@ -50,7 +50,7 @@ function InputType($strType, $strName, $strValue, $strCmp, $strPrintValue=false,
  * @param string    $field1         Additional attributes
  * @return string
  */
-function SelectBox($strBoxName, $arValues, $strDetText = "", $strSelectedVal = "", $field1="class=\"typeselect\"")
+function SelectBox($strBoxName, $arValues, $strDetText = "", $strSelectedVal = "null", $field1="class=\"typeselect\"")
 {
 	$strReturnBox = "<select ".$field1." name=\"".$strBoxName."\" id=\"".$strBoxName."\">";
 	if ($strDetText <> '')
@@ -74,6 +74,26 @@ function SelectBox($strBoxName, $arValues, $strDetText = "", $strSelectedVal = "
 		$strReturnBox = $strReturnBox."value=\"".$arValue["VALUE"]. "\">".$arValue["NAME"]."</option>";
 	}
 	return $strReturnBox."</select>";
+}
+
+function SelectBoxBool ($strBoxName, $strSelectedVal = "", $strYes='', $strNo='', $field1="class=\"typeselect\"")
+{
+	if ($strYes == '') $strYes = 'Да';
+	if ($strNo == '') $strNo = 'Нет';
+	if ($strSelectedVal == "") $strSelectedVal = 0;
+
+	$arValues = array(
+		array(
+			'VALUE' => 0,
+			'NAME' => $strNo
+		),
+		array(
+			'VALUE' => 1,
+			'NAME' => $strYes
+		)
+	);
+
+	return SelectBox($strBoxName, $arValues, '', $strSelectedVal, $field1);
 }
 
 /**
