@@ -4,9 +4,9 @@
 
 include_once ($_SERVER["DOCUMENT_ROOT"]."/msergeev_config.php");
 //MSergeev\Core\Lib\Loader::IncludePackage("dates");
-//MSergeev\Core\Lib\Loader::IncludePackage("icar");
+MSergeev\Core\Lib\Loader::IncludePackage("icar");
 //MSergeev\Core\Lib\Loader::IncludePackage("products");
-MSergeev\Core\Lib\Loader::IncludePackage("tasks");
+//MSergeev\Core\Lib\Loader::IncludePackage("tasks");
 header('Content-type: text/html; charset=utf-8');
 
 use MSergeev\Packages\Dates\Tables;
@@ -50,7 +50,7 @@ $res = WorkCalendarTable::getList(array(
 //$code = Tools::generateCode("Михаил Сергеев");
 //CarGearboxTable::insertDefaultRows();
 //$res = Tools::getClassNameByTableName("ms_icar_car_gearbox");
-//Installer::createPackageTables("products");
+Installer::createPackageTables("icar");
 /*
 $res = MSergeev\Packages\Products\Tables\FreezerTable::createTable();
 msDebug($res);
@@ -59,13 +59,13 @@ msDebug($res);
 
 */
 //Installer::createPackageTables("tasks");
-$arResult = TaskLib\Groups::getGroupTree();
-$arResult['SELECT'] = TaskLib\Groups::getSelectArray($arResult['ITEMS']);
+//$arResult = TaskLib\Groups::getGroupTree();
+//$arResult['SELECT'] = TaskLib\Groups::getSelectArray($arResult['ITEMS']);
 
-msDebug($arResult);
+//msDebug($arResult);
 ?>
 <?//echo InputCalendar("calendar"); ?>
-<? echo SelectBox("groups",$arResult['SELECT']['LIST'],"---Верхний уровень---","NULL"); ?>
+<? //echo SelectBox("groups",$arResult['SELECT']['LIST'],"---Верхний уровень---","NULL"); ?>
 
 </body></html>
 

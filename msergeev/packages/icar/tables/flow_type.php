@@ -4,6 +4,7 @@ namespace MSergeev\Packages\Icar\Tables;
 
 use MSergeev\Core\Lib\DataManager;
 use MSergeev\Core\Entity;
+use MSergeev\Core\Lib\TableHelper;
 
 class FlowTypeTable extends DataManager {
 	public static function getTableName () {
@@ -26,6 +27,8 @@ class FlowTypeTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID расхода'
 			)),
+			TableHelper::activeField(),
+			TableHelper::sortField(),
 			new Entity\StringField ('NAME', array(
 				'required' => true,
 				'title' => 'Название типа расхода'
@@ -37,11 +40,6 @@ class FlowTypeTable extends DataManager {
 					'column' => 'NAME'
 				),
 				'title' => 'Код типа расхода'
-			)),
-			new Entity\IntegerField ('SORT', array(
-				'required' => true,
-				'default_value' => 500,
-				'title' => 'Сортировка'
 			))
 		);
 	}

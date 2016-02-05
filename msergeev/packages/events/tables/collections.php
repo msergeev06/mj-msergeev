@@ -4,6 +4,7 @@ namespace MSergeev\Packages\Events\Tables;
 
 use MSergeev\Core\Lib\DataManager;
 use MSergeev\Core\Entity;
+use MSergeev\Core\Lib\TableHelper;
 
 class CollectionsTable extends DataManager {
 	public static function getTableName() {
@@ -19,14 +20,11 @@ class CollectionsTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID коллекции'
 			)),
+			TableHelper::activeField(),
+			TableHelper::sortField(),
 			new Entity\StringField ('NAME', array(
 				'required' => true,
 				'title' => 'Название коллекции'
-			)),
-			new Entity\IntegerField ('SORT', array(
-				'required' => true,
-				'default_value' => 500,
-				'title' => 'Сортировка'
 			)),
 			new Entity\IntegerField ('USER_ID', array(
 				'required' => true,

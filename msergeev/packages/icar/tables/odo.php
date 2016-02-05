@@ -26,7 +26,6 @@ class OdoTable extends DataManager {
 			)),
 			new Entity\DateField ('DATE', array(
 				'required' => true,
-				'default_value' => 'date("Y-m-d")',
 				'title' => 'Дата поездки'
 			)),
 			new Entity\FloatField ('ODO', array(

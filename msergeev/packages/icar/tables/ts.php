@@ -38,7 +38,6 @@ class TsTable extends DataManager {
 			)),
 			new Entity\DateField ('DATE', array(
 				'required' => true,
-				'default_value' => 'date("Y-m-d")',
 				'title' => 'Дата прохождения ТО'
 			)),
 			new Entity\IntegerField ('EXECUTORS_ID', array(
@@ -60,7 +59,7 @@ class TsTable extends DataManager {
 				'link' => 'ms_icar_points.ID',
 				'title' => 'ID путевой точки'
 			)),
-			new Entity\StringField ('DESCRIPTION', array(
+			new Entity\TextField('DESCRIPTION', array(
 				'title' => 'Комментарий'
 			))
 		);

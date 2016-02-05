@@ -24,21 +24,20 @@ class CreditTable extends DataManager {
 				'link' => 'ms_icar_my_car.ID',
 				'title' => 'ID автомобиля'
 			)),
-			new Entity\IntegerField('DATE',array(
+			new Entity\DateField('DATE',array(
 				'required' => true,
-				'default_value' => 'date("Y-m-d")',
 				'title' => 'Дата расхода'
 			)),
-			new Entity\IntegerField('SUM',array(
+			new Entity\FloatField('SUM',array(
 				'required' => true,
 				'default_value' => 0,
 				'title' => 'Сумма'
 			)),
-			new Entity\IntegerField('NAME',array(
+			new Entity\StringField('NAME',array(
 				'required' => true,
 				'title' => 'Название'
 			)),
-			new Entity\IntegerField('DESCRIPTION',array(
+			new Entity\TextField('DESCRIPTION',array(
 				'title' => 'Примечание'
 			))
 		);

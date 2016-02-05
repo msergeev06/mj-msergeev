@@ -38,7 +38,6 @@ class AccidentTable extends DataManager
 			)),
 			new Entity\DateField('ACCIDENT_DATE',array(
 				'required' => true,
-				'default_value' => 'data("Y-m-d")',
 				'title' => 'Дата ДТП'
 			)),
 			new Entity\FloatField('ODO',array(

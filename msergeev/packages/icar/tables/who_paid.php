@@ -4,6 +4,7 @@ namespace MSergeev\Packages\Icar\Tables;
 
 use MSergeev\Core\Lib\DataManager;
 use MSergeev\Core\Entity;
+use MSergeev\Core\Lib\TableHelper;
 
 class WhoPaidTable extends DataManager {
 	public static function getTableName() {
@@ -27,6 +28,8 @@ class WhoPaidTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID плательщика'
 			)),
+			TableHelper::activeField(),
+			TableHelper::sortField(),
 			new Entity\StringField ('NAME', array(
 				'required' => true,
 				'title' => 'Название плательщика'
@@ -38,11 +41,6 @@ class WhoPaidTable extends DataManager {
 					'column' => 'NAME'
 				),
 				'title' => 'Код плательщика'
-			)),
-			new Entity\IntegerField ('SORT', array(
-				'required' => true,
-				'default_value' => 500,
-				'title' => 'Сортировка'
 			))
 	);
 	}

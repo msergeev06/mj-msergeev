@@ -26,7 +26,6 @@ class FuelTable extends DataManager {
 			)),
 			new Entity\DateField ('DATE', array(
 				'required' => true,
-				'default_value' => 'data("Y-m-d")',
 				'title' => 'Дата заправки'
 			)),
 			new Entity\FloatField ('ODO', array(
@@ -70,7 +69,7 @@ class FuelTable extends DataManager {
 				'link' => 'ms_icar_points.ID',
 				'title' => 'ID путевой точки'
 			)),
-			new Entity\StringField ('DESCRIPTION', array(
+			new Entity\TextField('DESCRIPTION', array(
 				'title' => 'Комментарий'
 			))
 		);

@@ -2,4 +2,4 @@
 
 
 
-<? include_once(MSergeev\Core\Lib\Loader::getPublic("events")."include/footer.php"); ?>
+<? include_once(MSergeev\Core\Lib\Loader::getPublic("tasks")."include/footer.php"); ?>

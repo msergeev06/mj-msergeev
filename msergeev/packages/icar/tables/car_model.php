@@ -4,6 +4,7 @@ namespace MSergeev\Packages\Icar\Tables;
 
 use MSergeev\Core\Entity;
 use MSergeev\Core\Lib\DataManager;
+use MSergeev\Core\Lib\TableHelper;
 
 class CarModelTable extends DataManager {
 	public static function getTableName() {
@@ -26,6 +27,8 @@ class CarModelTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID модели автомобиля'
 			)),
+			TableHelper::activeField(),
+			TableHelper::sortField(),
 			new Entity\IntegerField('BRANDS_ID',array(
 				'link' => 'ms_icar_car_brands.ID',
 				'required' => true,
@@ -43,12 +46,17 @@ class CarModelTable extends DataManager {
 					'column' => 'NAME'
 				),
 				'title' => 'Код модели автомобиля'
-			)),
-			new Entity\IntegerField('SORT',array(
-				'required' => true,
-				'default_value' => 500,
-				'title' => 'Сортировка'
-			)),
+			))
+		);
+	}
+	public static function getArrayDefaultValues ()
+	{
+		return array(
+			array(
+				'BRANDS_ID' => 1,
+				'NAME' => 'On Do',
+				'CODE' => 'ondo'
+			)
 		);
 	}
 }

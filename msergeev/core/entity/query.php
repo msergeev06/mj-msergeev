@@ -641,7 +641,8 @@ class Query
 					}
 					else
 					{
-						$sql .= "DEFAULT ".$helper->helperDate()->getGetDateFunction()." ";
+						//$sql .= "DEFAULT ".$helper->helperDate()->getGetDateFunction()." ";
+						$sql .= "";
 					}
 				}
 				else {

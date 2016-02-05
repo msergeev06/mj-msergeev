@@ -4,6 +4,7 @@ namespace MSergeev\Packages\Icar\Tables;
 
 use MSergeev\Core\Lib\DataManager;
 use MSergeev\Core\Entity;
+use MSergeev\Core\Lib\TableHelper;
 
 class PointTypesTable extends DataManager {
 	public static function getTableName() {
@@ -26,6 +27,8 @@ class PointTypesTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID типа путевых точек'
 			)),
+			TableHelper::activeField(),
+			TableHelper::sortField(),
 			new Entity\StringField ('NAME', array(
 				'required' => true,
 				'title' => 'Название типа путевых точек'
@@ -37,11 +40,6 @@ class PointTypesTable extends DataManager {
 					'column' => 'NAME'
 				),
 				'title' => 'Код типа путевых точек'
-			)),
-			new Entity\IntegerField ('SORT', array(
-				'required' => true,
-				'default_value' => 500,
-				'title' => 'Сортировка'
 			)),
 			new Entity\BooleanField ('DEFAULT', array(
 				'required' => true,

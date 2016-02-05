@@ -26,7 +26,6 @@ class OtherExpenseTable extends DataManager {
 			)),
 			new Entity\DateField('DATE',array(
 				'required' => true,
-				'default_value' => 'date("Y-m-d")',
 				'title' => 'Дата расхода'
 			)),
 			new Entity\FloatField('SUM',array(
@@ -62,7 +61,7 @@ class OtherExpenseTable extends DataManager {
 				'link' => 'ms_icar_points.ID',
 				'title' => 'ID путевой точки'
 			)),
-			new Entity\StringField('DESCRIPTION',array(
+			new Entity\TextField('DESCRIPTION',array(
 				'title' => 'Примечание'
 			))
 		);

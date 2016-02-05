@@ -36,6 +36,16 @@ class MyCarTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID автомобиля'
 			)),
+			new Entity\BooleanField('ACTIVE',array(
+				'required' => true,
+				'default_value' => true,
+				'title' => 'Активность'
+			)),
+			new Entity\IntegerField('SORT',array(
+				'required' => true,
+				'default_value' => 500,
+				'title' => 'Сортировка'
+			)),
 			new Entity\StringField ('NAME', array(
 				'required' => true,
 				'title' => 'Название автомобиля'

@@ -1,0 +1,11 @@
+a {
+	text-decoration: none;
+	color: dodgerblue;
+}
+a:hover {
+	text-decoration: underline;
+	color: dodgerblue;
+}
+a.selected {
+	text-decoration: underline !important;
+}

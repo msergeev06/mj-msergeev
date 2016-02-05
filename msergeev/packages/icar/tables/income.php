@@ -26,7 +26,6 @@ class IncomeTable extends DataManager {
 			)),
 			new Entity\DateField('DATE',array(
 				'required' => true,
-				'default_value' => 'date("Y-m-d")',
 				'title' => 'Дата получения дохода'
 			)),
 			new Entity\FloatField('SUM',array(
@@ -38,7 +37,7 @@ class IncomeTable extends DataManager {
 				'required' => true,
 				'title' => 'Откуда получен доход'
 			)),
-			new Entity\StringField('DESCRIPTION',array(
+			new Entity\TextField('DESCRIPTION',array(
 				'title' => 'Примечание'
 			)),
 		);

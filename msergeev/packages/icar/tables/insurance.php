@@ -4,6 +4,7 @@ namespace MSergeev\Packages\Icar\Tables;
 
 use MSergeev\Core\Entity;
 use MSergeev\Core\Lib\DataManager;
+use MSergeev\Core\Lib\TableHelper;
 
 class InsuranceTable extends DataManager {
 	public static function getTableName() {
@@ -26,15 +27,12 @@ class InsuranceTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID страховой компании'
 			)),
+			TableHelper::activeField(),
+			TableHelper::sortField(),
 			new Entity\StringField('NAME',array(
 				'required' => true,
 				'title' => 'Название страховой компании'
-			)),
-			new Entity\IntegerField('SORT',array(
-				'required' => true,
-				'default_value' => 500,
-				'title' => 'Сортировка'
-			)),
+			))
 		);
 	}
 }

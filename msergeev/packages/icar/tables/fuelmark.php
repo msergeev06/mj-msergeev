@@ -4,6 +4,7 @@ namespace MSergeev\Packages\Icar\Tables;
 
 use MSergeev\Core\Lib\DataManager;
 use MSergeev\Core\Entity;
+use MSergeev\Core\Lib\TableHelper;
 
 class FuelmarkTable extends DataManager {
 	public static function getTableName () {
@@ -26,6 +27,8 @@ class FuelmarkTable extends DataManager {
 				'autocomplete' => true,
 				'title' => 'ID типа топлива'
 			)),
+			TableHelper::activeField(),
+			TableHelper::sortField(),
 			new Entity\StringField ('NAME', array(
 				'required' => true,
 				'title' => 'Название типа топлива'
@@ -43,11 +46,6 @@ class FuelmarkTable extends DataManager {
 					'column' => 'SHORT_NAME'
 				),
 				'title' => 'Код типа топлива'
-			)),
-			new Entity\IntegerField ('SORT', array(
-				'required' => true,
-				'default_value' => 500,
-				'title' => 'Сортировка'
 			))
 		);
 	}

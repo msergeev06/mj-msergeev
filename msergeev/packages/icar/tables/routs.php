@@ -26,7 +26,6 @@ class RoutsTable extends DataManager {
 			)),
 			new Entity\DateField ('DATE', array(
 				'required' => true,
-				'default_value' => 'date("Y-m-d")',
 				'title' => 'Дата поездки'
 			)),
 			new Entity\IntegerField ('START_POINTS_ID', array(
@@ -44,7 +43,7 @@ class RoutsTable extends DataManager {
 				'required' => true,
 				'default_value' => 0,
 				'link' => 'ms_icar_points.ID',
-				'title' => 'ID клнечной путевой точки'
+				'title' => 'ID конечной путевой точки'
 			)),
 			new Entity\FloatField ('ODO', array(
 				'title' => 'Пробег'
