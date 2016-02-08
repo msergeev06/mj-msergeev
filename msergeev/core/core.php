@@ -36,6 +36,8 @@ Lib\Loader::includeFiles(
 	)
 );
 
+Lib\Loc::setModuleMessages();
+
 //***** Entity ********
 Lib\Loader::includeFiles(
 	Lib\Config::getConfig('CORE_ROOT')."entity/",

@@ -10,7 +10,8 @@ $arConfig = array(
 	'MSERGEEV_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/',
 	'CORE_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/core/',
 	'PACKAGES_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/packages/',
-	'PUBLIC_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/public/'
+	'PUBLIC_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/public/',
+	'LANG' => 'ru'
 );
 
 include_once($arConfig["CORE_ROOT"].'lib/config.php');

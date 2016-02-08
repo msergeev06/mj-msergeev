@@ -9,3 +9,12 @@ function __include_once ($path)
 	include_once($path);
 }
 
+/*
+function getMessage ($name, $arReplace=array())
+{
+	$message = \MSergeev\Core\Lib\Loc::getMessage($name,$arReplace);
+
+	return $message;
+}
+*/
+

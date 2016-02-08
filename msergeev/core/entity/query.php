@@ -380,7 +380,10 @@ class Query
 	 */
 	public function exec ()
 	{
-		$this->setQueryBuildParts(static::BuildQuery());
+		if ($this->getQueryBuildParts() == '')
+		{
+			$this->setQueryBuildParts(static::BuildQuery());
+		}
 		$DB = $GLOBALS['DB'];
 		try
 		{
@@ -797,11 +800,15 @@ class Query
 										|| $obMap instanceof FloatField
 									)
 									{
-										$sql .= $res;
+										$sqlValues .= $res;
+										$sqlNames .= $helper->wrapQuotes($columnName);
+										//$sql .= $res;
 									}
 									else
 									{
-										$sql .= "'".$res."'";
+										$sqlValues .= "'".$res."'";
+										$sqlNames .= $helper->wrapQuotes($columnName);
+										//$sql .= "'".$res."'";
 									}
 								}
 							}

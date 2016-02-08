@@ -127,4 +127,9 @@ class ScalarField extends Field {
 
         return $value;
     }
+
+	public function validate ($value)
+	{
+		return $value;
+	}
 }
