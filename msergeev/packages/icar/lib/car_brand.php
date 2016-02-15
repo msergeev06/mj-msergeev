@@ -6,7 +6,7 @@ use MSergeev\Packages\Icar\Tables\CarBrandTable;
 
 class CarBrand
 {
-	public static function getHtmlSelect($name='car_brand')
+	public static function getHtmlSelect($selected=0, $name='car_brand')
 	{
 		$arValues = CarBrandTable::getList(array(
 			'select' => array(
@@ -22,6 +22,9 @@ class CarBrand
 			)
 		));
 
-		return SelectBox($name,$arValues,'-- Выбрать --');
+		if ($selected>0)
+			return SelectBox($name,$arValues,'-- Выбрать --',$selected);
+		else
+			return SelectBox($name,$arValues,'-- Выбрать --');
 	}
 }

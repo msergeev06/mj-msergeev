@@ -6,7 +6,7 @@ use MSergeev\Packages\Icar\Tables\CarGearboxTable;
 
 class CarGearbox
 {
-	public static function getHtmlSelect($name='car_gearbox')
+	public static function getHtmlSelect($selected=0,$name='car_gearbox')
 	{
 		$arValues = CarGearboxTable::getList(array(
 			'select' => array(
@@ -22,6 +22,9 @@ class CarGearbox
 			)
 		));
 
-		return SelectBox($name,$arValues,'-- Выбрать --');
+		if ($selected>0)
+			return SelectBox($name,$arValues,'-- Выбрать --',$selected);
+		else
+			return SelectBox($name,$arValues,'-- Выбрать --');
 	}
 }

@@ -364,11 +364,25 @@ class MyCar
 
 	public static function getCarByID ($carID=0)
 	{
-		if ($carID==0) $carID = static::getDefaultCar();
+		if ($carID==0) $carID = static::getDefaultCarID();
 
+		$arResult = MyCarTable::getList(array(
+			"filter" => array(
+				"ID" => $carID
+			),
+			"limit" => 1
+		));
+		if (isset($arResult[0]))
+			$arResult = $arResult[0];
+		return $arResult;
 	}
 
 	public static function getDefaultCar ()
+	{
+		return static::getDefaultCarID();
+	}
+
+	public static function getDefaultCarID ()
 	{
 		$arRes = MyCarTable::getList(array(
 			'select' => array('ID'),

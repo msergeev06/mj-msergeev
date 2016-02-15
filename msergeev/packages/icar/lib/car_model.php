@@ -8,7 +8,7 @@ use MSergeev\Packages\Icar\Tables\CarModelTable;
 
 class CarModel
 {
-	public static function getHtmlSelect($brand=null, $name='car_model')
+	public static function getHtmlSelect($brand=null, $selected=0, $name='car_model')
 	{
 		$arGetList = array(
 			'select' => array(
@@ -29,7 +29,10 @@ class CarModel
 		}
 		$arValues = CarModelTable::getList($arGetList);
 
-		return SelectBox($name,$arValues,'-- Выбрать --');
+		if ($selected>0)
+			return SelectBox($name,$arValues,'-- Выбрать --',$selected);
+		else
+			return SelectBox($name,$arValues,'-- Выбрать --');
 	}
 
 	public static function addNewModel ($brandID=null, $modelName=null)
