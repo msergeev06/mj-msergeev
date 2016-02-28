@@ -17,4 +17,5 @@ Lib\Buffer::start("page");
 
 <? include_once (Lib\Loader::getPublic("icar")."include_areas/top_menu.php"); ?>
 
+<? include_once (Lib\Loader::getPublic("icar")."include_areas/alerts.php"); ?>
 <h1><?=Lib\Buffer::showTitle("Главная");?></h1>

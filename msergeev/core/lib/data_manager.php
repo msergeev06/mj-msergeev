@@ -3,7 +3,7 @@
 namespace MSergeev\Core\Lib;
 
 use MSergeev\Core\Entity;
-use MSergeev\Core\Lib\DataBase;
+use MSergeev\Core\Exception;
 
 class DataManager {
 
@@ -154,6 +154,25 @@ class DataManager {
 		return $arTableFields;
 	}
 
+	public static function getListFunc ()
+	{
+		try
+		{
+			if (func_num_args() <= 0)
+			{
+				throw new Exception\ArgumentNullException('params');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+		$params = func_get_arg(0);
+
+		return static::getList($params[0]);
+	}
+
 	public static function getList ($parameters)
 	{
 		$query = static::query("select");
@@ -297,4 +316,51 @@ class DataManager {
 			$primary = array('='.$prim => $primary);
 		}
 	}
+
+	public static function checkTableLinks()
+	{
+		$bLinks = false;
+
+		$helper = new SqlHelper();
+		$arLinks = static::getTableLinks();
+		$tableName = static::getTableName();
+		foreach ($arLinks as $field=>$arLink)
+		{
+			$sql = "SELECT\n\t".'t.'.$helper->wrapQuotes($field)."\n";
+			$sql .= "FROM\n\t".$helper->wrapQuotes($tableName)." t";
+			$where = "WHERE\n\t";
+
+			$t=0;
+			$bFirst = true;
+			foreach ($arLink as $tableName=>$fieldName)
+			{
+				$t++;
+				if ($bFirst)
+				{
+					$bFirst = false;
+				}
+				else
+				{
+					$where .= " AND\n\t";
+				}
+				$sql .= ",\n\t";
+				$sql .= $helper->wrapQuotes($tableName)." t".$t;
+				$where .= "t".$t
+					.".".$helper->wrapQuotes($fieldName)
+					." = t.".$helper->wrapQuotes($field);
+			}
+			$sql .= "\n".$where;
+
+			$query = new Entity\Query("select");
+			$query->setQueryBuildParts($sql);
+			$res = $query->exec();
+			if ($ar_res = $res->fetch())
+			{
+				$bLinks = true;
+			}
+		}
+
+		return $bLinks;
+	}
+
 }

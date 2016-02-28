@@ -31,7 +31,7 @@ $arResult['CARS'] = MyCar::getListCar();
 						<td><?=$myCar["COST"]?>&nbsp;руб.</td>
 						<td><b>Кредит:</b>&nbsp;<?=($myCar["CREDIT"]) ? 'Да' : 'Нет'?></td>
 						<td><?=($myCar["CREDIT"]) ? $myCar["CREDIT_COST"]."&nbsp;руб." : "&nbsp;"?></td>
-						<td><b>Итнервал ТО:</b></td>
+						<td><b>Интервал ТО:</b></td>
 						<td><?=$myCar["INTERVAL_TS"]?>&nbsp;км.</td>
 					</tr>
 					<tr>
@@ -49,11 +49,11 @@ $arResult['CARS'] = MyCar::getListCar();
 					</tr>
 					<tr>
 						<td><b>Всего расходов:</b></td>
-						<td colspan="5"><?=MyCar::getCarTotalCosts($myCar['ID'])?>&nbsp;руб.</td>
+						<td colspan="5"><?=MyCar::getCarTotalCostsFormatted($myCar['ID'])?>&nbsp;руб.</td>
 					</tr>
 					<tr>
 						<td><b>Средний расход топлива:</b></td>
-						<td colspan="5"><?=MyCar::getCarAverageFuel($myCar['ID'])?>&nbsp;л./100км.</td>
+						<td colspan="5"><?=MyCar::getCarAverageFuelFormatted($myCar['ID'])?>&nbsp;л./100км.</td>
 					</tr>
 					<tr>
 						<td><b>Израсходованно топлива:</b></td>

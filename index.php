@@ -63,6 +63,11 @@ msDebug($res);
 //$arResult['SELECT'] = TaskLib\Groups::getSelectArray($arResult['ITEMS']);
 
 //msDebug($arResult);
+
+
+
+
+
 ?>
 <?//echo InputCalendar("calendar"); ?>
 <? //echo SelectBox("groups",$arResult['SELECT']['LIST'],"---Верхний уровень---","NULL"); ?>

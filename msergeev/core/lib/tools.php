@@ -2,6 +2,8 @@
 
 namespace MSergeev\Core\Lib;
 
+use MSergeev\Core\Exception;
+
 class Tools {
 	public static function generateCode ()
 	{
@@ -283,11 +285,18 @@ class Tools {
 		return $strClassName;
 	}
 
-	public static function runTableClassFunction ($strTable,$strFunction)
+	public static function runTableClassFunction ($strTable,$strFunction,$arParams=array())
 	{
 		$strClassFunction = static::getClassNameByTableName($strTable);
 		$strClassFunction .= "::".$strFunction;
-		return call_user_func($strClassFunction);
+		if (empty($arParams))
+		{
+			return call_user_func($strClassFunction);
+		}
+		else
+		{
+			return call_user_func($strClassFunction,$arParams);
+		}
 	}
 
 	public static function setFirstCharToBig ($str)
@@ -298,4 +307,89 @@ class Tools {
 
 		return $str;
 	}
+
+	public static function getNameDayOfWeek ($day=null)
+	{
+		try
+		{
+			if (is_null($day))
+			{
+				throw new Exception\ArgumentNullException('day');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		switch (intval($day))
+		{
+			case 0:
+				return 'Вс.';
+			case 1:
+				return 'Пн.';
+			case 2:
+				return 'Вт.';
+			case 3:
+				return 'Ср.';
+			case 4:
+				return 'Чт.';
+			case 5:
+				return 'Пт.';
+			case 6:
+				return 'Сб.';
+			default:
+				return false;
+		}
+
+	}
+
+	public static function getNameMonth ($month=null)
+	{
+		try
+		{
+			if (is_null($month))
+			{
+				throw new Exception\ArgumentNullException('month');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		switch ($month)
+		{
+			case 1:
+				return 'Январь';
+			case 2:
+				return 'Февраль';
+			case 3:
+				return 'Март';
+			case 4:
+				return 'Апрель';
+			case 5:
+				return 'Май';
+			case 6:
+				return 'Июнь';
+			case 7:
+				return 'Июль';
+			case 8:
+				return 'Август';
+			case 9:
+				return 'Сентябрь';
+			case 10:
+				return 'Октябрь';
+			case 11:
+				return 'Ноябрь';
+			case 12:
+				return 'Декабрь';
+			default:
+				return FALSE;
+		}
+	}
+
+
 }

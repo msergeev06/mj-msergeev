@@ -3,7 +3,7 @@
 namespace MSergeev\Packages\Icar\Lib;
 
 use MSergeev\Core\Entity\Query;
-use MSergeev\Core\Exception\ArgumentNullException;
+use MSergeev\Core\Exception;
 use MSergeev\Core\Lib\SqlHelper;
 use MSergeev\Packages\Icar\Tables\CarBodyTable;
 use MSergeev\Packages\Icar\Tables\CarBrandTable;
@@ -13,16 +13,24 @@ use MSergeev\Packages\Icar\Tables\MyCarTable;
 
 class MyCar
 {
+	/**
+	 * Добавляет новый автомобиль
+	 *
+	 * @param array $arData
+	 *
+	 * @throw Exception\ArgumentNullException
+	 * @return \MSergeev\Core\Lib\DBResult
+	 */
 	public static function addNewCar($arData=array())
 	{
 		try
 		{
 			if (empty($arData))
 			{
-				throw new ArgumentNullException('arData');
+				throw new Exception\ArgumentNullException('arData');
 			}
 		}
-		catch (ArgumentNullException $e)
+		catch (Exception\ArgumentNullException $e)
 		{
 			$e->showException();
 
@@ -54,6 +62,133 @@ class MyCar
 		return $res;
 	}
 
+	/**
+	 * Обновляет данне по автомобилю
+	 *
+	 * @param array $arData
+	 *
+	 * @throw Exception\ArgumentNullException
+	 *        Exception\ArgumentOutOfRangeException
+	 * @return \MSergeev\Core\Lib\DBResult
+	 */
+	public static function editCar ($arData=array())
+	{
+		try
+		{
+			if (empty($arData))
+			{
+				throw new Exception\ArgumentNullException('arData');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+
+			return false;
+		}
+
+		$arMap = MyCarTable::getMapArray();
+		$arUpdate = array();
+		foreach ($arData as $field=>$value)
+		{
+			try
+			{
+				if (isset($arMap[$field]))
+				{
+					$arUpdate[$field] = $arData[$field];
+				}
+				else
+				{
+					throw new Exception\ArgumentOutOfRangeException("arData[".$field."]");
+				}
+			}
+			catch (Exception\ArgumentOutOfRangeException $e)
+			{
+				$e->showException();
+			}
+		}
+
+		if (isset($arUpdate['DEFAULT']) && $arUpdate['DEFAULT'])
+		{
+			$res = static::uncheckDefaultAllCars();
+		}
+
+		$query = new Query('update');
+		$query->setTableName(MyCarTable::getTableName());
+		$query->setTableMap(MyCarTable::getMapArray());
+		$query->setUpdateArray($arUpdate);
+		if (isset($arUpdate['ID']) && intval($arUpdate['ID']) > 0)
+			$query->setUpdatePrimary(intval($arUpdate['ID']));
+		$res = $query->exec();
+
+		return $res;
+	}
+
+	/**
+	 * Проверяет можно ли удалить автомобиль,
+	 * т.е. нет ли данных, ссылающихся на данный автомобиль
+	 *
+	 * @param int $carID
+	 *
+	 * @throw Exception\ArgumentNullException
+	 * @return bool
+	 */
+	public static function canDeleteCar ($carID=0)
+	{
+		try
+		{
+			if ($carID <=0 )
+			{
+				throw new Exception\ArgumentNullException('carID');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			die($e->showException());
+		}
+
+		$bLinks = MyCarTable::checkTableLinks();
+
+		return !$bLinks;
+	}
+
+	public static function deleteCar ($carID=0)
+	{
+		try
+		{
+			if ($carID <=0 )
+			{
+				throw new Exception\ArgumentNullException('carID');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		$query = new Query("delete");
+		$query->setDeletePrimary($carID);
+		$query->setTableMap(MyCarTable::getMapArray());
+		$query->setTableLinks(MyCarTable::getTableLinks());
+		$query->setTableName(MyCarTable::getTableName());
+		//$query->setDeleteConfirm(true);
+		$res = $query->exec();
+		if ($ar_res = $res->fetch())
+		{
+			return $ar_res;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Снимает пометку "по-умолчанию" со всех автомобилей
+	 *
+	 * @return \MSergeev\Core\Lib\DBResult
+	 */
 	public static function uncheckDefaultAllCars()
 	{
 		$helper = new SqlHelper();
@@ -70,6 +205,13 @@ class MyCar
 		return $res;
 	}
 
+	/**
+	 * Возвращает массив данных обо всех автомобилях
+	 *
+	 * @param bool $bActive
+	 *
+	 * @return array
+	 */
 	public static function getListCar ($bActive=true)
 	{
 		$helper = new SqlHelper();
@@ -223,6 +365,13 @@ class MyCar
 		return $arResult;
 	}
 
+	/**
+	 * Получает развернутые данные об автомобиле из других таблиц
+	 *
+	 * @param $arResult
+	 *
+	 * @return mixed
+	 */
 	protected static function fetchCarData ($arResult)
 	{
 		$myCarMap = MyCarTable::getMapArray();
@@ -322,25 +471,54 @@ class MyCar
 		return $arResult;
 	}
 
-	public static function getCarTotalCosts ($carID=0)
+	/**
+	 * Подсчитывает общую сумму расходов по автомобилю
+	 *
+	 * @param int $carID
+	 *
+	 * @return float
+	 */
+	public static function getCarTotalCostsFormatted ($carID=null)
 	{
 		$total = 0;
+		$total += Fuel::getTotalFuelCosts($carID);
 
-		return round($total,2);
+		return number_format($total,2,',','');
 	}
 
-	public static function getCarAverageFuel ($carID=0)
+	/**
+	 * Подсчитывает средний расход топлива автомобиля
+	 *
+	 * @param int $carID
+	 *
+	 * @return float
+	 */
+	public static function getCarAverageFuelFormatted ($carID=null)
 	{
-		$average = 0;
-		return round($average,2);
+		$average = Fuel::getAverageFuelConsumption($carID);
+		return number_format($average,2,',','');
 	}
 
-	public static function getCarTotalSpentFuelFormatted ($carID=0)
+	/**
+	 * Возвращает отформатированное значение израсходованного топлива
+	 *
+	 * @param int $carID
+	 *
+	 * @return string
+	 */
+	public static function getCarTotalSpentFuelFormatted ($carID=null)
 	{
-		$spent = static::getCarTotalSpentFuel($carID);
-		return number_format($spent,2);
+		$spent = Fuel::getCarTotalSpentFuel($carID);
+		return number_format($spent,2,',','');
 	}
 
+	/**
+	 * Подсчитывает общее количество израсходованного топлива
+	 *
+	 * @param int $carID
+	 *
+	 * @return int
+	 */
 	public static function getCarTotalSpentFuel ($carID=0)
 	{
 		$spent = 0;
@@ -348,20 +526,50 @@ class MyCar
 		return $spent;
 	}
 
-	public static function getCarCurrentMileage ($carID=0)
+	/**
+	 * Возвращает текущее значение пробега автомобиля
+	 *
+	 * @param int $carID
+	 *
+	 * @return int
+	 */
+	public static function getCarCurrentMileage ($carID=null)
 	{
 		$mileage = 0;
+		if (is_null($carID))
+		{
+			$carID = static::getDefaultCarID();
+		}
+		$routsOdo = floatval(Odo::getMaxOdo($carID));
+		if ($routsOdo > $mileage)
+		{
+			$mileage = $routsOdo;
+		}
 
 		return $mileage;
 	}
 
-	public static function getCarCurrentMileageFormatted ($carID=0)
+	/**
+	 * Выводит отформатированное текщее значение пробега автомобиля
+	 *
+	 * @param int $carID
+	 *
+	 * @return string
+	 */
+	public static function getCarCurrentMileageFormatted ($carID=null)
 	{
 		$mileage = static::getCarCurrentMileage ($carID);
 
 		return number_format($mileage,2);
 	}
 
+	/**
+	 * Возвращает массив параметров указанного автомобиля
+	 *
+	 * @param int $carID
+	 *
+	 * @return array|bool
+	 */
 	public static function getCarByID ($carID=0)
 	{
 		if ($carID==0) $carID = static::getDefaultCarID();
@@ -377,11 +585,21 @@ class MyCar
 		return $arResult;
 	}
 
+	/**
+	 * @deprecated
+	 * @see getDefaultCarID
+	 * @return bool
+	 */
 	public static function getDefaultCar ()
 	{
 		return static::getDefaultCarID();
 	}
 
+	/**
+	 * Возвращает ID автомобиля по-умолчанию
+	 *
+	 * @return bool|int
+	 */
 	public static function getDefaultCarID ()
 	{
 		$arRes = MyCarTable::getList(array(
@@ -400,5 +618,165 @@ class MyCar
 		{
 			return false;
 		}
+	}
+
+	public static function showSelectCars ($strBoxName, $strSelectedVal = null, $field1="class=\"typeselect\"")
+	{
+		$arCars = static::getListCar();
+		if (is_null($strSelectedVal))
+		{
+			$strSelectedVal = static::getDefaultCarID();
+		}
+
+		$arValues = array();
+		foreach($arCars as $arCar)
+		{
+			$arValues[] = array(
+				"NAME" => $arCar['NAME'].' - '.$arCar['CAR_NUMBER'],
+				"VALUE" => $arCar['ID']
+			);
+		}
+
+		return SelectBox($strBoxName, $arValues, "", $strSelectedVal, $field1);
+	}
+
+	public static function getBuyCarOdo ($carID=null)
+	{
+		try
+		{
+			if (is_null($carID))
+			{
+				throw new Exception\ArgumentNullException('carID');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		if ($arRes = MyCarTable::getList(array(
+			'select' => array('MILEAGE'),
+			'filter' => array('ID'=>$carID)
+		)))
+		{
+			return floatval($arRes[0]['MILEAGE']);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static function checkAlerts ()
+	{
+		$arAlerts = array();
+		$arCars = static::getListCar();
+		$dateHelper = new DateHelper();
+
+		$time = time();
+		foreach ($arCars as &$arCar)
+		{
+			//Проверка необходимости ТО
+			$arCar['CURRENT_MILEAGE'] = static::getCarCurrentMileage ($arCar['ID']);
+			//echo 'CURRENT_MILEAGE ='.$arCar['CURRENT_MILEAGE']."<br>";
+			//echo 'count = floor(CURRENT_MILEAGE / INTERVAL_TS)<br>';
+			$count = floor($arCar['CURRENT_MILEAGE'] / $arCar['INTERVAL_TS']);
+			//echo $count.' = floor('.$arCar['CURRENT_MILEAGE'].' / '.$arCar['INTERVAL_TS'].')<br>';
+			//echo 'minus = INTERVAL_TS * count<br>';
+			$minus = $arCar['INTERVAL_TS'] * $count;
+			//echo $minus.' = '.$arCar['INTERVAL_TS'].' * '.$count.'<br>';
+			//echo 'curMil = CURRENT_MILEAGE - minus<br>';
+			$curMil = $arCar['CURRENT_MILEAGE'] - $minus;
+			//echo $curMil.' = '.$arCar['CURRENT_MILEAGE'].' - '.$minus.'<br>';
+			//echo 'raznica = INTERVAL_TS - curMil<br>';
+			$raznica = $arCar['INTERVAL_TS'] - $curMil;
+			//echo $raznica.' = '.$arCar['INTERVAL_TS'].' - '.$curMil.'<br>';
+			if ($raznica > 500 && $raznica <= 1000)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'green',
+					'TYPE' => 'odo',
+					'TEXT' => 'Обратите внимание! Скоро необходимо будет проходить плановое ТО на автомобиле "'.$arCar['NAME'].'"! Осталось проехать '.$raznica.' км'
+				);
+			}
+			elseif ($raznica > 300 && $raznica <= 500)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'yellow',
+					'TYPE' => 'odo',
+					'TEXT' => 'Внимание! В ближайшее время необходимо пройти плановое ТО на автомобиле "'.$arCar['NAME'].'"! Осталось проехать '.$raznica.' км'
+				);
+			}
+			elseif ($raznica >= 0 && $raznica <= 300)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'red',
+					'TYPE' => 'odo',
+					'TEXT' => 'ВНИМАНИЕ! Необходимо в срочном порядке пройти плановое ТО на автомобиле "'.$arCar['NAME'].'"!'
+				);
+			}
+
+			//Проверка необходимости оформления новой страховки и прохождения ГТО
+			$carOsagoTime = $dateHelper->getDateTimestamp($arCar['DATE_OSAGO_END']);
+			$carGtoTime = $dateHelper->getDateTimestamp($arCar['DATE_GTO_END']);
+			$carOsagoDay = floor(($carOsagoTime - $time) / (60 * 60 * 24)) + 1;
+			$carGtoDay = floor(($carGtoTime - $time) / (60 * 60 * 24)) + 1;
+			if ($carOsagoDay > 5 && $carOsagoDay <= 30)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'green',
+					'TYPE' => 'osago',
+					'TEXT' => 'Заканчивается срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Рекомендуем позаботится о продлении заранее. Осталось '.$carGtoDay.' дней'
+				);
+			}
+			elseif ($carOsagoDay >= 0 && $carOsagoDay <= 5)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'yellow',
+					'TYPE' => 'osago',
+					'TEXT' => 'Внимание! Скоро закончится срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Необходимо продлить полис! Осталось '.$carGtoDay.' дней'
+				);
+			}
+			elseif ($carOsagoDay < 0)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'red',
+					'TYPE' => 'osago',
+					'TEXT' => 'ВНИМАНИЕ! Заканчился срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Необходимо СРОЧНО продлить полис!'
+				);
+			}
+
+			if ($carGtoDay > 5 && $carGtoDay <= 30)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'green',
+					'TYPE' => 'gto',
+					'TEXT' => 'Подходит дата очередного ГТО у автомобиля "'.$arCar['NAME'].'". Подготовьте автомобиль к осмотру. Осталось '.$carGtoDay.' дней'
+				);
+			}
+			elseif ($carGtoDay >= 0 && $carGtoDay <= 5)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'yellow',
+					'TYPE' => 'gto',
+					'TEXT' => 'Внимание! Скоро подойдет дата очередного ГТО у автомобиля "'.$arCar['NAME'].'". Последняя возможность подготовить автомобиль к осмотру! Осталось '.$carGtoDay.' дней'
+				);
+			}
+			elseif ($carGtoDay < 0)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'red',
+					'TYPE' => 'gto',
+					'TEXT' => 'ВНИМАНИЕ! Необходимо СРОЧНО пройти ГТО на автомобиле "'.$arCar['NAME'].'". Езда без ГТО может привести к штрафу и лишению прав. Необходимо СРОЧНО пройти ГТО!'
+				);
+			}
+
+			//msDebug($arCar);
+		}
+		unset($arCar);
+
+
+		return $arAlerts;
 	}
 }

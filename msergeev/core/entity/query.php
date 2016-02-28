@@ -403,31 +403,37 @@ class Query
 
 	protected function BuildQuery ()
 	{
-		if ($this->getType() == "select")
+		try
 		{
-			$sql = static::BuildQuerySelect();
+			if ($this->getType() == "select")
+			{
+				$sql = static::BuildQuerySelect();
+			}
+			elseif ($this->getType() == "create")
+			{
+				$sql = static::BuildQueryCreate ();
+			}
+			elseif ($this->getType() == "insert")
+			{
+				$sql = static::BuildQueryInsert();
+			}
+			elseif ($this->getType() == "update")
+			{
+				$sql = static::BuildQueryUpdate();
+			}
+			elseif ($this->getType() == "delete")
+			{
+				$sql = static::BuildQueryDelete();
+			}
+			else
+			{
+				throw new Exception\ArgumentOutOfRangeException('queryType');
+			}
 		}
-		elseif ($this->getType() == "create")
+		catch (Exception\ArgumentOutOfRangeException $e)
 		{
-			$sql = static::BuildQueryCreate ();
+			die($e->showException());
 		}
-		elseif ($this->getType() == "insert")
-		{
-			$sql = static::BuildQueryInsert();
-		}
-		elseif ($this->getType() == "update")
-		{
-			$sql = static::BuildQueryUpdate();
-		}
-		elseif ($this->getType() == "delete")
-		{
-			$sql = static::BuildQueryDelete();
-		}
-		else
-		{
-			$sql = "";
-		}
-
 		return $sql;
 	}
 
@@ -483,77 +489,166 @@ class Query
 			$bFirst = true;
 			foreach ($arWhere as $field=>$value)
 			{
-				if (isset($arMap[$field]))
+				if ($arMask = $this->maskField($field))
 				{
-					$value = $arMap[$field]->saveDataModification($value);
-					$bEquating_str = false;
-
-					if ($arMap[$field] instanceof IntegerField)
+					$field = $arMask['field'];
+					if (isset($arMask['mask']))
 					{
-						$equating = " = ";
+						$mask = $arMask['mask'];
 					}
-					elseif ($arMap[$field] instanceof BooleanField)
+				}
+				try
+				{
+					if (!isset($arMap[$field]))
 					{
-						$equating = " LIKE ";
-						$bEquating_str = true;
-					}
-					elseif ($arMap[$field] instanceof DateField)
-					{
-						$equating = " = ";
-						$bEquating_str = true;
-					}
-					elseif ($arMap[$field] instanceof DatetimeField)
-					{
-						$equating = " = ";
-						$bEquating_str = true;
-					}
-					elseif ($arMap[$field] instanceof EnumField)
-					{
-						$equating = " = ";
-						//TODO: Доделать
-					}
-					elseif ($arMap[$field] instanceof ExpressionField)
-					{
-						$equating = " = ";
-						//TODO: Доделать
-					}
-					elseif ($arMap[$field] instanceof FloatField)
-					{
-						$equating = " = ";
-					}
-					elseif ($arMap[$field] instanceof ReferenceField)
-					{
-						$equating = " = ";
-						//TODO: Доделать
-					}
-					elseif ($arMap[$field] instanceof StringField)
-					{
-						$equating = " LIKE ";
-						$bEquating_str = true;
-					}
-					elseif ($arMap[$field] instanceof TextField)
-					{
-						$equating = " LIKE ";
-						$bEquating_str = true;
-					}
-
-					if ($bFirst)
-					{
-						$sql .= $helper->wrapQuotes($field).$equating;
-						if ($bEquating_str)
-							$sql .= "'".$value."'";
-						else
-							$sql .= $value;
-						$bFirst = false;
+						throw new Exception\ArgumentOutOfRangeException('arMap['.$field.']');
 					}
 					else
 					{
-						$sql .= ' '.$this->getFilterLogic()."\n\t".$helper->wrapQuotes($field).$equating;
-						if ($bEquating_str)
-							$sql .= "'".$value."'";
+						$value = $arMap[$field]->saveDataModification($value);
+						$bEquating_str = false;
+
+						if ($arMap[$field] instanceof IntegerField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " = ";
+							}
+						}
+						elseif ($arMap[$field] instanceof BooleanField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " LIKE ";
+							}
+							$bEquating_str = true;
+						}
+						elseif ($arMap[$field] instanceof DateField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " = ";
+							}
+							$bEquating_str = true;
+						}
+						elseif ($arMap[$field] instanceof DatetimeField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " = ";
+							}
+							$bEquating_str = true;
+						}
+						elseif ($arMap[$field] instanceof EnumField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " = ";
+							}
+							//TODO: Доделать
+						}
+						elseif ($arMap[$field] instanceof ExpressionField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " = ";
+							}
+							//TODO: Доделать
+						}
+						elseif ($arMap[$field] instanceof FloatField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " = ";
+							}
+						}
+						elseif ($arMap[$field] instanceof ReferenceField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " = ";
+							}
+							//TODO: Доделать
+						}
+						elseif ($arMap[$field] instanceof StringField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " LIKE ";
+							}
+							$bEquating_str = true;
+						}
+						elseif ($arMap[$field] instanceof TextField)
+						{
+							if (isset($mask))
+							{
+								$equating = ' '.$mask.' ';
+							}
+							else
+							{
+								$equating = " LIKE ";
+							}
+							$bEquating_str = true;
+						}
+
+						if ($bFirst)
+						{
+							$sql .= $helper->wrapQuotes($field).$equating;
+							if ($bEquating_str)
+								$sql .= "'".$value."'";
+							else
+								$sql .= $value;
+							$bFirst = false;
+						}
 						else
-							$sql .= $value;
+						{
+							$sql .= ' '.$this->getFilterLogic()."\n\t".$helper->wrapQuotes($field).$equating;
+							if ($bEquating_str)
+								$sql .= "'".$value."'";
+							else
+								$sql .= $value;
+						}
 					}
+				}
+				catch (Exception\ArgumentOutOfRangeException $e)
+				{
+					$e->showException();
 				}
 			}
 		}
@@ -723,6 +818,7 @@ class Query
 		$arDefaultValues = $this->getInsertArray();
 		$tableName = $this->getTableName();
 		$arMapArray = $this->getTableMap();
+		//msDebug($arDefaultValues);
 		$sql = "";
 
 		$bFFirts = true;
@@ -871,6 +967,21 @@ class Query
 			{
 				$primaryField = $objData->getColumnName();
 				$primaryObj = $objData;
+				try
+				{
+					if (is_null($primaryId) && intval($arUpdate[$primaryField]) > 0)
+					{
+						$primaryId = intval($arUpdate[$primaryField]);
+					}
+					elseif (is_null($primaryId))
+					{
+						throw new Exception\ArgumentNullException("primaryID");
+					}
+				}
+				catch (Exception\ArgumentNullException $e)
+				{
+					die($e->showException());
+				}
 				break;
 			}
 		}
@@ -949,18 +1060,12 @@ class Query
 		}
 		elseif ($confirm)
 		{
-			$sql .= static::getSqlMassDelete();
-			//return $sql;
+			static::sqlMassDelete($this);
+			return false;
 		}
 		else
 		{
-			//TODO: Это надо продумать и переделать нормально
-			$arPrimary = array(
-				"ID" => $primaryId,
-				"FIELD" => $primaryField,
-				"OBJ" => $primaryObj
-			);
-			$bCanDelete = static::checkCanDelete($this,$arPrimary);
+			$bCanDelete = static::checkCanDelete($this);
 
 			if ($bCanDelete)
 			{
@@ -973,63 +1078,224 @@ class Query
 		}
 	}
 
-	protected function getSqlMassDelete ()
+	//TODO: Протестировать
+	protected function sqlMassDelete ($query=null)
 	{
-		$sql = "";
+		try
+		{
+			if (is_null($query))
+			{
+				throw new Exception\ArgumentNullException('query');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
 
-		return $sql;
+		$helper = new Lib\SqlHelper();
+		$arMap = $query->getTableMap();
+		$primaryId = $query->getDeletePrimary();
+		$arTableLinks = $query->getTableLinks();
+		$tableName = $query->getTableName();
+
+		foreach ($arTableLinks as $field=>$arLinked)
+		{
+			foreach ($arLinked as $linkTable=>$linkField)
+			{
+				if (is_array($linkField))
+				{
+					foreach ($linkField as $linkF)
+					{
+						$arRes = Lib\Tools::runTableClassFunction ($linkTable,'getListFunc',array(
+							array(
+								'select' => array('ID'),
+								'filter' => array(
+									$linkF => $primaryId
+								)
+							)
+						));
+						if ($arRes)
+						{
+							foreach ($arRes as $delID)
+							{
+								$deleteQuery = new Query('delete');
+								$deleteQuery->setDeletePrimary($delID);
+								$deleteQuery->setTableLinks(Lib\Tools::runTableClassFunction ($linkTable,'getTableLinks'));
+								$deleteQuery->setTableMap(Lib\Tools::runTableClassFunction ($linkTable,'getTableMap'));
+								$deleteQuery->setDeleteConfirm(true);
+								$deleteQuery->exec();
+							}
+						}
+					}
+				}
+				else
+				{
+					$arRes = Lib\Tools::runTableClassFunction ($linkTable,'getListFunc',array(
+						array(
+							'select' => array('ID'),
+							'filter' => array(
+								$linkField => $primaryId
+							)
+						)
+					));
+					if ($arRes)
+					{
+						foreach ($arRes as $delID)
+						{
+							$deleteQuery = new Query('delete');
+							$deleteQuery->setDeletePrimary($delID);
+							$deleteQuery->setTableLinks(Lib\Tools::runTableClassFunction ($linkTable,'getTableLinks'));
+							$deleteQuery->setTableMap(Lib\Tools::runTableClassFunction ($linkTable,'getTableMap'));
+							$deleteQuery->setDeleteConfirm(true);
+							$deleteQuery->exec();
+						}
+					}
+				}
+			}
+		}
+
+		foreach ($arMap as $field=>$objData)
+		{
+			if ($objData->isPrimary())
+			{
+				$primaryField = $objData->getColumnName();
+				$primaryObj = $objData;
+				break;
+			}
+		}
+
+		$sql = "DELETE FROM ".$helper->wrapQuotes($tableName);
+		$sql .= " WHERE ".$helper->wrapQuotes($tableName).".";
+		$sql .= $helper->wrapQuotes($primaryField)." = ";
+		if ($primaryObj instanceof IntegerField || $primaryObj instanceof FloatField)
+		{
+			$sql .= $primaryId;
+		}
+		else
+		{
+			$sql .= "'".$primaryId."'";
+		}
+		$sql .= " LIMIT 1";
+
+		$delQuery = new Query('delete');
+		$delQuery->setQueryBuildParts($sql);
+		$res = $delQuery->exec();
 	}
 
-	protected function checkCanDelete($query,$arPrimary)
+	//TODO: Протестировать
+	protected function checkCanDelete($query=null)
 	{
-		$bCanDelete = true;
-		$arTableLinks = $query->getTableLinks();
-
-		foreach ($arTableLinks as $field=>$arLinks)
+		try
 		{
-			if ($field == $arPrimary["FIELD"])
+			if (is_null($query))
 			{
-				$searchValue = $arPrimary{"ID"};
+				throw new Exception\ArgumentNullException('query');
 			}
-			else
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		$primaryId = $query->getDeletePrimary();
+		$arTableLinks = $query->getTableLinks();
+		$bCanDelete = true;
+
+		foreach ($arTableLinks as $field=>$arLinked)
+		{
+			foreach ($arLinked as $linkTable=>$linkField)
 			{
-				$searchQuery = new Query("select");
-				$searchQuery->setTableName($query->getTableName());
-				$searchQuery->setTableMap(Lib\Tools::runTableClassFunction($query->getTableName(),"getMapArray()"));
-				$searchQuery->setFilter(array(
-					0 => array(
-						$arPrimary["FIELD"] => $arPrimary["ID"]
-					)
-				));
-				$searchQuery->setLimit(1);
-				$res = $searchQuery->exec();
-				if ($ar_res = $res->fetch())
+				if (is_array($linkField))
 				{
-					$searchValue = $ar_res[$field];
+					foreach ($linkField as $linkF)
+					{
+						$arRes = Lib\Tools::runTableClassFunction ($linkTable,'getListFunc',array(
+							array(
+								'select' => array('ID'),
+								'filter' => array(
+									$linkF => $primaryId
+								)
+							)
+						));
+						if ($arRes)
+						{
+							$bCanDelete = false;
+						}
+					}
 				}
-
-			}
-
-			foreach ($arLinks as $link)
-			{
-				list($linkTable,$linkField) = explode(".",$link);
-				$newQuery = new Query("select");
-				$newQuery->setTableName($linkTable);
-				$newQuery->setTableMap(Lib\Tools::runTableClassFunction($linkTable,"getMapArray()"));
-				$newQuery->setFilter(array(
-					0 => array(
-						$linkField => $searchValue
-					)
-				));
-				$newQuery->setLimit(1);
-				$res = $newQuery->exec();
-				if ($ar_res = $res->fetch())
+				else
 				{
-					$bCanDelete = false;
+					$arRes = Lib\Tools::runTableClassFunction ($linkTable,'getListFunc',array(
+						array(
+							'select' => array('ID'),
+							'filter' => array(
+								$linkField => $primaryId
+							)
+						)
+					));
+					if ($arRes)
+					{
+						$bCanDelete = false;
+					}
 				}
 			}
 		}
 
 		return $bCanDelete;
+	}
+
+	protected function maskField ($field=null)
+	{
+		try
+		{
+			if (is_null($field))
+			{
+				throw new Exception\ArgumentNullException('field');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		$arMask = array();
+		$arMask['field'] = $field;
+		$first = mb_substr($field,0,1,'utf-8');
+		$count = mb_strlen($field,'utf-8');
+		if (
+			$first == '<'
+			|| $first == '>'
+			|| $first == '!'
+			|| $first == '='
+		)
+		{
+			$second = mb_substr($field,1,1,'utf-8');
+			if (
+				$second == '<'
+				|| $second == '>'
+				|| $second == '!'
+				|| $second == '='
+			)
+			{
+				$arMask['mask'] = $first.$second;
+				$arMask['field'] = mb_substr($field,2,$count-2,'utf-8');
+			}
+			else
+			{
+				$arMask['mask'] = $first;
+				$arMask['field'] = mb_substr($field,1,$count-1,'utf-8');
+			}
+
+			return $arMask;
+		}
+		else
+		{
+			return false;
+		}
+
 	}
 }

@@ -14,7 +14,7 @@ class MyCarTable extends DataManager {
 	}
 	public static function getTableLinks() {
 		return array(
-			'ID' => array(
+			'ID' => array (
 				'ms_icar_fuel' => 'MY_CAR_ID',
 				'ms_icar_odo' => 'MY_CAR_ID',
 				'ms_icar_repair_parts' => 'MY_CAR_ID',

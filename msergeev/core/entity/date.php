@@ -7,10 +7,47 @@ class Date
 	protected
 		$timestamp=null;
 
-	public function __construct ($timestamp=null)
+	public function __construct ($date=null,$type=null)
 	{
-		if (is_null($timestamp)) $this->timestamp=time();
-		else $this->timestamp = $timestamp;
+		if (is_null($type) || ($type != 'db' && $type != 'site'))
+		{
+			$type = 'time';
+		}
+		switch ($type)
+		{
+			case 'time':
+				if (is_null($date))
+				{
+					$this->timestamp = time();
+				}
+				else
+				{
+					$this->timestamp = $date;
+				}
+				break;
+			case 'db':
+				if (is_null($date))
+				{
+					$this->timestamp = mktime(0,0,0,intval(date('m')),intval(date('d')),intval(date('Y')));
+				}
+				else
+				{
+					list($year,$month,$day)=explode('-',$date);
+					$this->timestamp = mktime(0,0,0,intval($month),intval($day),intval($year));
+				}
+				break;
+			case 'site':
+				if (is_null($date))
+				{
+					$this->timestamp = mktime(0,0,0,intval(date('m')),intval(date('d')),intval(date('Y')));
+				}
+				else
+				{
+					list($day,$month,$year)=explode('.',$date);
+					$this->timestamp = mktime(0,0,0,intval($month),intval($day),intval($year));
+				}
+				break;
+		}
 	}
 
 	public function getTimestamp ()

@@ -62,6 +62,10 @@ function SelectBox($strBoxName, $arValues, $strDetText = "", $strSelectedVal = "
 		}
 		$strReturnBox.= ">".$strDetText."</option>";
 	}
+	if (empty($arValues))
+	{
+		return false;
+	}
 	foreach ($arValues as $arValue) {
 		$strReturnBox = $strReturnBox."<option ";
 		if (

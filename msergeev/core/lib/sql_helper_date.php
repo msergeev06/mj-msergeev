@@ -2,11 +2,73 @@
 
 namespace MSergeev\Core\Lib;
 
+use MSergeev\Core\Exception;
+
 class SqlHelperDate extends SqlHelper
 {
 	function __construct ()
 	{
 		parent::__construct();
+	}
+
+	public function convertDateFromDB ($date=null)
+	{
+		try
+		{
+			if (is_null($date))
+			{
+				throw new Exception\ArgumentNullException('date');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			die($e->showException());
+		}
+
+		list($year,$month,$day) = explode('-',$date);
+		$day = intval($day);
+		$month = intval($month);
+		$year = intval($year);
+		if ($day >= 1 && $day <= 9)
+		{
+			$day = (string) '0'.$day;
+		}
+		if ($month >= 1 && $month <= 9)
+		{
+			$month = (string) '0'.$month;
+		}
+
+		return $day.".".$month.".".$year;
+	}
+
+	public function convertDateToDB ($date=null)
+	{
+		try
+		{
+			if (is_null($date))
+			{
+				throw new Exception\ArgumentNullException('date');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			die($e->showException());
+		}
+
+		list($day,$month,$year)=explode('.',$date);
+		$day = intval($day);
+		$month = intval($month);
+		$year = intval($year);
+		if ($day >= 1 && $day <= 9)
+		{
+			$day = (string) '0'.$day;
+		}
+		if ($month >= 1 && $month <= 9)
+		{
+			$month = (string) '0'.$month;
+		}
+
+		return $year."-".$month."-".$day;
 	}
 
 	//https://msdn.microsoft.com/ru-ru/library/ms186724%28v=sql.120%29.aspx

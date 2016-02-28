@@ -36,7 +36,7 @@ class PointTypesTable extends DataManager {
 			new Entity\StringField ('CODE', array(
 				'required' => true,
 				'run' => array(
-					'function' => "\\MSergeev\\Core\\Lib\\Tools::generateCode()",
+					'function' => "\\MSergeev\\Core\\Lib\\Tools::generateCode",
 					'column' => 'NAME'
 				),
 				'title' => 'Код типа путевых точек'
