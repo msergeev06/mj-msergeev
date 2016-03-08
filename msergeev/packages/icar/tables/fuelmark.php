@@ -42,7 +42,7 @@ class FuelmarkTable extends DataManager {
 				'size' => 20,
 				'required' => true,
 				'run' => array(
-					'function' => "\\MSergeev\\Core\\Lib\\Tools::generateCode()",
+					'function' => "\\MSergeev\\Core\\Lib\\Tools::generateCode",
 					'column' => 'SHORT_NAME'
 				),
 				'title' => 'Код типа топлива'
@@ -54,63 +54,63 @@ class FuelmarkTable extends DataManager {
 			array(
 				'ID' => 1,
 				'NAME' => 'Бензин 80',
-				'SHORT' => '80',
+				'SHORT_NAME' => '80',
 				'CODE' => '80',
 				'SORT' => 10
 			),
 			array(
 				'ID' => 2,
 				'NAME' => 'Бензин 92',
-				'SHORT' => '92',
+				'SHORT_NAME' => '92',
 				'CODE' => '92',
 				'SORT' => 20
 			),
 			array(
 				'ID' => 3,
 				'NAME' => 'Бензин 92 Улучшенный',
-				'SHORT' => '92 Улучшенный',
+				'SHORT_NAME' => '92 Улучшенный',
 				'CODE' => '92improved',
 				'SORT' => 30
 			),
 			array(
 				'ID' => 4,
 				'NAME' => 'Бензин 95',
-				'SHORT' => '95',
+				'SHORT_NAME' => '95',
 				'CODE' => '95',
 				'SORT' => 40
 			),
 			array(
 				'ID' => 5,
 				'NAME' => 'Бензин 95 Улучшенный',
-				'SHORT' => '95 Улучшенный',
+				'SHORT_NAME' => '95 Улучшенный',
 				'CODE' => '95improved',
 				'SORT' => 50
 			),
 			array(
 				'ID' => 6,
 				'NAME' => 'Бензин 95 Био',
-				'SHORT' => '95 Био',
+				'SHORT_NAME' => '95 Био',
 				'CODE' => '95bio',
 				'SORT' => 60,
 			),
 			array(
 				'ID' => 7,
 				'NAME' => 'Бензин 98',
-				'SHORT' => '98',
+				'SHORT_NAME' => '98',
 				'CODE' => '98',
 				'SORT' => 70,
 			),
 			array(
 				'ID' => 8,
 				'NAME' => 'Дизельное топливо',
-				'SHORT' => 'ДТ',
+				'SHORT_NAME' => 'ДТ',
 				'CODE' => 'disel',
 				'SORT' => 80
 			),
 			array(
 				'ID' => 9,
 				'NAME' => 'Газ',
-				'SHORT' => 'Газ',
+				'SHORT_NAME' => 'Газ',
 				'CODE' => 'gas',
 				'SORT' => 90
 			)

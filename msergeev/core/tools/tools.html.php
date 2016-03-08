@@ -167,3 +167,135 @@ function InputCalendar ($strName, $strValue="", $field1="", $strId="")
 		$e->showException();
 	}
 }
+
+function LineCharts ($arParams = null)
+{
+	/*
+	$arParams = array();
+	$arParams['title'] = 'Средняя месячная температура';
+	$arParams['subtitle'] = 'Источник: WorldClimate.com';
+	$arParams['xAxis'] = array('Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек');
+	$arParams['yAxis'] = 'Температура (°C)';
+	$arParams['valueSuffix'] = '°C';
+	$arParams['series'] = array(
+		0 => array(
+			'name' => 'Токио',
+			'data' => array(7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6)
+		),
+		1 => array(
+			'name' => 'Нью-Йорк',
+			'data' => array(-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5)
+		),
+		2 => array(
+			'name' => 'Берлин',
+			'data' => array(-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0)
+		),
+		3 => array(
+			'name' => 'Лондон',
+			'data' => array(3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8)
+		)
+	);
+	*/
+	try
+	{
+		if (is_null($arParams))
+		{
+			throw new Exception\ArgumentNullException('arParams');
+		}
+		else
+		{
+			if (!isset($arParams['title']))
+			{
+				$arParams['title'] = 'График';
+			}
+			if (!isset($arParams['subtitle']))
+			{
+				$arParams['subtitle'] = 'MajorDoMo';
+			}
+			if (!isset($arParams['xAxis']))
+			{
+				throw new Exception\ArgumentNullException('arParams[xAxis]');
+			}
+			elseif (!is_array($arParams['xAxis']))
+			{
+				throw new Exception\ArgumentOutOfRangeException('arParams[xAxis]');
+			}
+			if (!isset($arParams['yAxis']))
+			{
+				throw new Exception\ArgumentNullException('arParams[yAxis]');
+			}
+			if (!isset($arParams['valueSuffix']))
+			{
+				throw new Exception\ArgumentNullException("arParams[valueSuffix]");
+			}
+			if (!isset($arParams['series']))
+			{
+				throw new Exception\ArgumentNullException('arParams[series]');
+			}
+			if (!isset($arParams['container']))
+			{
+				$containerName = $arParams['container'] = 'line_charts';
+			}
+			else
+			{
+				$containerName = $arParams['container'];
+			}
+		}
+	}
+	catch (Exception\ArgumentNullException $e)
+	{
+		die($e->showException());
+	}
+	catch (Exception\ArgumentOutOfRangeException $e1)
+	{
+		die($e1->showException());
+	}
+
+
+	Lib\Buffer::addJS (Lib\Config::getConfig ("CORE_ROOT")."js/highcharts.js");
+	Lib\Buffer::addJS (Lib\Config::getConfig ("CORE_ROOT")."js/exporting.js");
+
+	$arHighCharts = array (
+		'title' => array(
+			'text' => $arParams['title'],
+			'x' => -20 //center
+		),
+		'subtitle' => array(
+			'text' => $arParams['subtitle'],
+			'x' => -20
+		),
+		'xAxis' => array(
+			'categories' => $arParams['xAxis']
+		),
+		'yAxis' => array(
+			'title' => array(
+				'text' => $arParams['yAxis']
+			),
+			'plotLines' => array(
+				0 => array(
+					'value' => 0,
+					'width' => 1,
+					'color' => '#808080'
+				)
+			)
+		),
+		'tooltip' => array(
+			'valueSuffix' => $arParams['valueSuffix']
+		),
+		'legend' => array(
+			'layout' => 'vertical',
+			'align' => 'right',
+			'verticalAlign' => 'middle',
+			'borderWidth' => 0
+		),
+		'series' => $arParams['series']
+	);
+	$echo = '<div id="'.$containerName.'" style="min-width: 310px; height: 400px; margin: 0 auto"></div>'."\n";
+	$echo .= '<script type="text/javascript">'."\n\t"
+		."\$(function () {\n\t\t"
+		."\$('#".$containerName."').highcharts(".json_encode($arHighCharts).");\n\t"
+		."});\n"
+		."</script>\n";
+
+	return $echo;
+}

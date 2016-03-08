@@ -30,6 +30,8 @@ abstract class Field {
     /** @var null|callback */
     protected $saveDataModification = null;
 
+
+	protected $link=null;
     /*
     /* @var null|callback *
 	//protected $validation = null;
@@ -89,6 +91,11 @@ abstract class Field {
 			$this->title = $parameters['title'];
 		}
 
+		if (isset($parameters['link']))
+		{
+			$this->link = $parameters['link'];
+		}
+
 		// fetch data modifiers
 		if (isset($parameters['fetch_data_modification']))
 		{
@@ -133,6 +140,11 @@ abstract class Field {
 	public function getParentField()
 	{
 		return $this->parentField;
+	}
+
+	public function getLink()
+	{
+		return $this->link;
 	}
 
 	public function serialize($value)

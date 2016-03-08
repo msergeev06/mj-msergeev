@@ -15,12 +15,14 @@ class DBResult
 	protected $mysql_insert_id=null;
 	protected $mysql_num_fields=null;
 	protected $mysql_num_rows=null;
+	protected $arFieldsEntity;
 
 	function __construct($res, $obQuery)
 	{
 		$this->result = $res;
 		$this->table_map = $obQuery->getTableMap();
 		$this->query_type = $obQuery->getType();
+		$this->arFieldsEntity = $obQuery->getFieldsEntity();
 		if ($res)
 		{
 			if ($this->query_type == "select"){
@@ -43,9 +45,9 @@ class DBResult
 				{
 					if (is_string($k))
 					{
-						if (isset($this->table_map[$k]))
+						if (isset($this->arFieldsEntity[$k]))
 						{
-							$v = $this->table_map[$k]->fetchDataModification($v);
+							$v = $this->arFieldsEntity[$k]->fetchDataModification($v);
 						}
 					}
 					$arResult[$k] = $v;

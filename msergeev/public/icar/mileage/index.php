@@ -8,27 +8,20 @@ $defaultCar = Lib\MyCar::getDefaultCarID();
 <p><a class="linkAdd" href="add.php">Добавить маршрут</a></p>
 
 
-<select name="period" id="period_select">
+<p><select name="period" id="period_select">
 	<option value="1" selected>Текущий месяц</option>
 	<option value="2">Прошлый месяц</option>
 	<option value="3">За год</option>
-</select>&nbsp;&nbsp;<a class="update" href="#">Обновить пробег за день</a><br><br>
-<p>Показать за период с <?=InputCalendar ('from', date("d.m.Y"), 'class="calendarFrom"', $strId="")?> по <?=InputCalendar ('to', date("d.m.Y"), 'class="calendarTo"', $strId="")?> <a href="#">Показать</a></p>
+</select>&nbsp;&nbsp;Показать за период с <?=InputCalendar ('from', date("d.m.Y"), 'class="calendarFrom"', $strId="")?> по <?=InputCalendar ('to', date("d.m.Y"), 'class="calendarTo"', $strId="")?> <a href="#">Показать</a></p>
 
-<div class="charts"><? echo Lib\Main::showChartsOdo(); ?></div>
+<div class="charts"><? echo Lib\Odo::showChartsOdo('01.'.date("m.Y"),date("d.m.Y"),$defaultCar); ?></div>
 <script type="text/javascript">
 	$(document).on("ready",function(){
-		var sel;
-		//var chartWidth = 1000;
-		//var chartHeight = 500;
-		//var xTitle = "< ?//=urlencode("Дата")?>//";
-		//var yTitle = "< ?//=urlencode("Километраж")?>//";
-
-		sel = $("#period_select").val();
-		//$(".charts").html('<iframe src="/msergeev/investtocar/include/tools/getchartsodo.php?chartWidth='+chartWidth+'&chartHeight='+chartHeight+'&type='+sel+'&xTitle='+xTitle+'&yTitle='+yTitle+'" scrolling="no" frameborder="no" width="'+chartWidth+'" height="'+chartHeight+'" align="left"></iframe>');
+		var sel,car;
 
 		$("#period_select").on("change",function(){
 			sel = $(this).val();
+			car = $('.myCar').val();
 
 			//$(".charts").html('<iframe src="/msergeev/investtocar/include/tools/getchartsodo.php?chartWidth='+chartWidth+'&chartHeight='+chartHeight+'&type='+sel+'&xTitle='+xTitle+'&yTitle='+yTitle+'" scrolling="no" frameborder="no" width="'+chartWidth+'" height="'+chartHeight+'" align="left"></iframe>');
 

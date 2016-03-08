@@ -121,4 +121,212 @@ class DateHelper
 		return mktime(0,0,0,intval($month),intval($day),intval($year));
 	}
 
+	public function getDayOfWeekFromDate($date=null)
+	{
+		try
+		{
+			if (is_null($date))
+			{
+				throw new Exception\ArgumentNullException('date');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			die($e->showException());
+		}
+
+		//list($day,$month,$year) = explode('.',$date);
+		//$mktime = mktime(0,0,0,intval($month),intval($day),intval($year));
+		return intval(date('w',$this->getDateTimestamp($date)));
+	}
+
+	public static function getShortNameDayOfWeek ($day=null)
+	{
+		try
+		{
+			if (is_null($day))
+			{
+				throw new Exception\ArgumentNullException('day');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		switch (intval($day))
+		{
+			case 0:
+				return 'Вс.';
+			case 1:
+				return 'Пн.';
+			case 2:
+				return 'Вт.';
+			case 3:
+				return 'Ср.';
+			case 4:
+				return 'Чт.';
+			case 5:
+				return 'Пт.';
+			case 6:
+				return 'Сб.';
+			default:
+				return false;
+		}
+	}
+
+	public static function getNameDayOfWeek ($day=null)
+	{
+		try
+		{
+			if (is_null($day))
+			{
+				throw new Exception\ArgumentNullException('day');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		switch (intval($day))
+		{
+			case 0:
+				return 'Воскресенье';
+			case 1:
+				return 'Понедельник';
+			case 2:
+				return 'Вторник';
+			case 3:
+				return 'Среда';
+			case 4:
+				return 'Четверг';
+			case 5:
+				return 'Пятница';
+			case 6:
+				return 'Суббота';
+			default:
+				return false;
+		}
+	}
+
+	public static function getNameMonth ($month=null)
+	{
+		try
+		{
+			if (is_null($month))
+			{
+				throw new Exception\ArgumentNullException('month');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+			return false;
+		}
+
+		switch ($month)
+		{
+			case 1:
+				return 'Январь';
+			case 2:
+				return 'Февраль';
+			case 3:
+				return 'Март';
+			case 4:
+				return 'Апрель';
+			case 5:
+				return 'Май';
+			case 6:
+				return 'Июнь';
+			case 7:
+				return 'Июль';
+			case 8:
+				return 'Август';
+			case 9:
+				return 'Сентябрь';
+			case 10:
+				return 'Октябрь';
+			case 11:
+				return 'Ноябрь';
+			case 12:
+				return 'Декабрь';
+			default:
+				return FALSE;
+		}
+	}
+
+	public static function showDaysRus ($day=null)
+	{
+		try
+		{
+			if(is_null($day))
+			{
+				throw new Exception\ArgumentNullException('day');
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			$e->showException();
+		}
+
+		$dayRus = array(
+			0 => 'дней',
+			1 => 'день',
+			2 => 'дня',
+		);
+
+/*		0 дней
+		1 день
+		2 дня
+		3 дня
+		4 дня
+		5 дней
+		6 дней
+		7 дней
+		8 дней
+		9 дней
+		10 дней +
+		11 дней -
+		12 дней -
+		13 дней -
+		14 дней -
+		15 дней +
+		16 дней +
+		17 дней +
+		18 дней +
+		19 дней +
+		20 дней +
+		21 день +.*/
+		$dayNum = (($day/10)-floor($day/10))*10;
+		if ($day == 1)
+		{
+			return $dayRus[1];
+		}
+		elseif ($day >= 2 && $day <= 4)
+		{
+			return $dayRus[2];
+		}
+		elseif ($day >= 11 && $day <= 14)
+		{
+			return $dayRus[0];
+		}
+		else
+		{
+			if ($dayNum == 0 || ($dayNum >= 5 && $dayNum <= 9))
+			{
+				return $dayRus[0];
+			}
+			elseif ($dayNum == 1)
+			{
+				return $dayRus[1];
+			}
+			else
+			{
+				return $dayRus[2];
+			}
+		}
+	}
 }

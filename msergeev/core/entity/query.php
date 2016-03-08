@@ -64,10 +64,29 @@ class Query
 	/** @var array Replaced table aliases */
 	protected $replaced_taliases;
 
+	protected
+		$sqlSelect = '',
+		$sqlFrom = '',
+		$sqlWhere = '',
+		$sqlOrder = '',
+		$sqlLimit = '';
+
+	protected
+		$arSqlSelect=array(),
+		$arSqlFrom=array(),
+		$arSqlWhere=array(),
+		$arSqlOrder=array();
+
+	protected $arFieldsEntity = array();
 
 	public function __construct($type)
 	{
 		$this->type = $type;
+	}
+
+	public function getFieldsEntity ()
+	{
+		return $this->arFieldsEntity;
 	}
 
 	/**
@@ -437,18 +456,20 @@ class Query
 		return $sql;
 	}
 
-	protected function BuildQuerySelect ()
+	protected function CreateSqlSelect ()
 	{
-		$helper = new Lib\SqlHelper ();
-		$quote = $helper->getQuote();
-
-		$sql = "SELECT\n\t";
+		$helper = new Lib\SqlHelper();
+		$sqlSelect = "SELECT\n\t";
+		$tableName = $this->getTableName();
+		$arMap = $this->getTableMap();
 		$arSelect = $this->getSelect();
-		if (empty($arSelect)) {
-			$sql .= "*";
-		}
-		else
+
+		if (!isset($this->arSqlFrom[$tableName]))
 		{
+			$this->arSqlFrom[$tableName] = 1;
+		}
+
+		if (!empty($arSelect)) {
 			$bSelectFirst = true;
 			foreach ($arSelect as $key=>$value)
 			{
@@ -458,33 +479,257 @@ class Query
 				}
 				else
 				{
-					$sql .= ",\n\t";
+					$sqlSelect .= ",\n\t";
 				}
 				if (is_numeric($key))
 				{
-					$sql .= $helper->wrapQuotes($value);
+					if (!strpos($value,'.'))
+					{
+						try
+						{
+							if (!isset($arMap[$value]))
+							{
+								throw new Exception\ArgumentOutOfRangeException($tableName.'.'.$value);
+							}
+							else
+							{
+								$sqlSelect .= $helper->wrapQuotes($tableName)."."
+									.$helper->wrapQuotes($value);
+								if (!isset($this->arFieldsEntity[$value]))
+								{
+									$this->arFieldsEntity[$value] = $arMap[$value];
+								}
+							}
+						}
+						catch (Exception\ArgumentOutOfRangeException $e)
+						{
+							$e->showException();
+						}
+					}
+					else
+					{
+						$aliasField = str_replace('.','_',$value);
+						$arFields = explode('.',$value);
+						foreach ($arFields as $k=>$field)
+						{
+							if (isset($arFields[$k+1]))
+							{
+								try
+								{
+									if (isset($this->arFieldsEntity[$field]))
+									{
+										$fieldMap = $this->arFieldsEntity[$field];
+									}
+									elseif (isset($arMap[$field]))
+									{
+										$fieldMap = $arMap[$field];
+									}
+									elseif (isset($linkedMap) && isset($linkedMap[$field]))
+									{
+										$fieldMap = $linkedMap[$field];
+									}
+									else
+									{
+										throw new Exception\ArgumentOutOfRangeException($field);
+									}
+								}
+								catch (Exception\ArgumentOutOfRangeException $e)
+								{
+									die($e->showException());
+								}
+								$linked = $fieldMap->getLink();
+								list($linkedTable,$linkedField) = explode('.',$linked);
+								$linkedSql = $helper->wrapQuotes($linkedTable).'.'
+									.$helper->wrapQuotes($linkedField);
+								$linkedClass = Lib\Tools::getClassNameByTableName($linkedTable);
+								$linkedMap = $linkedClass::getMapArray();
+							}
+							if ($k==0)
+							{
+								$arFieldTable[] = $tableName;
+								$arFieldTable[] = $linkedTable;
+							}
+							else
+							{
+								$arFieldTable[] = $linkedTable;
+							}
+							$lastField = $arFields[$k-1];
+							$selectField = $field;
+						}
+
+						$lastFieldTable = $arFieldTable[count($arFieldTable)-3];
+						$sqlSelect.= $helper->wrapQuotes($linkedTable)."."
+							.$helper->wrapQuotes($selectField)." AS "
+							.$helper->wrapQuotes($aliasField);
+						if (!isset($this->arFieldsEntity[$aliasField]))
+						{
+							$this->arFieldsEntity[$aliasField] = $linkedMap[$selectField];
+						}
+						if (!isset($this->arSqlFrom[$linkedTable]))
+						{
+							$this->arSqlFrom[$linkedTable] = 1;
+						}
+						if (!isset($this->arSqlWhere[$linkedSql]))
+						{
+							$this->arSqlWhere[$linkedSql] = $helper->wrapQuotes($lastFieldTable)
+								.'.'.$helper->wrapQuotes($lastField);
+						}
+					}
 				}
 				else
 				{
-					$sql .= $helper->wrapQuotes($key)." AS ".$helper->wrapQuotes($value);
+					if (!strpos($key,'.'))
+					{
+						try
+						{
+							if (!isset($arMap[$key]))
+							{
+								throw new Exception\ArgumentOutOfRangeException($tableName.'.'.$key);
+							}
+							else
+							{
+								$sqlSelect .= $helper->wrapQuotes($tableName)."."
+									.$helper->wrapQuotes($key)." AS ".$helper->wrapQuotes($value);
+								if (!isset($this->arFieldsEntity[$value]))
+								{
+									$this->arFieldsEntity[$value] = $arMap[$key];
+								}
+							}
+						}
+						catch (Exception\ArgumentOutOfRangeException $e)
+						{
+							$e->showException();
+						}
+					}
+					else
+					{
+						$aliasField = $value;
+						$arFieldTable = array();
+						$arFields = explode('.',$key);
+						foreach ($arFields as $k=>$field)
+						{
+							if (isset($arFields[$k+1]))
+							{
+								try
+								{
+									if (isset($this->arFieldsEntity[$field]))
+									{
+										$fieldMap = $this->arFieldsEntity[$field];
+									}
+									elseif (isset($arMap[$field]))
+									{
+										$fieldMap = $arMap[$field];
+									}
+									elseif (isset($linkedMap) && isset($linkedMap[$field]))
+									{
+										$fieldMap = $linkedMap[$field];
+									}
+									else
+									{
+										throw new Exception\ArgumentOutOfRangeException($field);
+									}
+								}
+								catch (Exception\ArgumentOutOfRangeException $e)
+								{
+									die($e->showException());
+								}
+								$linked = $fieldMap->getLink();
+								list($linkedTable,$linkedField) = explode('.',$linked);
+								$linkedSql = $helper->wrapQuotes($linkedTable).'.'
+									.$helper->wrapQuotes($linkedField);
+								$linkedClass = Lib\Tools::getClassNameByTableName($linkedTable);
+								$linkedMap = $linkedClass::getMapArray();
+							}
+							if ($k==0)
+							{
+								$arFieldTable[] = $tableName;
+								$arFieldTable[] = $linkedTable;
+							}
+							else
+							{
+								$arFieldTable[] = $linkedTable;
+							}
+							$lastField = $arFields[$k-1];
+							$selectField = $field;
+						}
+
+						$lastFieldTable = $arFieldTable[count($arFieldTable)-3];
+						$sqlSelect.= $helper->wrapQuotes($linkedTable)."."
+							.$helper->wrapQuotes($selectField)." AS "
+							.$helper->wrapQuotes($aliasField);
+						if (!isset($this->arFieldsEntity[$aliasField]))
+						{
+							$this->arFieldsEntity[$aliasField] = $linkedMap[$selectField];
+						}
+						if (!isset($this->arSqlFrom[$linkedTable]))
+						{
+							$this->arSqlFrom[$linkedTable] = 1;
+						}
+						if (!isset($this->arSqlWhere[$linkedSql]))
+						{
+							$this->arSqlWhere[$linkedSql] = $helper->wrapQuotes($lastFieldTable)
+								.'.'.$helper->wrapQuotes($lastField);
+						}
+					}
 				}
 			}
 			//$sql .= $quote.join ($quote.",\n\t".$quote,$arSelect).$quote;
 		}
-
-		$sql .= "\nFROM\n\t".$helper->wrapQuotes($this->getTableName());
-		if ($this->getTableAliasPostfix() != '') {
-			$sql .= ' '.$this->getTableAliasPostfix()."\n";
-		}
 		else
 		{
-			$sql .= "\n";
+			$sqlSelect .= "*";
 		}
 
+		return $sqlSelect."\n";
+	}
+
+	protected function CreateSqlFrom ()
+	{
+		$sqlFrom = "FROM\n\t";
+		$helper = new Lib\SqlHelper();
+		$tableName = $this->getTableName();
+		$tableAlias = $this->getTableAliasPostfix();
+		$bTableAlias = ($tableAlias != '');
+		$bFirst = true;
+		foreach ($this->arSqlFrom as $table=>$value)
+		{
+			if ($bFirst)
+			{
+				$bFirst = false;
+			}
+			else
+			{
+				$sqlFrom.= " ,\n\t";
+			}
+			if (($table == $tableName) && $bTableAlias)
+			{
+				$sqlFrom.= $helper->wrapQuotes($tableName)." "
+					.$helper->wrapQuotes($tableAlias);
+			}
+			elseif (!is_numeric($value))
+			{
+				$sqlFrom.= $helper->wrapQuotes($table)." "
+					.$helper->wrapQuotes($value);
+			}
+			else
+			{
+				$sqlFrom.= $helper->wrapQuotes($table);
+			}
+		}
+
+		return $sqlFrom."\n";
+	}
+
+	protected function CreateSqlWhere ()
+	{
+		$sqlWhere = "";
+
+		$helper = new Lib\SqlHelper();
+		$tableName = $this->getTableName();
 		$arWhere = $this->getWhere();
 		if (!empty($arWhere))
 		{
-			$sql .= "WHERE\n\t";
+			$sqlWhere = "WHERE\n\t";
 			$arMap = $this->getTableMap();
 			$bFirst = true;
 			foreach ($arWhere as $field=>$value)
@@ -629,20 +874,23 @@ class Query
 
 						if ($bFirst)
 						{
-							$sql .= $helper->wrapQuotes($field).$equating;
+							$sqlWhere .= $helper->wrapQuotes($tableName).'.'
+								.$helper->wrapQuotes($field).$equating;
 							if ($bEquating_str)
-								$sql .= "'".$value."'";
+								$sqlWhere .= "'".$value."'";
 							else
-								$sql .= $value;
+								$sqlWhere .= $value;
 							$bFirst = false;
 						}
 						else
 						{
-							$sql .= ' '.$this->getFilterLogic()."\n\t".$helper->wrapQuotes($field).$equating;
+							$sqlWhere .= ' '.$this->getFilterLogic()."\n\t"
+								.$helper->wrapQuotes($tableName).'.'
+								.$helper->wrapQuotes($field).$equating;
 							if ($bEquating_str)
-								$sql .= "'".$value."'";
+								$sqlWhere .= "'".$value."'";
 							else
-								$sql .= $value;
+								$sqlWhere .= $value;
 						}
 					}
 				}
@@ -652,55 +900,125 @@ class Query
 				}
 			}
 		}
+
+		$arSqlWhere = $this->arSqlWhere;
+		if (!empty($arSqlWhere))
+		{
+			if ($sqlWhere != "")
+			{
+				$sqlWhere.= " AND\n\t";
+			}
+			$bFirst = true;
+			foreach ($arSqlWhere as $first=>$second)
+			{
+				if ($bFirst)
+				{
+					$bFirst = false;
+				}
+				else
+				{
+					$sqlWhere.= " AND\n\t";
+				}
+				$sqlWhere.= $first." = ".$second;
+			}
+		}
+
+		if ($sqlWhere != "")
+		{
+			$sqlWhere.= "\n";
+		}
+		return $sqlWhere;
+	}
+
+	protected function CreateSqlGroup ()
+	{
+		$sqlGroup = "";
+		$helper = new Lib\SqlHelper();
 		$arGroup = $this->getGroup();
 		if (!empty($arGroup)) {
 			//TODO: Доделать
-			$sql .= "\nGROUP BY\n\t";
+			$sqlGroup .= "GROUP BY\n\t";
 			$bFirst = true;
 			foreach ($arGroup as $groupField=>$sort)
 			{
 				if($bFirst)
 				{
 					$bFirst = false;
-					$sql .= $helper->wrapQuotes($groupField).' '.$sort;
+					$sqlGroup .= $helper->wrapQuotes($groupField).' '.$sort;
 				}
 				else
 				{
-					$sql .= ",\n\t".$helper->wrapQuotes($groupField).' '.$sort;
+					$sqlGroup .= ",\n\t".$helper->wrapQuotes($groupField).' '.$sort;
 				}
 			}
+			$sqlGroup.="\n";
 		}
+
+		return $sqlGroup;
+	}
+
+	protected function CreateSqlOrder ()
+	{
+		$sqlOrder = "";
+		$helper = new Lib\SqlHelper();
 		$arOrder = $this->getOrder();
 		if (!empty($arOrder)) {
-			$sql .= "\nORDER BY\n\t";
+			$sqlOrder .= "ORDER BY\n\t";
 			$bFirst = true;
 			foreach ($arOrder as $sort=>$by)
 			{
 				if ($bFirst)
 				{
-					$sql .= $helper->wrapQuotes($sort).' '.$by;
+					$sqlOrder .= $helper->wrapQuotes($sort).' '.$by;
 					$bFirst = false;
 				}
 				else
 				{
-					$sql .= ",\n\t".$helper->wrapQuotes($sort).' '.$by;
+					$sqlOrder .= ",\n\t".$helper->wrapQuotes($sort).' '.$by;
 				}
 			}
+			$sqlOrder.="\n";
 		}
 
+		return $sqlOrder;
+	}
+
+	protected function CreateSqlLimit ()
+	{
+		$sqlLimit = "";
 		if (!is_null($this->getLimit()))
 		{
-			$sql .= "\nLIMIT ";
-			if (!is_null($this->getOffset()))
-				$sql .= $this->getOffset();
+			$sqlLimit .= "LIMIT ";
+			if (!is_null($this->getOffset()) && intval($this->getOffset())>0)
+				$sqlLimit .= $this->getOffset();
 			else
-				$sql .= 0;
-			$sql .= ', '.$this->getLimit();
+				$sqlLimit .= 0;
+			$sqlLimit .= ', '.$this->getLimit();
+			$sqlLimit.= "\n";
 		}
+
+		return $sqlLimit;
+	}
+
+	protected function BuildQuerySelect ()
+	{
+		$sql = "";
+
+		$sql.= $this->CreateSqlSelect();
+
+		$sql.= $this->CreateSqlFrom();
+
+		$sql.= $this->CreateSqlWhere();
+
+		$sql.= $this->CreateSqlGroup();
+
+		$sql.= $this->CreateSqlOrder();
+
+		$sql.= $this->CreateSqlLimit();
 
 		if (!is_null($this->getRuntime()))
 		{
-			//TODO: Доделать
+			//TODO: Доделать !is_null($this->getRuntime())
 		}
 
 		return $sql;
@@ -863,75 +1181,82 @@ class Query
 				}
 				else
 				{
-					if ($obMap->isAutocomplete())
+					try
 					{
-						$sqlValues .= 'NULL';
-						$sqlNames .= $helper->wrapQuotes($columnName);
-					}
-					elseif (!$obMap->isRequired())
-					{
-						$sqlValues .= 'NULL';
-						$sqlNames .= $helper->wrapQuotes($columnName);
-					}
-					elseif (!is_null($obMap->getRun()))
-					{
-						$arRun = $obMap->getRun();
-						if (!isset($arRun['function']))
+						if ($obMap->isAutocomplete())
 						{
-							return false;
+							$sqlValues .= 'NULL';
+							$sqlNames .= $helper->wrapQuotes($columnName);
 						}
-						if (isset($arRun['column']))
+						elseif (!$obMap->isRequired())
 						{
-							if (!isset($arValue[$arRun['column']]))
+							$sqlValues .= 'NULL';
+							$sqlNames .= $helper->wrapQuotes($columnName);
+						}
+						elseif (!is_null($obMap->getRun()))
+						{
+							$arRun = $obMap->getRun();
+							if (!isset($arRun['function']))
 							{
 								return false;
 							}
-							else
+							if (isset($arRun['column']))
 							{
-								if (is_callable($arRun['function']))
+								if (!isset($arValue[$arRun['column']]))
 								{
-									$res = call_user_func($arRun['function'],$arValue[$arRun['column']]);
-									if (
-										$obMap instanceof IntegerField
-										|| $obMap instanceof FloatField
-									)
+									return false;
+								}
+								else
+								{
+									if (is_callable($arRun['function']))
 									{
-										$sqlValues .= $res;
-										$sqlNames .= $helper->wrapQuotes($columnName);
-										//$sql .= $res;
-									}
-									else
-									{
-										$sqlValues .= "'".$res."'";
-										$sqlNames .= $helper->wrapQuotes($columnName);
-										//$sql .= "'".$res."'";
+										$res = call_user_func($arRun['function'],$arValue[$arRun['column']]);
+										if (
+											$obMap instanceof IntegerField
+											|| $obMap instanceof FloatField
+										)
+										{
+											$sqlValues .= $res;
+											$sqlNames .= $helper->wrapQuotes($columnName);
+											//$sql .= $res;
+										}
+										else
+										{
+											$sqlValues .= "'".$res."'";
+											$sqlNames .= $helper->wrapQuotes($columnName);
+											//$sql .= "'".$res."'";
+										}
 									}
 								}
 							}
 						}
-					}
-					elseif (!is_null($obMap->getDefaultValue()))
-					{
-						$value = $obMap->getDefaultValue();
-						$value = $obMap->saveDataModification($value);
-						if (
-							$obMap instanceof IntegerField
-							|| $obMap instanceof FloatField
-						)
+						elseif (!is_null($obMap->getDefaultValue()))
 						{
-							//$sqlValues .= $value;
-							$sqlValues .= "'".$value."'";
-							$sqlNames .= $helper->wrapQuotes($columnName);
+							$value = $obMap->getDefaultValue();
+							$value = $obMap->saveDataModification($value);
+							if (
+								$obMap instanceof IntegerField
+								|| $obMap instanceof FloatField
+							)
+							{
+								//$sqlValues .= $value;
+								$sqlValues .= "'".$value."'";
+								$sqlNames .= $helper->wrapQuotes($columnName);
+							}
+							else
+							{
+								$sqlValues .= "'".$value."'";
+								$sqlNames .= $helper->wrapQuotes($columnName);
+							}
 						}
 						else
 						{
-							$sqlValues .= "'".$value."'";
-							$sqlNames .= $helper->wrapQuotes($columnName);
+							throw new Exception\ArgumentNullException('field['.$fieldName.']');
 						}
 					}
-					else
+					catch (Exception\ArgumentNullException $e)
 					{
-						return false;
+						die($e->showException());
 					}
 				}
 			}
@@ -1264,8 +1589,8 @@ class Query
 
 		$arMask = array();
 		$arMask['field'] = $field;
-		$first = mb_substr($field,0,1,'utf-8');
-		$count = mb_strlen($field,'utf-8');
+		$first = substr($field,0,1);
+		$count = strlen($field);
 		if (
 			$first == '<'
 			|| $first == '>'
@@ -1273,21 +1598,20 @@ class Query
 			|| $first == '='
 		)
 		{
-			$second = mb_substr($field,1,1,'utf-8');
+			$second = substr($field,1,1);
 			if (
 				$second == '<'
 				|| $second == '>'
-				|| $second == '!'
 				|| $second == '='
 			)
 			{
 				$arMask['mask'] = $first.$second;
-				$arMask['field'] = mb_substr($field,2,$count-2,'utf-8');
+				$arMask['field'] = substr($field,2,$count-2);
 			}
 			else
 			{
 				$arMask['mask'] = $first;
-				$arMask['field'] = mb_substr($field,1,$count-1,'utf-8');
+				$arMask['field'] = substr($field,1,$count-1);
 			}
 
 			return $arMask;

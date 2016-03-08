@@ -1,6 +1,7 @@
 <? include_once(__DIR__."/../include/header.php"); MSergeev\Core\Lib\Buffer::setTitle("Топливо - Добавление данных о заправке");
 
 use MSergeev\Packages\Icar\Lib;
+use MSergeev\Core\Lib\Options;
 if (isset($_REQUEST['car']) && intval($_REQUEST['car'])>0)
 {
 	$carID = intval($_REQUEST['car']);
@@ -10,13 +11,23 @@ else
 	$carID = Lib\MyCar::getDefaultCarID();
 }
 
+if (!$fuelMarkSelected = Options::getOptionInt('icar_last_fuelmark_'.$carID))
+{
+	$fuelMarkSelected = 'null';
+}
+
 if (isset($_POST['action']) && intval($_POST['action'])==1)
 {
-
+	if (Lib\Fuel::addFuelFromPost($_POST)) {
+		echo '<span class="ok">Данные успешно добавлены</span>';
+	}
+	else {
+		echo '<span class="err">Ошибка добавления данных</span>';
+	}
 }
+//msDebug(Lib\Odo::getMaxOdo($carID));
 ?>
 <form action="" method="post">
-	<input type="hidden" name="car" value="<?=$carID?>">
 	<table class="add_ts">
 		<tr>
 			<td class="title">Автомобиль</td>
@@ -42,7 +53,7 @@ if (isset($_POST['action']) && intval($_POST['action'])==1)
 		</tr>
 		<tr>
 			<td class="title">Марка топлива</td>
-			<td><? echo Lib\Fuel::showSelectFuelMarks("fuel_mark",'null','class="fuel_mark"')?></td>
+			<td><? echo Lib\Fuel::showSelectFuelMarks("fuel_mark",$fuelMarkSelected,'class="fuel_mark"')?></td>
 		</tr>
 		<tr>
 			<td class="title">Литраж</td>
@@ -58,7 +69,7 @@ if (isset($_POST['action']) && intval($_POST['action'])==1)
 		</tr>
 		<tr>
 			<td class="title">Путевая точка</td>
-			<td><? echo Lib\Points::showSelectPoints("fuel_point",'null','class="fuel_point"')?></td>
+			<td><? echo Lib\Points::showSelectPoints("fuel_point",'null','class="fuel_point"',array('fuel'))?></td>
 		</tr>
 		<tr>
 			<td class="center" colspan="2">или</td>

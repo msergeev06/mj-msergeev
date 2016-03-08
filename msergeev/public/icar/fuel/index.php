@@ -11,12 +11,15 @@ else
 }
 ?>
 <p>Статистика для: <? echo Lib\MyCar::showSelectCars("my_car",$carID,'class="myCar"'); ?><br>
-Общие затраты на топливо: <? echo Lib\Fuel::getTotalFuelCosts($carID); ?> руб.<br>
+Общие затраты на топливо: <? echo Lib\Fuel::getTotalFuelCostsFormatted($carID); ?> руб.<br>
 Средний расход топлива: <? echo Lib\MyCar::getCarAverageFuelFormatted($carID); ?> л./100км.<br>
 Всего израсходованно топлива: <? echo Lib\MyCar::getCarTotalSpentFuelFormatted($carID); ?> л.<br><br></p>
 <p><a href="add.php?car=<?=$carID?>">Добавить запись</a><br><br></p>
 
-<table class="ts_list">
+<?
+echo Lib\Main::showListTable(array(),array(),$carID);
+/*
+<table class="listTable">
 	<thead>
 	<tr>
 		<td>Дата</td>
@@ -33,7 +36,7 @@ else
 		<td>&nbsp;</td>
 	</tr>
 	</thead>
-	<tbody class="list_ts">
+	<tbody class="listBody">
 	<? //$arFuelList = CInvestToCarMain::GetFuelList ($defaultCar); ?>
 	<? //foreach($arFuelList as $arFuel):?>
 		<tr>
@@ -54,7 +57,7 @@ else
 	<?//endforeach;?>
 	</tbody>
 </table>
-
+*/ ?>
 
 <p><a href="add.php?car=<?=$carID?>">Добавить запись</a><br><br></p>
 <? $curDir = basename(__DIR__); ?>

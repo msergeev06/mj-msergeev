@@ -480,10 +480,7 @@ class MyCar
 	 */
 	public static function getCarTotalCostsFormatted ($carID=null)
 	{
-		$total = 0;
-		$total += Fuel::getTotalFuelCosts($carID);
-
-		return number_format($total,2,',','');
+		return Main::moneyFormat(Fuel::getTotalFuelCosts($carID));
 	}
 
 	/**
@@ -495,8 +492,7 @@ class MyCar
 	 */
 	public static function getCarAverageFuelFormatted ($carID=null)
 	{
-		$average = Fuel::getAverageFuelConsumption($carID);
-		return number_format($average,2,',','');
+		return Main::averageFormat(Fuel::getAverageFuelConsumption($carID));
 	}
 
 	/**
@@ -508,8 +504,7 @@ class MyCar
 	 */
 	public static function getCarTotalSpentFuelFormatted ($carID=null)
 	{
-		$spent = Fuel::getCarTotalSpentFuel($carID);
-		return number_format($spent,2,',','');
+		return Main::literFormat(Fuel::getCarTotalSpentFuel($carID));
 	}
 
 	/**
@@ -558,9 +553,7 @@ class MyCar
 	 */
 	public static function getCarCurrentMileageFormatted ($carID=null)
 	{
-		$mileage = static::getCarCurrentMileage ($carID);
-
-		return number_format($mileage,2);
+		return Main::mileageFormat(static::getCarCurrentMileage ($carID));
 	}
 
 	/**
@@ -727,15 +720,23 @@ class MyCar
 				$arAlerts[] = array(
 					'COLOR' => 'green',
 					'TYPE' => 'osago',
-					'TEXT' => 'Заканчивается срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Рекомендуем позаботится о продлении заранее. Осталось '.$carGtoDay.' дней'
+					'TEXT' => 'Заканчивается срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Рекомендуем позаботится о продлении заранее. Осталось '.$carOsagoDay.' '.$dateHelper->showDaysRus($carOsagoDay)
 				);
 			}
-			elseif ($carOsagoDay >= 0 && $carOsagoDay <= 5)
+			elseif ($carOsagoDay > 0 && $carOsagoDay <= 5)
 			{
 				$arAlerts[] = array(
 					'COLOR' => 'yellow',
 					'TYPE' => 'osago',
-					'TEXT' => 'Внимание! Скоро закончится срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Необходимо продлить полис! Осталось '.$carGtoDay.' дней'
+					'TEXT' => 'Внимание! Скоро закончится срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Необходимо продлить полис! Осталось '.$carOsagoDay.' '.$dateHelper->showDaysRus($carOsagoDay)
+				);
+			}
+			elseif ($carOsagoDay == 0)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'red',
+					'TYPE' => 'osago',
+					'TEXT' => 'ВНИМАНИЕ! Сегодня заканчиватся срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Необходимо СРОЧНО продлить полис!'
 				);
 			}
 			elseif ($carOsagoDay < 0)
@@ -743,7 +744,7 @@ class MyCar
 				$arAlerts[] = array(
 					'COLOR' => 'red',
 					'TYPE' => 'osago',
-					'TEXT' => 'ВНИМАНИЕ! Заканчился срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Необходимо СРОЧНО продлить полис!'
+					'TEXT' => 'ВНИМАНИЕ! Закончился срок действия полиса ОСАГО у автомобиля "'.$arCar['NAME'].'". Необходимо СРОЧНО продлить полис!'
 				);
 			}
 
@@ -752,15 +753,23 @@ class MyCar
 				$arAlerts[] = array(
 					'COLOR' => 'green',
 					'TYPE' => 'gto',
-					'TEXT' => 'Подходит дата очередного ГТО у автомобиля "'.$arCar['NAME'].'". Подготовьте автомобиль к осмотру. Осталось '.$carGtoDay.' дней'
+					'TEXT' => 'Подходит дата очередного ГТО у автомобиля "'.$arCar['NAME'].'". Подготовьте автомобиль к осмотру. Осталось '.$carGtoDay.' '.$dateHelper->showDaysRus($carGtoDay)
 				);
 			}
-			elseif ($carGtoDay >= 0 && $carGtoDay <= 5)
+			elseif ($carGtoDay > 0 && $carGtoDay <= 5)
 			{
 				$arAlerts[] = array(
 					'COLOR' => 'yellow',
 					'TYPE' => 'gto',
-					'TEXT' => 'Внимание! Скоро подойдет дата очередного ГТО у автомобиля "'.$arCar['NAME'].'". Последняя возможность подготовить автомобиль к осмотру! Осталось '.$carGtoDay.' дней'
+					'TEXT' => 'Внимание! Скоро подойдет дата очередного ГТО у автомобиля "'.$arCar['NAME'].'". Последняя возможность подготовить автомобиль к осмотру! Осталось '.$carGtoDay.' '.$dateHelper->showDaysRus($carGtoDay)
+				);
+			}
+			elseif ($carGtoDay == 0)
+			{
+				$arAlerts[] = array(
+					'COLOR' => 'red',
+					'TYPE' => 'gto',
+					'TEXT' => 'ВНИМАНИЕ! Сегодня последний день действия ГТО на автомобиле "'.$arCar['NAME'].'". Необходимо СРОЧНО пройти ГТО!'
 				);
 			}
 			elseif ($carGtoDay < 0)

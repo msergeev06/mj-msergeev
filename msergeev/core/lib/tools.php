@@ -3,6 +3,7 @@
 namespace MSergeev\Core\Lib;
 
 use MSergeev\Core\Exception;
+use MSergeev\Packages\Icar\Lib\DateHelper;
 
 class Tools {
 	public static function generateCode ()
@@ -308,88 +309,26 @@ class Tools {
 		return $str;
 	}
 
+	/**
+	 * @deprecated
+	 * @see DateHelper->getShortNameDayOfWeek
+	 */
 	public static function getNameDayOfWeek ($day=null)
 	{
-		try
-		{
-			if (is_null($day))
-			{
-				throw new Exception\ArgumentNullException('day');
-			}
-		}
-		catch (Exception\ArgumentNullException $e)
-		{
-			$e->showException();
-			return false;
-		}
+		$dateHelper = new DateHelper();
 
-		switch (intval($day))
-		{
-			case 0:
-				return 'Вс.';
-			case 1:
-				return 'Пн.';
-			case 2:
-				return 'Вт.';
-			case 3:
-				return 'Ср.';
-			case 4:
-				return 'Чт.';
-			case 5:
-				return 'Пт.';
-			case 6:
-				return 'Сб.';
-			default:
-				return false;
-		}
-
+		return $dateHelper->getShortNameDayOfWeek($day);
 	}
 
+	/**
+	 * @deprecated
+	 * @see DateHelper->getNameMonth
+	 */
 	public static function getNameMonth ($month=null)
 	{
-		try
-		{
-			if (is_null($month))
-			{
-				throw new Exception\ArgumentNullException('month');
-			}
-		}
-		catch (Exception\ArgumentNullException $e)
-		{
-			$e->showException();
-			return false;
-		}
+		$dateHelper = new DateHelper();
 
-		switch ($month)
-		{
-			case 1:
-				return 'Январь';
-			case 2:
-				return 'Февраль';
-			case 3:
-				return 'Март';
-			case 4:
-				return 'Апрель';
-			case 5:
-				return 'Май';
-			case 6:
-				return 'Июнь';
-			case 7:
-				return 'Июль';
-			case 8:
-				return 'Август';
-			case 9:
-				return 'Сентябрь';
-			case 10:
-				return 'Октябрь';
-			case 11:
-				return 'Ноябрь';
-			case 12:
-				return 'Декабрь';
-			default:
-				return FALSE;
-		}
+		return $dateHelper->getNameMonth($month);
 	}
-
 
 }

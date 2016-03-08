@@ -17,7 +17,7 @@ class Points
 
 	public static function showSelectPoints ($strBoxName='point', $strSelectedVal='null', $field1='class="typeselect"',$pointType=null)
 	{
-		if ($arPoints = static::getPointsList())
+		if ($arPoints = static::getPointsList($pointType))
 		{
 			$arValues = array();
 			foreach ($arPoints as $arPoint)
@@ -63,6 +63,38 @@ class Points
 		if (is_null($types))
 		{
 			return $arPoints;
+		}
+		else
+		{
+			$arPointsTemp = $arPoints;
+			$arPoints = array();
+			$arTypes = array();
+			if (is_array($types))
+			{
+				foreach ($types as $pointType)
+				{
+					$arTypes[] = intval(static::getPointTypeIdByCode($pointType));
+				}
+			}
+			else
+			{
+				$arTypes[] = intval(static::getPointTypeIdByCode($types));
+			}
+			foreach ($arPointsTemp as $point)
+			{
+				if (in_array(intval($point['POINT_TYPES_ID']),$arTypes))
+				{
+					$arPoints[] = $point;
+				}
+			}
+			if (!empty($arPoints))
+			{
+				return $arPoints;
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 
@@ -311,20 +343,27 @@ class Points
 			return false;
 		}
 
-		/* TODO: Сделать, чтобы код ниже работал!
+		//TODO: Проверить работу кода
 		$arRes = Tables\PointsTable::getList(array(
 			'select' => array('ID'),
-			'filter' => array('ACTIVE'=>true,'>POPULAR'=>$nowPopular)
+			'filter' => array(
+				'>POPULAR'=>$nowPopular,
+				'<>ID' => $pointID
+			)
 		));
-		*/
-		$helper = new SqlHelper();
+
+/*		$helper = new SqlHelper();
 		$query = new Query('select');
-		$sql = 'SELECT '.$helper->wrapQuotes('ID').' FROM '.$helper->wrapQuotes(Tables\PointsTable::getTableName()).' WHERE '.$helper->wrapQuotes('POPULAR').' >= '.$nowPopular.' AND '.$helper->wrapQuotes('ID').' <> '.$pointID;
+		$sql = 'SELECT '.$helper->wrapQuotes('ID').' FROM '
+			.$helper->wrapQuotes(Tables\PointsTable::getTableName())
+			.' WHERE '.$helper->wrapQuotes('POPULAR').' >= '.$nowPopular.' AND '
+			.$helper->wrapQuotes('ID').' <> '.$pointID;
 		$query->setQueryBuildParts($sql);
 		$query->setTableMap(Tables\PointsTable::getMapArray());
 		$query->setTableName(Tables\PointsTable::getTableName());
-		$res = $query->exec();
-		if ($ar_res = $res->fetch())
+		$res = $query->exec();*/
+		//if ($ar_res = $res->fetch())
+		if ($arRes)
 		{
 			return true;
 		}

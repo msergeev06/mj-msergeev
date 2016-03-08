@@ -175,7 +175,7 @@ class DataManager {
 
 	public static function getList ($parameters)
 	{
-		$query = static::query("select");
+		$query = new Entity\Query("select");
 
 		$arMap = static::getMapArray();
 		$query->setTableMap($arMap);
@@ -221,7 +221,7 @@ class DataManager {
 			$query->setOrder($arOrder);
 		}
 
-		$res = $query->exec($arMap);
+		$res = $query->exec();
 		$arResult = array();
 		while ($ar_res = $res->fetch())
 		{
@@ -265,7 +265,7 @@ class DataManager {
 		if (count($arDefaultValues)>0)
 		{
 			$tableName = static::getTableName();
-			$query = static::query("insert");
+			$query = new Entity\Query("insert");
 			$query->setTableName($tableName);
 			$query->setTableMap($arMapArray);
 			$query->setInsertArray($arDefaultValues);

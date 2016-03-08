@@ -49,7 +49,7 @@ class FuelTable extends DataManager {
 			new Entity\FloatField ('SUM', array(
 				'required' => true,
 				'run' => array(
-					'function' => "\\MSergeev\\Core\\Lib\\Tools::multiplication()",
+					'function' => "\\MSergeev\\Core\\Lib\\Tools::multiplication",
 					'array_column' => 'LITER,LITER_COST'
 				),
 				'title' => 'Сумма'

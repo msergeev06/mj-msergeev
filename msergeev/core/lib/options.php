@@ -1,6 +1,7 @@
 <?php
 
 namespace MSergeev\Core\Lib;
+use MSergeev\Core\Entity\Query;
 use \MSergeev\Core\Tables;
 
 class Options {
@@ -15,43 +16,77 @@ class Options {
 		}
 	}
 
-	public function getStrOption ($optionName) {
+	public static function getOptionStr ($optionName) {
 		$optionName = strtoupper($optionName);
 
 		return static::getOption ($optionName);
 	}
 
 
-	public function getIntOption($optionName) {
+	public static function getOptionInt($optionName) {
 		$optionName = strtoupper($optionName);
 
 		return intval(static::getOption($optionName));
 	}
 
-	public function getFloatOption($optionName) {
+	public static function getOptionFloat($optionName) {
 		$optionName = strtoupper($optionName);
 
 		return floatval(static::getOption($optionName));
 	}
 
-	public function setOption ($optionName, $optionValue) {
+	public static function setOption ($optionName, $optionValue)
+	{
 		$optionName = strtoupper($optionName);
-		static::$arOptions[$optionName] = $optionValue;
-
+		if (!isset(static::$arOptions[$optionName]))
+		{
+			$arInsert = array(
+				0 => array(
+					'NAME' => $optionName,
+					'VALUE' => $optionValue
+				)
+			);
+			$query = new Query('insert');
+			$query->setTableName(Tables\OptionsTable::getTableName());
+			$query->setTableMap(Tables\OptionsTable::getMap());
+			$query->setInsertArray($arInsert);
+			$res = $query->exec();
+			if ($res->getResult())
+			{
+				static::$arOptions[$optionName] = $optionValue;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
-	protected function getOption ($optionName) {
-
+	protected static function getOption ($optionName)
+	{
+		$optionName = strtoupper($optionName);
 		if (isset(static::$arOptions[$optionName])) {
 			return static::$arOptions[$optionName];
 		}
 		else {
 			$result = Tables\OptionsTable::getList(array(
 				"filter" => array(
-					"=NAME" => $optionName
-				),
-				"table" => Tables\OptionsTable::getTableName()
+					"NAME" => $optionName
+				)
 			));
+			if (!empty($result))
+			{
+				return $result[0]['VALUE'];
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 	}

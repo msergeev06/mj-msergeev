@@ -3,13 +3,18 @@
 namespace MSergeev\Packages\Icar\Lib;
 
 use MSergeev\Core\Exception;
-use MSergeev\Core\Lib\SqlHelper;
-use MSergeev\Core\Lib\SqlHelperDate;
-use \MSergeev\Packages\Icar\Tables;
+use MSergeev\Packages\Icar\Tables;
 use MSergeev\Core\Entity\Query;
 
 class Odo
 {
+	/**
+	 * Функция обрабатывает данные о маршруте из формы, для сохранении в БЛ
+	 *
+	 * @param null $post
+	 *
+	 * @return bool|int
+	 */
 	public static function addNewRouteFromPost ($post=null)
 	{
 		try
@@ -111,6 +116,146 @@ class Odo
 		return static::addNewRoute($arData);
 	}
 
+	/**
+	 * Возвращает максимальное значение одометра на основе маршрутов
+	 *
+	 * @param int $carID
+	 *
+	 * @return int
+	 */
+	public static function getMaxOdo ($carID=null)
+	{
+		if (is_null($carID))
+		{
+			$carID = MyCar::getDefaultCarID();
+		}
+
+		$arRes = Tables\RoutsTable::getList(array(
+			                                    'select' => array('ODO'),
+			                                    'filter' => array(
+				                                    'MY_CAR_ID' => intval($carID),
+				                                    '>ODO' => 0
+			                                    ),
+			                                    'order' => array('DATE'=>'DESC'),
+			                                    'limit' => 1
+		                                    ));
+		if ($arRes)
+		{
+			return $arRes[0]['ODO'];
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	/**
+	 * Выводит график пройденного пути по дням для заданного временного промежутка
+	 *
+	 * @param string    $from       date
+	 * @param string    $to         date
+	 * @param int       $carID
+	 * @param string    $xTitle
+	 * @param string    $yTitle
+	 *
+	 * @return string
+	 */
+	public static function showChartsOdo ($from=null, $to=null, $carID=null, $xTitle='', $yTitle='')
+	{
+		if ($xTitle=='')
+		{
+			$xTitle="Дата";
+		}
+		if ($yTitle=='')
+		{
+			$yTitle="Километраж (км.)";
+		}
+		if (is_null($carID))
+		{
+			$carID = MyCar::getDefaultCarID();
+		}
+		else
+		{
+			$carID = intval($carID);
+		}
+		$arCar = MyCar::getCarByID($carID);
+		if (is_null($from) || is_null($to))
+		{
+			$nowYear = date('Y');
+			$nowMonth = date('m');
+			$nowDay = date('d');
+
+			if (intval($nowDay)>=1 && intval($nowDay) <=9)
+			{
+				$to = '0'.$nowDay;
+			}
+			else
+			{
+				$to = $nowDay;
+			}
+			$from = '01.'.$nowMonth.'.'.$nowYear;
+			$to .= '.'.$nowMonth.'.'.$nowYear;
+		}
+
+		$title = 'Данные за период: с '.$from.' по '.$to;
+
+		$arRes = OdoTable::getList(array(
+			'select' => array('DATE','ODO'),
+			'filter' => array(
+				'MY_CAR_ID' => $carID,
+				'>=DATE' => $from,
+				'<=DATE' => $to
+			),
+			'order' => array('DATE'=>'ASC')
+		));
+		if (!$arRes) {
+			return 'Нет данных за указанный период';
+		}
+		else
+		{
+			$dateHelper = new DateHelper();
+			$arXAxis = array();
+			foreach ($arRes as $ar_res)
+			{
+				list($day,$month,$year) = explode('.',$ar_res['DATE']);
+				$dayOfWeek = $dateHelper->getDayOfWeekFromDate($ar_res['DATE']);
+				if ($dayOfWeek === 0 || $dayOfWeek === 6)
+				{
+					$name = '<span style="color: red;">'.$day." (".$dateHelper->getShortNameDayOfWeek($dayOfWeek).")</span>";
+				}
+				else
+				{
+					$name = $day." (".$dateHelper->getShortNameDayOfWeek($dayOfWeek).")";
+				}
+				$arXAxis['NAME'][] = $name;
+				$arXAxis['VALUE'][] = floatval($ar_res['ODO']);
+			}
+
+			$arData = array();
+			$arData['title'] = 'Пробег';
+			$arData['subtitle'] = $title;
+			$arData['yAxis'] = $yTitle;
+			$arData['valueSuffix'] = 'км.';
+
+			$arData['xAxis'] = $arXAxis['NAME'];
+			$arData['series'] = array(
+				0 => array(
+					'name' => $arCar['NAME'],
+					'data' => $arXAxis['VALUE']
+				)
+			);
+
+			return LineCharts($arData);
+		}
+	}
+
+	/**
+	 * Функция добавляет новый машрут и возвращает ID записи, либо false
+	 *
+	 * @param array $arData
+	 *
+	 * @return bool|int
+	 */
 	protected static function addNewRoute($arData=array())
 	{
 		try
@@ -156,12 +301,15 @@ class Odo
 		}
 	}
 
+	/**
+	 * Функция высчитывает данные о пройденном расстоянии от выбранной даты или за все время
+	 *
+	 * @param int $carID
+	 * @param string $date
+	 */
 	protected static function updateDayOdometer($carID=null,$date=null)
 	{
-		$helper = new SqlHelper();
 		$dateHelper = new DateHelper();
-		$routsTable = Tables\RoutsTable::getTableName();
-		$odoTable = Tables\OdoTable::getTableName();
 		$arResult = array();
 		if (is_null($carID))
 		{
@@ -169,38 +317,29 @@ class Odo
 		}
 		if (is_null($date))
 		{
-			//$date = date('d.m.Y');
-			$sql = "SELECT ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('ID').", ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('DATE').", ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('ODO')."\n";
-			$sql.= "FROM ".$helper->wrapQuotes($routsTable)."\n";
-			$sql.= "WHERE\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('MY_CAR_ID')." = ".$carID." AND\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('ODO')." > 0\n";
-			$sql.= "ORDER BY\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('DATE')." ASC,\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('ID')." ASC";
-
-			$query = new Query('select');
-			$query->setQueryBuildParts($sql);
-			$res = $query->exec();
+			//TODO: Проверить работу кода
+			$arRes = Tables\RoutsTable::getList(array(
+				'select' => array('ID','DATE','ODO'),
+				'filter' => array(
+					'MY_CAR_ID' => $carID,
+					'>ODO' => 0
+				),
+				'order' => array(
+					'DATE' => 'ASC',
+					'ID' => 'ASC'
+				)
+			));
 			$arResult['BUY_ODO'] = MyCar::getBuyCarOdo($carID);
 			$arResult['MAX_DATE_ODO'] = array();
 			$bFirst = true;
-			while ($ar_res = $res->fetch())
+			foreach ($arRes as $ar_res)
 			{
-				$ar_res['DATE'] = $dateHelper->convertDateFromDB($ar_res['DATE']);
 				if ($bFirst)
 				{
 					$bFirst = false;
 					$arResult['FIRST_DAY'] = $ar_res['DATE'];
 				}
-				$arResult['ROUTS'][$ar_res['ID']]['DATE'] =
+				$arResult['ROUTS'][$ar_res['ID']]['DATE'] = $ar_res['DATE'];
 				$arResult['ROUTS'][$ar_res['ID']]['ODO'] = $ar_res['ODO'];
 				if (
 					!isset($arResult['MAX_DATE_ODO'][$ar_res['DATE']])
@@ -220,7 +359,6 @@ class Odo
 			}
 			$arResult['ODO_ALL_DAYS'] = array();
 			$now_day = $arResult['FIRST_DAY'];
-			$dateHelper = new DateHelper();
 			while ($now_day !== $arResult['LAST_DAY'])
 			{
 				if (isset($arResult['DAY_ODO'][$now_day]))
@@ -241,32 +379,23 @@ class Odo
 			$arResult['LAST_DAY'] = date('d.m.Y');
 			$arResult['BUY_ODO'] = MyCar::getBuyCarOdo($carID);
 
-			$sql = "SELECT ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('ID').", ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('DATE').", ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('ODO')."\n";
-			$sql.= "FROM ".$helper->wrapQuotes($routsTable)."\n";
-			$sql.= "WHERE\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('MY_CAR_ID')." = ".$carID." AND\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('DATE')." >= '".$dateHelper->convertDateToDB($date)."' AND\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('ODO')." > 0\n";
-			$sql.= "ORDER BY\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('DATE')." ASC,\n\t";
-			$sql.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('ID')." ASC";
-
-			$query = new Query('select');
-			$query->setQueryBuildParts($sql);
-			$res = $query->exec();
+			//TODO: Проверить работу кода
+			$arRes = Tables\RoutsTable::getList(array(
+				'select' => array('ID','DATE','ODO'),
+				'filter' => array(
+					'MY_CAR_ID' => $carID,
+					'>=DATE' => $date,
+					'>ODO' => 0
+				),
+				'order' => array(
+					'DATE' => 'ASC',
+					'ID' => 'ASC'
+				)
+			));
 			$arResult['MAX_DATE_ODO'] = array();
-			while ($ar_res = $res->fetch())
+			foreach ($arRes as $ar_res)
 			{
-				$ar_res['DATE'] = $dateHelper->convertDateFromDB($ar_res['DATE']);
-				$arResult['ROUTS'][$ar_res['ID']]['DATE'] =
+				$arResult['ROUTS'][$ar_res['ID']]['DATE'] = $ar_res['DATE'];
 				$arResult['ROUTS'][$ar_res['ID']]['ODO'] = $ar_res['ODO'];
 				if (
 					!isset($arResult['MAX_DATE_ODO'][$ar_res['DATE']])
@@ -277,31 +406,23 @@ class Odo
 				}
 			}
 
-			$sql2 = "SELECT ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('ID').", ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('DATE').", ".$helper->wrapQuotes($routsTable)
-				.".".$helper->wrapQuotes('ODO')."\n";
-			$sql2.= "FROM ".$helper->wrapQuotes($routsTable)."\n";
-			$sql2.= "WHERE\n\t";
-			$sql2.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('MY_CAR_ID')." = ".$carID." AND\n\t";
-			$sql2.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('DATE')." < '".$dateHelper->convertDateToDB($date)."' AND\n\t";
-			$sql2.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('ODO')." > 0\n";
-			$sql2.= "ORDER BY\n\t";
-			$sql2.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('DATE')." DESC,\n\t";
-			$sql2.= $helper->wrapQuotes($routsTable)."."
-				.$helper->wrapQuotes('ID')." DESC";
-
-			$query = new Query('select');
-			$query->setQueryBuildParts($sql2);
-			$res = $query->exec();
-			if ($ar_res = $res->fetch())
+			//TODO: Проверить работу кода
+			$arRes2 = Tables\RoutsTable::getList(array(
+				'select' => array('ID','DATE','ODO'),
+				'filter' => array(
+					'MY_CAR_ID' => $carID,
+					'<DATE' => $date,
+					'>ODO' => 0
+				),
+				'order' => array(
+					'DATE' => 'DESC',
+					'ID' => 'DESC'
+				)
+			));
+			if ($arRes2)
 			{
-				$lastOdo = $ar_res['ODO'];
-				$arResult['LAST_RES'] = $ar_res;
+				$lastOdo = $arRes2[0]['ODO'];
+				$arResult['LAST_RES'] = $arRes2[0];
 			}
 			else
 			{
@@ -331,29 +452,20 @@ class Odo
 				}
 				$now_day = $dateHelper->strToTime($now_day,'+1 day','site');
 			}
-
 		}
 
-		$sql2 = "SELECT\n\t".$helper->wrapQuotes($odoTable)."."
-			.$helper->wrapQuotes('ID').", ".$helper->wrapQuotes($odoTable)."."
-			.$helper->wrapQuotes('DATE').", ".$helper->wrapQuotes($odoTable)."."
-			.$helper->wrapQuotes('ODO')."\n";
-		$sql2.= "FROM\n\t".$helper->wrapQuotes($odoTable)."\n";
-		$sql2.= "WHERE\n\t".$helper->wrapQuotes($odoTable)."."
-			.$helper->wrapQuotes('MY_CAR_ID')." = ".$carID." AND\n\t";
-		$sql2.= $helper->wrapQuotes($odoTable)."."
-			.$helper->wrapQuotes('DATE')." >= '"
-			.$dateHelper->convertDateToDB($arResult['FIRST_DAY'])."'\n";
-		$sql2.= "ORDER BY ".$helper->wrapQuotes($odoTable)."."
-			.$helper->wrapQuotes('DATE')." ASC";
-
-		$query = new Query('select');
-		$query->setQueryBuildParts($sql2);
-		$res = $query->exec();
+		//TODO: Проверить работу кода
+		$arRes2 = Tables\OdoTable::getList(array(
+			'select' => array('ID','DATE','ODO'),
+			'filter' => array(
+				'MY_CAR_ID' => $carID,
+				'>=DATE' => $arResult['FIRST_DAY']
+			),
+			'order' => array('DATE'=>'ASC')
+		));
 		$arResult['ODO_TABLE'] = array();
-		while ($ar_res = $res->fetch())
+		foreach ($arRes2 as $ar_res)
 		{
-			$ar_res['DATE'] = $dateHelper->convertDateFromDB($ar_res['DATE']);
 			$arResult['ODO_TABLE'][$ar_res['DATE']] = array(
 				'ID' => $ar_res['ID'],
 				'ODO' => $ar_res['ODO']
@@ -392,38 +504,6 @@ class Odo
 			}
 		}
 
-	}
-
-	public static function getMaxOdo ($carID=null)
-	{
-		if (is_null($carID))
-		{
-			$carID = MyCar::getDefaultCarID();
-		}
-		$helper = new SqlHelper();
-		$tableRouts = Tables\RoutsTable::getTableName();
-		$sql = "SELECT\n\t".$helper->wrapQuotes($tableRouts).".".$helper->wrapQuotes('ODO')."\n";
-		$sql.= "FROM\n\t".$helper->wrapQuotes($tableRouts)."\n";
-		$sql.= "WHERE\n\t".$helper->wrapQuotes($tableRouts)."."
-			.$helper->wrapQuotes('MY_CAR_ID')." = ".intval($carID)." AND\n\t";
-		$sql.= $helper->wrapQuotes($tableRouts)."."
-			.$helper->wrapQuotes('ODO')." > 0\n";
-		$sql.= "ORDER BY\n\t";
-		$sql.= $helper->wrapQuotes($tableRouts)."."
-			.$helper->wrapQuotes('DATE')." DESC\n";
-		$sql.= "LIMIT 1";
-
-		$query = new Query('select');
-		$query->setQueryBuildParts($sql);
-		$res = $query->exec();
-		if ($ar_res = $res->fetch())
-		{
-			return $ar_res['ODO'];
-		}
-		else
-		{
-			return 0;
-		}
 	}
 
 }
