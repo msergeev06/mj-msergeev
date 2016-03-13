@@ -2,6 +2,8 @@
 
 namespace MSergeev\Core\Lib;
 
+use MSergeev\Core\Exception\ArgumentNullException;
+
 class Buffer {
 
 	protected static $pageTitle;
@@ -9,6 +11,7 @@ class Buffer {
 	protected static $includedJS;
 	protected static $arIncludedCSS=array();
 	protected static $arIncludedJS=array();
+	protected static $arWebixJs=array();
 
 	public static function start($name) {
 		if ($name == "page") {
@@ -30,6 +33,7 @@ class Buffer {
 		$buffer = str_replace("#PAGE_TITLE#", static::$pageTitle, $buffer);
 		$buffer = str_replace("#INCLUDED_CSS#", static::$includedCSS, $buffer);
 		$buffer = str_replace("#INCLUDED_JS#", static::$includedJS, $buffer);
+		$buffer = str_replace("#INCLUDED_WEBIX_JS#", static::generateWebixJs(), $buffer);
 
 		return $buffer;
 	}
@@ -93,5 +97,66 @@ class Buffer {
 		}
 
 		return '#INCLUDED_JS#';
+	}
+
+	public static function showWebixJS () {
+
+		return '#INCLUDED_WEBIX_JS#';
+	}
+
+	public static function addWebixJs ($js=null, $key=null)
+	{
+		try
+		{
+			if(is_null($js))
+			{
+				throw new ArgumentNullException ('js');
+			}
+		}
+		catch (ArgumentNullException $e)
+		{
+			die($e->showException());
+		}
+
+		if (!is_null($key))
+		{
+			if (!isset(static::$arWebixJs[$key]))
+			{
+				static::$arWebixJs[$key] = $js;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			static::$arWebixJs[] = $js;
+			return true;
+		}
+	}
+
+	protected static function generateWebixJs ()
+	{
+		if (!empty(static::$arWebixJs))
+		{
+			$webixJS = '<script type="text/javascript" charset="utf-8">'."\n"
+				."webix.ready(function(){\n"
+				."webix.i18n.setLocale('ru-RU');\n";
+
+			foreach (static::$arWebixJs as $key=>$js)
+			{
+				$webixJS .= $js;
+			}
+
+			$webixJS.= "});\n</script>";
+
+			return $webixJS;
+		}
+		else
+		{
+			return '';
+		}
 	}
 }

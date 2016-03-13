@@ -4,8 +4,13 @@ namespace MSergeev\Packages\Icar\Lib;
 
 use MSergeev\Core\Entity\Query;
 use MSergeev\Core\Exception;
+use MSergeev\Core\Lib\Buffer;
+use MSergeev\Core\Lib\DataManager;
+use MSergeev\Core\Lib\Loader;
 use MSergeev\Core\Lib\Options;
 use MSergeev\Core\Lib\SqlHelper;
+use MSergeev\Core\Lib\Tools;
+use MSergeev\Core\Lib\Webix;
 use MSergeev\Packages\Icar\Tables;
 
 class Fuel
@@ -275,7 +280,7 @@ class Fuel
 		}
 	}
 
-	public static function getFuelList ($carID=null,$limit=20,$offset=0)
+	public static function getFuelList ($carID=null,$limit=0,$offset=0)
 	{
 		if (is_null($carID))
 		{
@@ -309,13 +314,219 @@ class Fuel
 			'order' => array(
 				'DATE' => 'ASC',
 				'ID' => 'ASC'
-			),
-			'limit' => $limit,
-			'offset' => $offset
+			)
 		);
+		if ($limit>0)
+		{
+			$arList['limit'] = $limit;
+			$arList['offset'] = $offset;
+		}
+
 		$arRes = Tables\FuelTable::getList($arList);
 
 		return $arRes;
+	}
+
+	public static function getFuelNumRows ($carID=null)
+	{
+		if (is_null($carID))
+		{
+			$carID = MyCar::getDefaultCarID();
+		}
+
+		$helper = new SqlHelper();
+		$sql = "SELECT\n\t".$helper->wrapQuotes('ID')."\nFROM\n\t"
+			.$helper->wrapQuotes(Tables\FuelTable::getTableName())."\nWHERE\n\t"
+			.$helper->wrapQuotes('MY_CAR_ID')." = ".$carID;
+		$query = new Query('select');
+		$query->setQueryBuildParts($sql);
+		$res = $query->exec();
+
+		return $res->getNumRows();
+	}
+
+	public static function showListTable ($carID = null, $div = null, $first=false)
+	{
+		if (is_null($carID))
+		{
+			$carID = MyCar::getDefaultCarID();
+		}
+
+		$dateHelper = new DateHelper();
+		$arList = static::getFuelList($carID);
+		$imgSrcPath = Tools::getSitePath(Loader::getTemplate('icar')."images/");
+
+		//msDebug($arList);
+		$arDatas = array();
+		foreach ($arList as $list)
+		{
+			$arDatas[] = array(
+				'id' => $list['ID'],
+				'date' => $list['DATE'],
+				'timestamp' => "=".$dateHelper->getDateTimestamp($list['DATE']),
+				'odo' => "=".$list['ODO'],
+				'fuelmark_name' => $list['FUELMARK_NAME'],
+				'liter' => "=".$list['LITER'],
+				'liter_cost' => "=".$list['LITER_COST'],
+				'sum' => "=".$list['SUM'],
+				'full' => ($list['FULL'])?"Да":"-",
+				'expence' => "=".$list['EXPENCE'],
+				'point_name' => $list['POINT_NAME'],
+				'point_type' => $list['POINT_TYPE_NAME'],
+				'info' => (strlen($list['INFO'])>0)?"<img src='".$imgSrcPath."info.png'>":"",
+				'comment' => $list['INFO'],
+				'edit' => "<a href='edit.php?id=".$list['ID']."'><img src='".$imgSrcPath."edit.png'></a>",
+				'delete' => "<a href='delete.php?id=".$list['ID']."'><img src='".$imgSrcPath."delete.png'></a>"
+				//'edit' => '&nbsp;',
+				//'delete' => '&nbsp;'
+			);
+		}
+
+		$func = "function sortByTimestamp (a,b){\n\t"
+			."a=a.timestamp;\n\tb=b.timestamp;\n\treturn a>b?1:(a<b?-1:0);\n};\n\n";
+		Buffer::addWebixJs($func);
+
+/*		$func = "function editClick(id, e){\n\t"
+			."var item_id = $$('datatable').locate(e);\n\t"
+			.'webix.message("Edit "+item_id);'."}\n";
+		Buffer::addWebixJs($func);
+
+		$func = "function deleteClick(id, e){\n\t"
+			."var item_id = $$('datatable').locate(e);\n\t"
+			.'webix.message("Delete "+item_id);'."}\n";
+		Buffer::addWebixJs($func);*/
+
+		$arData = array(
+			'grid' => 'grida',
+			'container' => 'testA',
+			'columns' => array(
+				array(
+					'id' => "date",
+					'tooltip' => '=false',
+					'header' => "Дата",
+					//'width' => "=100",
+					'adjust'=>'=true',
+					'sort' => '=sortByTimestamp',
+					'footer'=>'={text:"Итого:", colspan:3}'
+				),
+				array(
+					'id' => "odo",
+					'tooltip' => '=false',
+					'header' => "Пробег",
+					//'width' => "=100",
+					'adjust'=>'=true',
+					'sort' => 'int'
+					//'editor' => 'text'
+				),
+				array(
+					'id' => "fuelmark_name",
+					'tooltip' => '=false',
+					'header' => "Тип топлива",
+					//'width' => "=100",
+					'adjust'=>'=true',
+					'sort' => 'string'
+				),
+				array(
+					'id' => "liter",
+					'tooltip' => '=false',
+					'header' => "Литров",
+					//'width' => "=70",
+					'adjust'=>'=true',
+					'sort' => 'int',
+					'format' => '=webix.Number.numToStr({
+						groupDelimiter:" ",
+						groupSize:3,
+						decimalDelimiter:",",
+						decimalSize:2
+					})',
+					'footer'=>'={ content:"summColumn" }'
+				),
+				array(
+					'id' => "liter_cost",
+					'tooltip' => '=false',
+					'header' => "р/л.",
+					//'width' => "=70",
+					'adjust'=>'=true',
+					'format' => '=webix.Number.numToStr({
+						groupDelimiter:" ",
+						groupSize:3,
+						decimalDelimiter:",",
+						decimalSize:2
+					})',
+					'sort' => 'int'
+				),
+				array(
+					'id' => "sum",
+					'tooltip' => '=false',
+					'header' => "Сумма",
+					//'width' => "=100",
+					'adjust'=>'=true',
+					'sort' => 'int',
+					'format' => '=webix.Number.numToStr({
+						groupDelimiter:" ",
+						groupSize:3,
+						decimalDelimiter:",",
+						decimalSize:2
+					})',
+					'footer'=>'={ content:"summColumn" }'
+				),
+				array(
+					'id' => "full",
+					'tooltip' => '=false',
+					'header' => "Полный",
+					//'width' => "=70"
+					'adjust'=>'=true'
+				),
+				array(
+					'id' => "expence",
+					'tooltip' => '=false',
+					'header' => "Расход",
+					//'width' => "=70",
+					'adjust'=>'=true',
+					'format' => '=webix.Number.numToStr({
+						groupDelimiter:" ",
+						groupSize:3,
+						decimalDelimiter:",",
+						decimalSize:2
+					})',
+					'sort' => 'int'
+				),
+				array(
+					'id' => "point_name",
+					'tooltip' => 'Имя точки: #point_name#<br>Тип точки: #point_type#',
+					'header' => "Точка",
+					//'width' => "=200",
+					'adjust'=>'=true',
+					'sort' => 'string'
+				),
+				array(
+					'id' => "info",
+					'tooltip' => "#comment#",
+					'header' => "Инфо",
+					//'width' => "=50"
+					'adjust'=>'=true'
+				),
+				array(
+					'id' => "edit",
+					'tooltip' => "Редактировать запись",
+					'header' => "",
+					//'width' => "=50"
+					'adjust'=>'=true'
+					//'template' => "<div class='buttons'>{common.editButton()}</div>"
+				),
+				array(
+					'id' => "delete",
+					'tooltip' => "Удалить запись",
+					'header' => "",
+					//'width' => "=50"
+					'adjust'=>'=true'
+					//'template' => "<div class='buttons'>{common.deleteButton()}</div>"
+				)
+			),
+			'data' => $arDatas
+		);
+
+		return Webix::showDataTable($arData);
 	}
 
 

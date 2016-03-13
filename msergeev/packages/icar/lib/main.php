@@ -2,6 +2,7 @@
 
 namespace MSergeev\Packages\Icar\Lib;
 
+use MSergeev\Core\Exception\ArgumentNullException;
 use MSergeev\Core\Lib as CoreLib;
 
 class Main
@@ -71,55 +72,41 @@ class Main
 	}
 
 
-	public static function showListTable ($arData,$arColumn,$carID=null,$arSystem=null)
+	public static function showListTable ($arData=null,$arColumn=null,$arSystem=null,$div=null,$fuelNumRows=null,$itemsPerPage=null,$first=false)
 	{
-		if (is_null($carID))
+		try
 		{
-			$carID = MyCar::getDefaultCarID();
+			if (is_null($arData))
+			{
+				throw new ArgumentNullException('arData');
+			}
+			if (is_null($arColumn))
+			{
+				throw new ArgumentNullException('arColumn');
+			}
 		}
-		//Для теста
-		$arColumn = array(
-			'DATE' => array(
-				'NAME' => "Дата",
-				'TYPE' => 'date'
-			),
-			'FUELMARK_NAME' => array(
-				'NAME' => "Марка топлива",
-				'TYPE' => 'string'
-			),
-			'SUM' => array(
-				'NAME' => "Сумма,<br>руб.",
-				'TYPE' => 'money'
-			),
-			'LITER' => array(
-				'NAME' => "Литраж,<br>л.",
-				'TYPE' => 'liter'
-			),
-			'LITER_COST' => array(
-				'NAME' => "Цена за литр,<br>руб.",
-				'TYPE' => 'money'
-			),
-			'EXPENCE' => array(
-				'NAME' => "Расход,<br>л./100км.",
-				'TYPE' => 'average'
-			),
-			'ODO' => array(
-				'NAME' => "Пробег,<br>км.",
-				'TYPE' => 'mileage'
-			),
-			'POINTS_ID' => array(
-				'NAME' => "Путевая<br>точка",
-				'TYPE' => 'waypoint'
-			),
-			'FULL' => array(
-				'NAME' => "Полный<br>бак",
-				'TYPE' => 'bool'
-			)
-		);
-		$arData = Fuel::getFuelList($carID);
-		//Конец отладки
+		catch (ArgumentNullException $e)
+		{
+			die($e->showException());
+		}
 
 		$imgPath = CoreLib\Tools::getSitePath(CoreLib\Loader::getTemplate("icar")."images/");
+		$toolsRoot = CoreLib\Config::getConfig("ICAR_TOOLS_ROOT");
+
+		if (is_null($fuelNumRows))
+		{
+			$fuelNumRows = 20;
+		}
+		if (is_null($fuelNumRows))
+		{
+			$itemsPerPage = 20;
+		}
+
+		if (is_null($div))
+		{
+			$div = "ajaxListTable";
+		}
+
 		if (is_null($arSystem))
 		{
 			$arSystem = array(
@@ -129,9 +116,40 @@ class Main
 				'DELETE' => true
 			);
 		}
+		elseif (!isset($arSystem['CHECK']))
+		{
+			$arSystem['CHECK'] = true;
+		}
+		elseif (!isset($arSystem['INFO']))
+		{
+			$arSystem['INFO'] = true;
+		}
+		elseif (!isset($arSystem['EDIT']))
+		{
+			$arSystem['EDIT'] = true;
+		}
+		elseif (!isset($arSystem['DELETE']))
+		{
+			$arSystem['DELETE'] = true;
 
+		}
+		$echo = "";
+		if ($first) {
+		$echo.= '
+<div class="itemsOnPage">Показывать на странице по
+	<select class="selectItemsPerPage" name="item_per_page">
+		<option value="5">5</option>
+		<option value="10">10</option>
+		<option value="20" selected>20</option>
+		<option value="50">50</option>
+		<option value="100">100</option>
+		<option value="0">все</option>
+	</select> записей
+</div>
+';
+		}
 		//$tableClass='listTable', $tdClass='listBody'
-		$echo = '<table class="listTable">'."\n\t"
+		$echo .= '<table class="listTable">'."\n\t"
 			."<thead>\n\t\t<tr>\n";
 		if (isset($arSystem['CHECK']) && $arSystem['CHECK'])
 		{
@@ -145,7 +163,7 @@ class Main
 		}
 		if (isset($arSystem['INFO']) && $arSystem['INFO'])
 		{
-			$echo.= "\t\t\t<td>&nbsp;</td>\n";
+			$echo.= "\t\t\t<td>".'<img src="'.$imgPath.'info.png" title="Информация">'."</td>\n";
 		}
 		if (isset($arSystem['EDIT']) && $arSystem['EDIT'])
 		{
@@ -204,18 +222,30 @@ class Main
 					$echo.= "\t\t\t".'<td class="tdWaypoint">';
 					$echo.= '<img class="waypoint" src="'.$imgPath.'waypoint.png" data-id="'.$data[$code].'">';
 				}
+				elseif ($ar_column["TYPE"]=="full")
+				{
+					$echo.= "\t\t\t".'<td class="tdFull">';
+					$echo.= ($data[$code])?'<img class="full-'.strtolower($code).'" src="'.$imgPath.'full.png" title="Полный бак" data-id="'.$data[$code].'">':"";
+				}
 				elseif ($ar_column["TYPE"]=="bool")
 				{
 					$echo.= "\t\t\t".'<td class="tdBool">';
-					$echo.= ($data[$code])?'<img class="bool-'.strtolower($code).'" src="'.$imgPath.'full.png" title="Полный бак" data-id="'.$data[$code].'">':"";
+					$echo.= ($data[$code])?'Да':"Нет";
 				}
 				$echo.= "</td>\n";
 			}
 			if (isset($arSystem['INFO']) && $arSystem['INFO'])
 			{
-				$echo.= "\t\t\t".'<td class="tdInfo">'
-					.'<img class="info" src="'.$imgPath.'info.png" data-info="'.$data['INFO'].'">'
-					."</td>\n";
+				$echo.= "\t\t\t".'<td class="tdInfo">';
+				if (strlen($data['INFO'])>0)
+				{
+					$echo.='<img class="info" src="'.$imgPath.'info.png" data-info="'.$data['INFO'].'">';
+				}
+				else
+				{
+					$echo.="&nbsp;";
+				}
+				$echo.="</td>\n";
 			}
 			if (isset($arSystem['EDIT']) && $arSystem['EDIT'])
 			{
@@ -231,10 +261,11 @@ class Main
 			}
 			$echo.= "\t\t</tr>\n";
 		}
-
-
 		$echo.= "\t</tbody>\n</table>\n";
-		$echo.= '<style>
+
+		if ($first)
+		{
+			$echo.= '<style>
 
 	.listTable, .listTable td, .listTable thead, .listTable tbody {
 		margin: 0;
@@ -247,6 +278,7 @@ class Main
 		text-align: center;
 		padding-left: 10px;
 		padding-right: 10px;
+		min-height: 32px;
 	}
 	.tdCheck,
 	 .tdDate,
@@ -254,12 +286,14 @@ class Main
 	 .tdMileage,
 	 .tdWaypoint,
 	 .tdBool,
+	 .tdFull,
 	 .tdInfo,
 	 .tdEdit,
 	 .tdDelete {
 		text-align: center;
 		padding-left: 10px;
 		padding-right: 10px;
+		height: 32px;
 	}
 	.tdMoney,
 	 .tdLiter,
@@ -267,8 +301,24 @@ class Main
 		text-align: right;
 		padding-left: 10px;
 		padding-right: 10px;
+		height: 32px;
+	}
+	.tdOther {
+		text-align: left;
+		padding-left: 10px;
+		padding-right: 10px;
+		height: 32px;
+	}
+	.tdDate {
+		width: 90px;
+	}
+	.itemsOnPage {
+		text-align: left;
+		padding-bottom: 20px;
 	}
 </style>';
+		}
+
 
 		return $echo;
 	}

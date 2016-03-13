@@ -9,6 +9,15 @@ else
 {
 	$carID = Lib\MyCar::getDefaultCarID();
 }
+
+if (!isset($_REQUEST['page']))
+{
+	$page = 1;
+}
+else
+{
+	$page = intval($_REQUEST['page']);
+}
 ?>
 <p>Статистика для: <? echo Lib\MyCar::showSelectCars("my_car",$carID,'class="myCar"'); ?><br>
 Общие затраты на топливо: <? echo Lib\Fuel::getTotalFuelCostsFormatted($carID); ?> руб.<br>
@@ -16,8 +25,40 @@ else
 Всего израсходованно топлива: <? echo Lib\MyCar::getCarTotalSpentFuelFormatted($carID); ?> л.<br><br></p>
 <p><a href="add.php?car=<?=$carID?>">Добавить запись</a><br><br></p>
 
+<? /*
+<div class="listFuel">
+	<?=Lib\Fuel::showListTable($carID,"listFuel",true);?>
+</div>
+ */
+//\MSergeev\Core\Lib\Webix::showDataTable($arData);
+Lib\Fuel::showListTable($carID);
+?>
+<div id="testA"></div>
+
+<script type="text/javascript">
+	/*
+	$.post(
+		"<? //=\MSergeev\Core\Lib\Config::getConfig("ICAR_TOOLS_ROOT").'show_list_table.php'?>//",
+		{
+			brand_id: brand_id
+		},
+		function(data) {
+			console.log(data);
+			if (data.status == 'ok')
+			{
+				$('.td_model').html(data.select);
+			}
+			else
+			{
+				$('.td_model').html('<? //=InputType('text','car_model_text','','',false,'','class="car_model_text"')?>//');
+
+			}
+		},
+		"json"
+	);
+*/
+</script>
 <?
-echo Lib\Main::showListTable(array(),array(),$carID);
 /*
 <table class="listTable">
 	<thead>

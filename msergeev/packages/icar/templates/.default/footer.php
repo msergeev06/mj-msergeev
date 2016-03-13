@@ -1,5 +1,7 @@
 
-
+<?
+echo \MSergeev\Core\Lib\Buffer::showWebixJS();
+?>
 </body>
 </html>
 
