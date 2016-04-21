@@ -4,7 +4,8 @@
 
 include_once ($_SERVER["DOCUMENT_ROOT"]."/msergeev_config.php");
 //MSergeev\Core\Lib\Loader::IncludePackage("dates");
-MSergeev\Core\Lib\Loader::IncludePackage("icar");
+//MSergeev\Core\Lib\Loader::IncludePackage("icar");
+//MSergeev\Core\Lib\Loader::IncludePackage("apihelp");
 //MSergeev\Core\Lib\Loader::IncludePackage("products");
 //MSergeev\Core\Lib\Loader::IncludePackage("tasks");
 header('Content-type: text/html; charset=utf-8');
@@ -63,7 +64,8 @@ msDebug($res);
 //$arResult['SELECT'] = TaskLib\Groups::getSelectArray($arResult['ITEMS']);
 
 //msDebug($arResult);
-
+//$res = MSergeev\Packages\Apihelp\Tables\SectionsTable::createTable();
+//$res = MSergeev\Packages\Apihelp\Tables\PagesTable::createTable();
 
 
 

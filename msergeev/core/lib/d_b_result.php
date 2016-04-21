@@ -2,6 +2,8 @@
 
 namespace MSergeev\Core\Lib;
 
+use MSergeev\Core\Entity\Query;
+
 class DBResult
 {
 	protected $result;
@@ -17,7 +19,7 @@ class DBResult
 	protected $mysql_num_rows=null;
 	protected $arFieldsEntity;
 
-	function __construct($res, $obQuery)
+	function __construct($res, Query $obQuery)
 	{
 		$this->result = $res;
 		$this->table_map = $obQuery->getTableMap();

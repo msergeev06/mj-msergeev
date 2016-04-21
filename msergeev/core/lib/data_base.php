@@ -2,6 +2,8 @@
 
 namespace MSergeev\Core\Lib;
 
+use MSergeev\Core\Entity\Query;
+
 class DataBase {
 
 	protected $host;
@@ -21,7 +23,7 @@ class DataBase {
 		mysql_select_db($this->base, $this->db_conn);
 	}
 
-	public function query ($obQuery)
+	public function query (Query $obQuery)
 	{
 		$sql = $obQuery->getQueryBuildParts();
 		$db_res = mysql_query($sql, $this->db_conn);
