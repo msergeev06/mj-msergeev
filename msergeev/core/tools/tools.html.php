@@ -28,10 +28,21 @@ function InputType($strType, $strName, $strValue, $strCmp, $strPrintValue=false,
 	$bCheck = false;
 	if($strValue <> '')
 	{
-		if(is_array($strCmp))
-			$bCheck = in_array($strValue, $strCmp);
-		elseif($strCmp <> '')
-			$bCheck = in_array($strValue, explode(",", $strCmp));
+		if (is_array($strValue))
+		{
+			if(is_array($strCmp))
+			{
+				$bCheck = in_array($strValue, $strCmp);
+			}
+			elseif($strCmp <> '')
+			{
+				$bCheck = in_array($strValue, explode(",", $strCmp));
+			}
+		}
+		else
+		{
+			$bCheck = ($strValue == $strCmp);
+		}
 	}
 	$bLabel = false;
 	if ($strType == 'radio')

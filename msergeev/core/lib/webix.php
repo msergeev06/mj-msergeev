@@ -58,20 +58,106 @@ class Webix
 		}
 
 		static::init();
+		$func = '
+		winYandexMap = webix.ui({
+				view:"popup",
+				height:450,
+			    width:600,
+			    position:"center",
+			    head:false,
+				body:{
+					template: ""
+				}
+			});
+			';
+		Buffer::addWebixJs($func,"winYandexMap");
 
 		$webixJS = trim($arData['grid'])." = webix.ui({\n";
 		$webixJS.= 'container:"'.trim($arData['container']).'",'."\n"
-			.'view:"datatable",'."\n"
-			//."id:'datatable',\n"
-			."autoheight:true,\n"
-			."autowidth:true,\n"
-			.'editable:true,'."\n"
-			.'editaction:"dblclick",'."\n"
-			//.'leftSplit:1,'."\n"
-			.'rightSplit:3,'."\n"
-			."minHeight:50,\n"
-			."footer:true,\n"
-			."tooltip:true,\n"
+			.'view:"datatable",'."\n";
+		if (isset($arData['id']))
+		{
+			$webixJS.="id:'".trim($arData['id']).",\n";
+		}
+		if (!isset($arData['autoheight']) || $arData['autoheight'])
+		{
+			$webixJS.="autoheight:true,\n";
+		}
+		if (!isset($arData['autowidth']) || $arData['autowidth'])
+		{
+			$webixJS.="autowidth:true,\n";
+		}
+		if ($arData['editable'])
+		{
+			$webixJS.="editable:true,\n"
+				.'editaction:"dblclick",'."\n";
+		}
+		if (isset($arData['leftSplit']) && intval($arData['leftSplit'])>0)
+		{
+			$webixJS.='leftSplit:'.$arData['leftSplit'].",\n";
+		}
+		if (isset($arData['rightSplit']) && intval($arData['rightSplit'])>0)
+		{
+			$webixJS.='rightSplit:'.$arData['rightSplit'].",\n";
+		}
+		if (isset($arData['minHeight']) && intval($arData['minHeight'])>0)
+		{
+			$webixJS.='minHeight:'.$arData['minHeight'].",\n";
+		}
+		else
+		{
+			$webixJS.='minHeight:50,'."\n";
+		}
+		if (isset($arData['footer']) && $arData['footer'])
+		{
+			$webixJS.="footer:true,\n";
+		}
+		if (isset($arData['tooltip']) && $arData['tooltip'])
+		{
+			$webixJS.="tooltip:true,\n";
+		}
+		if (isset($arData['pager']))
+		{
+			$webixJS.="pager:\n".'{template:"';
+			//Первая страница
+			if (!isset($arData['pager']['first']) || $arData['pager']['first'])
+				$webixJS.='{common.first()} ';
+			//Предыдущая страница
+			if (!isset($arData['pager']['prev']) || $arData['pager']['prev'])
+				$webixJS.='{common.prev()} ';
+			//Страницы
+			$webixJS.='{common.pages()} ';
+			//Следущая
+			if (!isset($arData['pager']['next']) || $arData['pager']['next'])
+				$webixJS.='{common.next()} ';
+			//Последняя страница
+			if (!isset($arData['pager']['last']) || $arData['pager']['last'])
+				$webixJS.='{common.last()}';
+
+			if (!isset($arData['pager']['container']))
+			{
+				//$arData['pager']['container'] = "pagination";
+				$arData['pager']['container'] = trim($arData['container']);
+			}
+			if (!isset($arData['pager']['size']) || intval($arData['pager']['size'])<=0)
+			{
+				$arData['pager']['size'] = 20;
+			}
+			if (!isset($arData['pager']['group']) || intval($arData['pager']['group'])<=0)
+			{
+				$arData['pager']['group'] = 5;
+			}
+
+			$webixJS.='",'."\n"
+				.'container:"'.$arData['pager']['container']
+				.'",size:'.$arData['pager']['size']
+				.',group:'.$arData['pager']['group']
+				.'},'."\n";
+		}
+		if (isset($arData['width']) && $arData['width']>0)
+		{
+			$webixJS.='width:'.$arData['width'].','."\n";
+		}
 			//."activeContent:{\n"
 			//."deleteButton:{\n"
 			//.'id:"deleteButtonId",'."\n".'view:"button",'."\n"
@@ -79,11 +165,27 @@ class Webix
 			//."editButton:{\n"
 			//.'id:"editButtonId",'."\n".'view:"button",'."\n"
 			//.'label:"Edit",'."\n".'width:50,click:editClick}},'."\n"
-			."on:{\nonAfterLoad:function(){\nif (!this.count())\n"
+		$webixJS.="on:{\nonAfterLoad:function(){\nif (!this.count())\n"
 			.'this.showOverlay("Нет данных для отображения...");'."\n"
-			."}\n},\n"
-			//.'width:1000,'."\n"
-			."columns:[";
+			."}\n},\n";
+/*		$webixJS.="on:{\n"
+			.'"onItemClick":function(id, e, trg){'."\n"
+			//id.column - column id
+			//id.row - row id
+			.'if (id.column=="point_name") {'
+			.'webix.message("Click on row: " + id.row+", column: " + id.column);'."\n"
+			.'var item = fuelGrid.getItem(id.row); '
+			.'var lat = item.point_latitude; '
+			.'var long = item.point_longitude; '
+			.'var yandexMap = item.yandex_map; ';
+			//.'console.log(lat);'
+			//.'window.open("https://static-maps.yandex.ru/1.x/?l=map&z=12&size=600,450&pt="+long+","+lat+",pm2blm");'
+		$webixJS.='winYandexMap.body = {template:yandexMap};';
+			//.'console.log(winYandexMap);'
+		$webixJS.='console.log(winYandexMap.body);';
+		$webixJS.='winYandexMap.show();'
+			."}}},\n";*/
+		$webixJS.="columns:[";
 		$bFirst = true;
 		foreach ($arData['columns'] as $arColumns)
 		{
@@ -165,18 +267,8 @@ class Webix
 		}
 		$webixJS.= "]\n";
 
-/*		$json = array(
-			'container' => trim($arData['container']),
-			'view' => "datatable",
-			'columns' => $arData['columns'],
-			'autoheight' => true,
-			'autowidth' => true,
-			'data' => json_encode($arData['data'])
-		);*/
-		//$webixJS.= json_encode($json);
 		$webixJS.= '});';
 
-		//echo "<pre>"; var_dump($webixJS); echo "</pre>";
 		Buffer::addWebixJs($webixJS, $arData['grid']);
 		Buffer::addCSS(static::$otherCssCatalog.'samples.css');
 	}

@@ -1313,25 +1313,35 @@ class Query
 		$bFirst = true;
 		foreach ($arUpdate as $field=>$value)
 		{
-			if (isset($arMap[$field]))
+			try
 			{
-				$columnName = $arMap[$field]->getColumnName();
-				if ($bFirst)
+				if (isset($arMap[$field]))
 				{
-					$bFirst = false;
+					$columnName = $arMap[$field]->getColumnName();
+					if ($bFirst)
+					{
+						$bFirst = false;
+					}
+					else
+					{
+						$sql .= ",\n";
+					}
+					$sql .= "\t".$helper->wrapQuotes($columnName)." = '";
+
+					$value = $arMap[$field]->saveDataModification($value);
+					$sql .= $value;
+
+					$sql .= "'";
 				}
 				else
 				{
-					$sql .= ",\n";
+					throw new Exception\ArgumentOutOfRangeException('arUpdate['.$field.']');
 				}
-				$sql .= "\t".$helper->wrapQuotes($columnName)." = '";
-
-				$value = $arMap[$field]->saveDataModification($value);
-				$sql .= $value;
-
-				$sql .= "'";
 			}
-
+			catch (Exception\ArgumentOutOfRangeException $e_out)
+			{
+				$e_out->showException();
+			}
 		}
 		$sql .= "\nWHERE\n\t".$helper->wrapQuotes($this->getTableName());
 		$sql .= ".".$helper->wrapQuotes($primaryField)." =";
@@ -1574,6 +1584,25 @@ class Query
 
 	protected function maskField ($field=null)
 	{
+		static $triple_char = array(
+			"!><" => "NB",  //not between
+		);
+		static $double_char = array(
+			"!=" => "NI",   //not Identical
+			"!%" => "NS",   //not substring
+			"><" => "B",    //between
+			">=" => "GE",   //greater or equal
+			"<=" => "LE",   //less or equal
+		);
+		static $single_char = array(
+			"=" => "I",     //Identical
+			"%" => "S",     //substring
+			"?" => "?",     //logical
+			">" => "G",     //greater
+			"<" => "L",     //less
+			"!" => "N",     //not field LIKE val
+		);
+
 		try
 		{
 			if (is_null($field))
@@ -1587,7 +1616,20 @@ class Query
 			return false;
 		}
 
-		$arMask = array();
+		$op = substr($field,0,3);
+		if ($op && isset($triple_char[$op]))
+			return array("field"=>substr($field,3),"mask"=>$op,"operation"=>$triple_char[$op]);
+		$op = substr($field,0,2);
+		if ($op && isset($double_char[$op]))
+			return array("field"=>substr($field,2),"mask"=>$op,"operation"=>$double_char[$op]);
+		$op = substr($field,0,1);
+		if ($op && isset($single_char[$op]))
+			return array("field"=>substr($field,1),"mask"=>$op,"operation"=>$single_char[$op]);
+
+		//return array("field"=>$field,"mask"=>$op,"operation"=>$single_char[$op]);
+		return false;
+
+/*		$arMask = array();
 		$arMask['field'] = $field;
 		$first = substr($field,0,1);
 		$count = strlen($field);
@@ -1619,7 +1661,7 @@ class Query
 		else
 		{
 			return false;
-		}
+		}*/
 
 	}
 }

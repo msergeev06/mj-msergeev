@@ -11,6 +11,7 @@ use MSergeev\Core\Lib\Options;
 use MSergeev\Core\Lib\SqlHelper;
 use MSergeev\Core\Lib\Tools;
 use MSergeev\Core\Lib\Webix;
+use MSergeev\Core\Lib\WebixHelper;
 use MSergeev\Packages\Icar\Tables;
 
 class Fuel
@@ -247,7 +248,195 @@ class Fuel
 			$arData['POINTS_ID'] = Points::createNewPoint($arPoint);
 		}
 
-		//return static::addFuel($arData);
+		return static::addFuel($arData);
+	}
+
+	public static function updateFuelFromPost ($post=null)
+	{
+		try
+		{
+			if (is_null($post))
+			{
+				throw new Exception\ArgumentNullException('post');
+			}
+			if (!isset($post['id']))
+			{
+				throw new Exception\ArgumentNullException('post[id]');
+			}
+			elseif (intval($post['id'])<=0)
+			{
+				throw new Exception\ArgumentOutOfRangeException('post[id]',1);
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			die($e->showException());
+		}
+		catch (Exception\ArgumentOutOfRangeException $e2)
+		{
+			die ($e2->showException());
+		}
+
+		$arFuel = static::getFuelList(null,intval($post['id']));
+		$arFuel = $arFuel[0];
+
+		$arUpdate = array();
+		if (isset($post['my_car']) && intval($post['my_car'])!=intval($arFuel['MY_CAR_ID']))
+		{
+			$arUpdate['MY_CAR_ID'] = intval($post['my_car']);
+		}
+		if (isset($post['date']) && $post['date'] != $arFuel['DATE'])
+		{
+			$arUpdate['DATE'] = $post['date'];
+		}
+		if (isset($post['odo']))
+		{
+			if (floatval($post['odo'])==0)
+			{
+				$odo = MyCar::getBuyCarOdo($arUpdate['MY_CAR_ID']);
+			}
+			else
+			{
+				$odo = floatval($post['odo']);
+			}
+
+			if ($odo != $arFuel['ODO'])
+			{
+				$arUpdate['ODO'] = $odo;
+			}
+		}
+		if (isset($post['fuel_mark']) && intval($post['fuel_mark']) != intval($arFuel['FUELMARK_ID']))
+		{
+			$arUpdate['FUELMARK_ID'] = intval($post['fuel_mark']);
+		}
+		if (isset($post['liters']) && floatval($post['liters']) != floatval($arFuel['LITER']))
+		{
+			$arUpdate['LITER'] = floatval($post['liters']);
+		}
+		if (isset($post['cost_liter']) && floatval($post['cost_liter']) != floatval($arFuel['LITER_COST']))
+		{
+			$arUpdate['LITER_COST'] = floatval($post['cost_liter']);
+		}
+		$sum = floatval($arFuel['LITER'] * $arFuel['LITER_COST']);
+		if ($sum != $arFuel['SUM'])
+		{
+			$arUpdate['SUM'] = $sum;
+		}
+		if (isset($post['full_tank']) && intval($post['full_tank']) == 1)
+		{
+			$full = true;
+		}
+		else
+		{
+			$full = false;
+		}
+		if ($full !== $arFuel['FULL'])
+		{
+			$arUpdate['FULL'] = $full;
+		}
+/*		$expence = static::recalculateExpence($arFuel);
+		if ($expence != $arFuel['EXPENCE'])
+		{
+			$arUpdate['EXPENCE'] = $expence;
+		}*/
+		if (isset($post['comment']) && $post['comment'] != $arFuel['INFO'])
+		{
+			$arUpdate['DESCRIPTION'] = trim($post['comment']);
+		}
+		if (
+			isset($post['fuel_point'])
+			&& intval($post['fuel_point'])>0
+			&& intval($post['fuel_point']) != intval($arFuel['POINTS_ID'])
+		)
+		{
+			$arUpdate['POINTS_ID'] = intval($post['fuel_point']);
+		}
+		elseif ($post['fuel_point']=='NULL')
+		{
+			$arPoint = array();
+			if (isset($post['newpoint_name']) && strlen($post['newpoint_name'])>3)
+			{
+				$arPoint['NAME'] = $post['newpoint_name'];
+			}
+			else
+			{
+				$arPoint['NAME'] = '[auto] АЗС';
+			}
+			if (isset($post['newpoint_address']) && strlen($post['newpoint_address'])>5)
+			{
+				$arPoint['ADDRESS'] = $post['newpoint_address'];
+			}
+			if (
+				(isset($post['newpoint_lat']) && strlen($post['newpoint_lat'])>2)
+				&& (isset($post['newpoint_lon']) && strlen($post['newpoint_lon'])>2)
+			)
+			{
+				$arPoint['LON'] = $post['newpoint_lon'];
+				$arPoint['LAT'] = $post['newpoint_lat'];
+			}
+			$arPoint['TYPE'] = Points::getPointTypeIdByCode('fuel');
+			$arUpdate['POINTS_ID'] = Points::createNewPoint($arPoint);
+		}
+
+		if (!empty($arUpdate))
+		{
+			$query = new Query('update');
+			$query->setUpdatePrimary($post['id']);
+			$query->setTableMap(Tables\FuelTable::getMapArray());
+			$query->setTableName(Tables\FuelTable::getTableName());
+			$query->setUpdateArray($arUpdate);
+			$res = $query->exec();
+			if ($res->getResult())
+			{
+				static::recalculateExpence($arFuel);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	public static function deleteFuel ($fuelID=null)
+	{
+		try
+		{
+			if (is_null($fuelID))
+			{
+				throw new Exception\ArgumentNullException('fuelID');
+			}
+			if (intval($fuelID)<=0)
+			{
+				throw new Exception\ArgumentOutOfRangeException('fuelID',1);
+			}
+		}
+		catch (Exception\ArgumentNullException $e)
+		{
+			die ($e->showException());
+		}
+
+		$query = new Query('delete');
+		$query->setDeletePrimary($fuelID);
+		$query->setDeleteConfirm(true);
+		$query->setTableName(Tables\FuelTable::getTableName());
+		$query->setTableMap(Tables\FuelTable::getMapArray());
+		$query->setTableLinks(Tables\FuelTable::getTableLinks());
+		$res = $query->exec();
+		if ($res->getResult())
+		{
+			//static::recalculateExpence();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
 	}
 
 	/**
@@ -280,11 +469,22 @@ class Fuel
 		}
 	}
 
-	public static function getFuelList ($carID=null,$limit=0,$offset=0)
+	public static function getFuelList ($carID=null,$getID=null,$limit=0,$offset=0)
 	{
 		if (is_null($carID))
 		{
 			$carID = MyCar::getDefaultCarID();
+		}
+
+		if (!is_null($getID) && intval($getID)>0)
+		{
+			$arFilter["ID"] = intval($getID);
+			$limit = 1;
+		}
+		else
+		{
+			$arFilter['MY_CAR_ID'] = $carID;
+
 		}
 
 		$arList = array(
@@ -304,21 +504,24 @@ class Fuel
 				'EXPENCE',
 				'POINTS_ID',
 				'POINTS_ID.NAME' => 'POINT_NAME',
+				'POINTS_ID.LATITUDE' => 'POINT_LATITUDE',
+				'POINTS_ID.LONGITUDE' => 'POINT_LONGITUDE',
 				'POINTS_ID.POINT_TYPES_ID' => 'POINT_TYPE_ID',
 				'POINTS_ID.POINT_TYPES_ID.NAME' => 'POINT_TYPE_NAME',
 				'DESCRIPTION' => 'INFO'
 			),
-			'filter' => array(
-				'MY_CAR_ID' => $carID
-			),
+			'filter' => $arFilter,
 			'order' => array(
 				'DATE' => 'ASC',
 				'ID' => 'ASC'
 			)
 		);
-		if ($limit>0)
+		if ($limit > 0)
 		{
 			$arList['limit'] = $limit;
+		}
+		if ($offset > 0)
+		{
 			$arList['offset'] = $offset;
 		}
 
@@ -327,7 +530,9 @@ class Fuel
 		return $arRes;
 	}
 
-	public static function getFuelNumRows ($carID=null)
+
+
+/*	public static function getFuelNumRows ($carID=null)
 	{
 		if (is_null($carID))
 		{
@@ -343,7 +548,7 @@ class Fuel
 		$res = $query->exec();
 
 		return $res->getNumRows();
-	}
+	}*/
 
 	public static function showListTable ($carID = null, $div = null, $first=false)
 	{
@@ -351,6 +556,8 @@ class Fuel
 		{
 			$carID = MyCar::getDefaultCarID();
 		}
+
+		echo '<div id="fuelList"></div><div id="fuelPager"></div>';
 
 		$dateHelper = new DateHelper();
 		$arList = static::getFuelList($carID);
@@ -372,156 +579,46 @@ class Fuel
 				'full' => ($list['FULL'])?"Да":"-",
 				'expence' => "=".$list['EXPENCE'],
 				'point_name' => $list['POINT_NAME'],
+				'point_latitude' => $list['POINT_LATITUDE'],
+				'point_longitude' => $list['POINT_LONGITUDE'],
+				'yandex_map' => "<img src='https://static-maps.yandex.ru/1.x/?l=map&z=12&size=600,450&pt=".$list['POINT_LONGITUDE'].",".$list['POINT_LATITUDE'].",pm2blm'>",
 				'point_type' => $list['POINT_TYPE_NAME'],
 				'info' => (strlen($list['INFO'])>0)?"<img src='".$imgSrcPath."info.png'>":"",
 				'comment' => $list['INFO'],
 				'edit' => "<a href='edit.php?id=".$list['ID']."'><img src='".$imgSrcPath."edit.png'></a>",
 				'delete' => "<a href='delete.php?id=".$list['ID']."'><img src='".$imgSrcPath."delete.png'></a>"
-				//'edit' => '&nbsp;',
-				//'delete' => '&nbsp;'
 			);
 		}
 
-		$func = "function sortByTimestamp (a,b){\n\t"
-			."a=a.timestamp;\n\tb=b.timestamp;\n\treturn a>b?1:(a<b?-1:0);\n};\n\n";
-		Buffer::addWebixJs($func);
+		$webixHelper = new WebixHelper();
 
-/*		$func = "function editClick(id, e){\n\t"
-			."var item_id = $$('datatable').locate(e);\n\t"
-			.'webix.message("Edit "+item_id);'."}\n";
-		Buffer::addWebixJs($func);
-
-		$func = "function deleteClick(id, e){\n\t"
-			."var item_id = $$('datatable').locate(e);\n\t"
-			.'webix.message("Delete "+item_id);'."}\n";
-		Buffer::addWebixJs($func);*/
+		$webixHelper->addFunctionSoftByTimestamp();
 
 		$arData = array(
-			'grid' => 'grida',
-			'container' => 'testA',
+			'grid' => 'fuelGrid',
+			'container' => 'fuelList',
+			'footer' => true,
+			'tooltip' => true,
+			'pager' => array('container'=>'fuelPager'),
 			'columns' => array(
-				array(
-					'id' => "date",
-					'tooltip' => '=false',
-					'header' => "Дата",
-					//'width' => "=100",
-					'adjust'=>'=true',
-					'sort' => '=sortByTimestamp',
+				$webixHelper->getColumnArray('DATE',array(
 					'footer'=>'={text:"Итого:", colspan:3}'
-				),
-				array(
-					'id' => "odo",
-					'tooltip' => '=false',
-					'header' => "Пробег",
-					//'width' => "=100",
-					'adjust'=>'=true',
-					'sort' => 'int'
-					//'editor' => 'text'
-				),
-				array(
-					'id' => "fuelmark_name",
-					'tooltip' => '=false',
-					'header' => "Тип топлива",
-					//'width' => "=100",
-					'adjust'=>'=true',
-					'sort' => 'string'
-				),
-				array(
-					'id' => "liter",
-					'tooltip' => '=false',
-					'header' => "Литров",
-					//'width' => "=70",
-					'adjust'=>'=true',
-					'sort' => 'int',
-					'format' => '=webix.Number.numToStr({
-						groupDelimiter:" ",
-						groupSize:3,
-						decimalDelimiter:",",
-						decimalSize:2
-					})',
+				)),
+				$webixHelper->getColumnArray('ODO'),
+				$webixHelper->getColumnArray('FUELMARK_NAME'),
+				$webixHelper->getColumnArray('LITER',array(
 					'footer'=>'={ content:"summColumn" }'
-				),
-				array(
-					'id' => "liter_cost",
-					'tooltip' => '=false',
-					'header' => "р/л.",
-					//'width' => "=70",
-					'adjust'=>'=true',
-					'format' => '=webix.Number.numToStr({
-						groupDelimiter:" ",
-						groupSize:3,
-						decimalDelimiter:",",
-						decimalSize:2
-					})',
-					'sort' => 'int'
-				),
-				array(
-					'id' => "sum",
-					'tooltip' => '=false',
-					'header' => "Сумма",
-					//'width' => "=100",
-					'adjust'=>'=true',
-					'sort' => 'int',
-					'format' => '=webix.Number.numToStr({
-						groupDelimiter:" ",
-						groupSize:3,
-						decimalDelimiter:",",
-						decimalSize:2
-					})',
+				)),
+				$webixHelper->getColumnArray('LITER_COST'),
+				$webixHelper->getColumnArray('LITER_COST_SUM',array(
 					'footer'=>'={ content:"summColumn" }'
-				),
-				array(
-					'id' => "full",
-					'tooltip' => '=false',
-					'header' => "Полный",
-					//'width' => "=70"
-					'adjust'=>'=true'
-				),
-				array(
-					'id' => "expence",
-					'tooltip' => '=false',
-					'header' => "Расход",
-					//'width' => "=70",
-					'adjust'=>'=true',
-					'format' => '=webix.Number.numToStr({
-						groupDelimiter:" ",
-						groupSize:3,
-						decimalDelimiter:",",
-						decimalSize:2
-					})',
-					'sort' => 'int'
-				),
-				array(
-					'id' => "point_name",
-					'tooltip' => 'Имя точки: #point_name#<br>Тип точки: #point_type#',
-					'header' => "Точка",
-					//'width' => "=200",
-					'adjust'=>'=true',
-					'sort' => 'string'
-				),
-				array(
-					'id' => "info",
-					'tooltip' => "#comment#",
-					'header' => "Инфо",
-					//'width' => "=50"
-					'adjust'=>'=true'
-				),
-				array(
-					'id' => "edit",
-					'tooltip' => "Редактировать запись",
-					'header' => "",
-					//'width' => "=50"
-					'adjust'=>'=true'
-					//'template' => "<div class='buttons'>{common.editButton()}</div>"
-				),
-				array(
-					'id' => "delete",
-					'tooltip' => "Удалить запись",
-					'header' => "",
-					//'width' => "=50"
-					'adjust'=>'=true'
-					//'template' => "<div class='buttons'>{common.deleteButton()}</div>"
-				)
+				)),
+				$webixHelper->getColumnArray('FULL'),
+				$webixHelper->getColumnArray('EXPENCE'),
+				$webixHelper->getColumnArray('POINT'),
+				$webixHelper->getColumnArray('INFO'),
+				$webixHelper->getColumnArray('EDIT'),
+				$webixHelper->getColumnArray('DELETE')
 			),
 			'data' => $arDatas
 		);
