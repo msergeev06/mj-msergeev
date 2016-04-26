@@ -310,6 +310,12 @@ class Query
 		return $this->query_build_parts;
 	}
 
+	/**
+	 * setInsertArray
+	 *
+	 * @deprecated use setInsertParams()
+	 * @param $array
+	 */
 	public function setInsertArray ($array)
 	{
 		$this->insertArray = $array;
@@ -340,6 +346,12 @@ class Query
 		return $this->table_alias_postfix;
 	}
 
+	/**
+	 * setUpdateArray
+	 *
+	 * @deprecated use setUpdateParams()
+	 * @param $array
+	 */
 	public function setUpdateArray($array)
 	{
 		$this->updateArray = $array;
@@ -350,6 +362,12 @@ class Query
 		return $this->updateArray;
 	}
 
+	/**
+	 * setUpdatePrimary
+	 *
+	 * @deprecated use setUpdateParams()
+	 * @param $primary
+	 */
 	public function setUpdatePrimary ($primary)
 	{
 		$this->updatePrimary = $primary;
@@ -360,6 +378,12 @@ class Query
 		return $this->updatePrimary;
 	}
 
+	/**
+	 * setDeletePrimary
+	 *
+	 * @deprecated use setDeleteParams()
+	 * @param $primary
+	 */
 	public function setDeletePrimary ($primary)
 	{
 		$this->deletePrimary = $primary;
@@ -370,6 +394,12 @@ class Query
 		return $this->deletePrimary;
 	}
 
+	/**
+	 * setDeleteConfirm
+	 *
+	 * @deprecated use setDeleteParams()
+	 * @param bool $confirm
+	 */
 	public function setDeleteConfirm ($confirm=false)
 	{
 		$this->deleteConfirm = $confirm;
@@ -388,6 +418,58 @@ class Query
 	public function getTableLinks ()
 	{
 		return $this->tableLinks;
+	}
+
+	public function setInsertParams($insertArray=null,$tableName=null,$tableMapArray=null)
+	{
+		if (!is_null($insertArray))
+		{
+			$this->setInsertArray(array($insertArray));
+		}
+		if (!is_null($tableName))
+		{
+			$this->setTableName($tableName);
+		}
+		if (!is_null($tableMapArray))
+		{
+			$this->setTableMap($tableMapArray);
+		}
+	}
+
+	public function setUpdateParams ($updateArray=null,$updatePrimary=null,$tableMapArray=null)
+	{
+		if (!is_null($updateArray))
+		{
+			$this->setUpdateArray($updateArray);
+		}
+		if (!is_null($updatePrimary))
+		{
+			$this->setUpdatePrimary($updatePrimary);
+		}
+		if (!is_null($tableMapArray))
+		{
+			$this->setTableMap($tableMapArray);
+		}
+	}
+
+	public function setDeleteParams ($deletePrimary=null,$deleteConfirm=null,$tableMapArray=null,$tableLinks=null)
+	{
+		if (!is_null($deletePrimary))
+		{
+			$this->setDeletePrimary($deletePrimary);
+		}
+		if (!is_null($deleteConfirm))
+		{
+			$this->setDeleteConfirm($deleteConfirm);
+		}
+		if (!is_null($tableMapArray))
+		{
+			$this->setTableMap($tableMapArray);
+		}
+		if (!is_null($tableLinks))
+		{
+			$this->setTableLinks($tableLinks);
+		}
 	}
 
 	/**
@@ -1136,7 +1218,7 @@ class Query
 		$arDefaultValues = $this->getInsertArray();
 		$tableName = $this->getTableName();
 		$arMapArray = $this->getTableMap();
-		//msDebug($arDefaultValues);
+		//msDebug($tableName);
 		$sql = "";
 
 		$bFFirts = true;

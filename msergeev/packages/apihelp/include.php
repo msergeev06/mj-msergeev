@@ -13,5 +13,5 @@ Config::addConfig('APIHELP_PUBLIC_ROOT',Config::getConfig('PUBLIC_ROOT')."apihel
 Loader::includeFiles(Config::getConfig('APIHELP_ROOT')."tables/");
 
 //***** Lib ********
-//Loader::includeFiles(Config::getConfig('APIHELP_ROOT')."lib/");
+Loader::includeFiles(Config::getConfig('APIHELP_ROOT')."lib/");
 
