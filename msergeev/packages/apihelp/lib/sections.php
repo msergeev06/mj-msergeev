@@ -7,13 +7,12 @@ use MSergeev\Core\Lib as CoreLib;
 
 class Sections extends CoreLib\Sections
 {
+	protected static $tableName = "ms_apihelp_sections";
+	protected static $selectFields = array('ID','ACTIVE','SORT','NAME','LEFT_MARGIN','RIGHT_MARGIN','DEPTH_LEVEL','PARENT_SECTION_ID','DESCRIPTION','DESCRIPTION_TYPE');
+
 	public static function showSelect ($bActive=true)
 	{
-		$arSections = parent::getTreeList(
-			'ms_apihelp_sections',
-			array('DESCRIPTION','DESCRIPTION_TYPE'),
-			$bActive
-		);
+		$arSections = static::getTreeList($bActive);
 
 		$options = "";
 		foreach ($arSections as $arSection)
@@ -53,9 +52,9 @@ class Sections extends CoreLib\Sections
 			{
 				throw new Exception\ArgumentNullException('arParams[NAME]');
 			}
-			if (!isset($arParams['PARENT']) || intval($arParams['PARENT'])<0)
+			if (!isset($arParams['PARENT_SECTION_ID']) || intval($arParams['PARENT_SECTION_ID'])<0)
 			{
-				throw new Exception\ArgumentNullException('arParams[PARENT]');
+				throw new Exception\ArgumentNullException('arParams[PARENT_SECTION_ID]');
 			}
 		}
 		catch (Exception\ArgumentNullException $e)

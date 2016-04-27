@@ -19,9 +19,7 @@ class SectionsTable extends Lib\DataManager
 	{
 		return array(
 			'ID' => array(
-				'ms_apihelp_sections' => 'PARENT',
-				'ms_apihelp_sections' => 'LEFT_MARGIN',
-				'ms_apihelp_sections' => 'RIGHT_MARGIN',
+				'ms_apihelp_sections' => 'PARENT_SECTION_ID',
 				'ms_apihelp_pages' => 'SECTION_ID'
 			)
 		);
@@ -45,7 +43,7 @@ class SectionsTable extends Lib\DataManager
 				'default_value' => 0,
 				'title' => 'Уровень вложенности раздела'
 			)),
-			new Entity\IntegerField('PARENT',array(
+			new Entity\IntegerField('PARENT_SECTION_ID',array(
 				'required' => true,
 				'default_value' => 0,
 				'link' => 'ms_apihelp_sections.ID',
@@ -54,13 +52,11 @@ class SectionsTable extends Lib\DataManager
 			new Entity\IntegerField('LEFT_MARGIN',array(
 				'required' => true,
 				'default_value' => 0,
-				'link' => 'ms_apihelp_sections.ID',
 				'title' => 'Левая граница'
 			)),
 			new Entity\IntegerField('RIGHT_MARGIN',array(
 				'required' => true,
 				'default_value' => 0,
-				'link' => 'ms_apihelp_sections.ID',
 				'title' => 'Правая граница'
 			)),
 			new Entity\TextField('DESCRIPTION',array(
