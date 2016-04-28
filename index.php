@@ -67,14 +67,14 @@ msDebug($res);
 //$res = MSergeev\Packages\Apihelp\Tables\SectionsTable::createTable();
 //$res = MSergeev\Packages\Apihelp\Tables\PagesTable::createTable();
 //$res = MSergeev\Core\Tables\SectionsTable::createTable();
-$arSection = array(
+/*$arSection = array(
 	'ACTIVE' => true,
-	'SORT' => 100,
-	'NAME' => 'Музыка',
-	'PARENT_SECTION_ID' => 0
-);
-$res = MSergeev\Core\Lib\Sections::addSection($arSection);
-msDebug($res);
+	'SORT' => 500,
+	'NAME' => 'Аткенсон, Рон',
+	'PARENT_SECTION_ID' => 9
+);*/
+//$res = MSergeev\Core\Lib\Sections::addSection($arSection);
+//msDebug($res);
 
 
 
