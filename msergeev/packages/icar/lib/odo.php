@@ -282,9 +282,11 @@ class Odo
 		}
 
 		$query = new Query('insert');
-		$query->setTableName(Tables\RoutsTable::getTableName());
-		$query->setTableMap(Tables\RoutsTable::getMapArray());
-		$query->setInsertArray(array(0=>$arData));
+		$query->setInsertParams(
+			array(0=>$arData),
+			Tables\RoutsTable::getTableName(),
+			Tables\RoutsTable::getMapArray()
+		);
 		$res = $query->exec();
 		if ($res->getResult())
 		{
@@ -480,10 +482,12 @@ class Odo
 				if ($odo != $arResult['ODO_TABLE'][$day]['ODO'])
 				{
 					$query = new Query('update');
-					$query->setTableMap(Tables\OdoTable::getMapArray());
-					$query->setTableName(Tables\OdoTable::getTableName());
-					$query->setUpdatePrimary($arResult['ODO_TABLE'][$day]['ID']);
-					$query->setUpdateArray(array('ODO' => $odo));
+					$query->setUpdateParams(
+						array('ODO' => $odo),
+						$arResult['ODO_TABLE'][$day]['ID'],
+						Tables\OdoTable::getTableName(),
+						Tables\OdoTable::getMapArray()
+					);
 					$res = $query->exec();
 					$arResult['UPDATED'][$day] = $res->getResult();
 				}
@@ -491,14 +495,16 @@ class Odo
 			else
 			{
 				$query = new Query('insert');
-				$query->setTableMap(Tables\OdoTable::getMapArray());
-				$query->setTableName(Tables\OdoTable::getTableName());
 				$arInsert[0] = array(
 					'MY_CAR_ID' => $carID,
 					'DATE' => $day,
 					'ODO' => $odo
 				);
-				$query->setInsertArray($arInsert);
+				$query->setInsertParams(
+					$arInsert,
+					Tables\OdoTable::getTableName(),
+					Tables\OdoTable::getMapArray()
+				);
 				$res = $query->exec();
 				$arResult['INSERTED'][$day] = $res->getInsertId();
 			}

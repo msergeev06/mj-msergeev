@@ -81,7 +81,7 @@ class Query
 
 	public function __construct($type)
 	{
-		$this->type = $type;
+		$this->setType($type);
 	}
 
 	public function getFieldsEntity ()
@@ -94,7 +94,7 @@ class Query
 	 *
 	 * @param string $type
 	 */
-	public function setType ($type)
+	private function setType ($type)
 	{
 		$this->type = $type;
 	}
@@ -127,7 +127,7 @@ class Query
 	 *
 	 * @return array $this->select
 	 */
-	public function getSelect ()
+	private function getSelect ()
 	{
 		return $this->select;
 	}
@@ -147,7 +147,7 @@ class Query
 	 *
 	 * @return null|string $this->table_name
 	 */
-	public function getTableName ()
+	private function getTableName ()
 	{
 		return $this->table_name;
 	}
@@ -167,7 +167,7 @@ class Query
 	 *
 	 * @return null|string $this->primary_key
 	 */
-	public function getPrimaryKey ()
+	private function getPrimaryKey ()
 	{
 		return $this->primary_key;
 	}
@@ -200,7 +200,7 @@ class Query
 			$this->filter = $filter;
 	}
 
-	public function getFilter ()
+	private function getFilter ()
 	{
 		return $this->filter;
 	}
@@ -211,7 +211,7 @@ class Query
 		$this->filter_logic = $logic;
 	}
 
-	public function getFilterLogic ()
+	private function getFilterLogic ()
 	{
 		return $this->filter_logic;
 	}
@@ -224,7 +224,7 @@ class Query
 			$this->where = $where;
 	}
 
-	public function getWhere ()
+	private function getWhere ()
 	{
 		return $this->where;
 	}
@@ -237,7 +237,7 @@ class Query
 			$this->group = $group;
 	}
 
-	public function getGroup ()
+	private function getGroup ()
 	{
 		return $this->group;
 	}
@@ -275,7 +275,7 @@ class Query
 		$this->limit = $limit;
 	}
 
-	public function getLimit ()
+	private function getLimit ()
 	{
 		return $this->limit;
 	}
@@ -285,7 +285,7 @@ class Query
 		$this->offset = $offset;
 	}
 
-	public function getOffset ()
+	private function getOffset ()
 	{
 		return $this->offset;
 	}
@@ -295,7 +295,7 @@ class Query
 		$this->runtime = $runtime;
 	}
 
-	public function getRuntime ()
+	private function getRuntime ()
 	{
 		return $this->runtime;
 	}
@@ -310,28 +310,22 @@ class Query
 		return $this->query_build_parts;
 	}
 
-	/**
-	 * setInsertArray
-	 *
-	 * @deprecated use setInsertParams()
-	 * @param $array
-	 */
-	public function setInsertArray ($array)
+	private function setInsertArray ($array)
 	{
 		$this->insertArray = $array;
 	}
 
-	public function getInsertArray ()
+	private function getInsertArray ()
 	{
 		return $this->insertArray;
 	}
 
-	public function setAutoIncrement ($autoI)
+	private function setAutoIncrement ($autoI)
 	{
 		$this->autoIncrement = $autoI;
 	}
 
-	public function getAutoIncrement ()
+	private function getAutoIncrement ()
 	{
 		return $this->autoIncrement;
 	}
@@ -341,81 +335,57 @@ class Query
 		$this->table_alias_postfix = $alias;
 	}
 
-	public function getTableAliasPostfix ()
+	private function getTableAliasPostfix ()
 	{
 		return $this->table_alias_postfix;
 	}
 
-	/**
-	 * setUpdateArray
-	 *
-	 * @deprecated use setUpdateParams()
-	 * @param $array
-	 */
-	public function setUpdateArray($array)
+	private function setUpdateArray($array)
 	{
 		$this->updateArray = $array;
 	}
 
-	public function getUpdateArray()
+	private function getUpdateArray()
 	{
 		return $this->updateArray;
 	}
 
-	/**
-	 * setUpdatePrimary
-	 *
-	 * @deprecated use setUpdateParams()
-	 * @param $primary
-	 */
-	public function setUpdatePrimary ($primary)
+	private function setUpdatePrimary ($primary)
 	{
 		$this->updatePrimary = $primary;
 	}
 
-	public function getUpdatePrimary ()
+	private function getUpdatePrimary ()
 	{
 		return $this->updatePrimary;
 	}
 
-	/**
-	 * setDeletePrimary
-	 *
-	 * @deprecated use setDeleteParams()
-	 * @param $primary
-	 */
-	public function setDeletePrimary ($primary)
+	private function setDeletePrimary ($primary)
 	{
 		$this->deletePrimary = $primary;
 	}
 
-	public function getDeletePrimary ()
+	private function getDeletePrimary ()
 	{
 		return $this->deletePrimary;
 	}
 
-	/**
-	 * setDeleteConfirm
-	 *
-	 * @deprecated use setDeleteParams()
-	 * @param bool $confirm
-	 */
-	public function setDeleteConfirm ($confirm=false)
+	private function setDeleteConfirm ($confirm=false)
 	{
 		$this->deleteConfirm = $confirm;
 	}
 
-	public function getDeleteConfirm ()
+	private function getDeleteConfirm ()
 	{
 		return $this->deleteConfirm;
 	}
 
-	public function setTableLinks ($arLinks)
+	private function setTableLinks ($arLinks)
 	{
 		$this->tableLinks = $arLinks;
 	}
 
-	public function getTableLinks ()
+	private function getTableLinks ()
 	{
 		return $this->tableLinks;
 	}
@@ -436,7 +406,7 @@ class Query
 		}
 	}
 
-	public function setUpdateParams ($updateArray=null,$updatePrimary=null,$tableMapArray=null)
+	public function setUpdateParams ($updateArray=null,$updatePrimary=null,$tableName=null,$tableMapArray=null)
 	{
 		if (!is_null($updateArray))
 		{
@@ -446,13 +416,17 @@ class Query
 		{
 			$this->setUpdatePrimary($updatePrimary);
 		}
+		if (!is_null($tableName))
+		{
+			$this->setTableName($tableName);
+		}
 		if (!is_null($tableMapArray))
 		{
 			$this->setTableMap($tableMapArray);
 		}
 	}
 
-	public function setDeleteParams ($deletePrimary=null,$deleteConfirm=null,$tableMapArray=null,$tableLinks=null)
+	public function setDeleteParams ($deletePrimary=null,$deleteConfirm=null,$tableName=null,$tableMapArray=null,$tableLinks=null)
 	{
 		if (!is_null($deletePrimary))
 		{
@@ -462,6 +436,10 @@ class Query
 		{
 			$this->setDeleteConfirm($deleteConfirm);
 		}
+		if (!is_null($tableName))
+		{
+			$this->setTableName($tableName);
+		}
 		if (!is_null($tableMapArray))
 		{
 			$this->setTableMap($tableMapArray);
@@ -469,6 +447,22 @@ class Query
 		if (!is_null($tableLinks))
 		{
 			$this->setTableLinks($tableLinks);
+		}
+	}
+
+	public function setCreateParams ($autoIncrement=null,$tableName=null,$arMapArray=null)
+	{
+		if (!is_null($autoIncrement))
+		{
+			$this->setAutoIncrement($autoIncrement);
+		}
+		if (!is_null($tableName))
+		{
+			$this->setTableName($tableName);
+		}
+		if (!is_null($arMapArray))
+		{
+			$this->setTableMap($arMapArray);
 		}
 	}
 
@@ -502,7 +496,7 @@ class Query
 		}
 	}
 
-	protected function BuildQuery ()
+	private function BuildQuery ()
 	{
 		try
 		{
@@ -538,7 +532,7 @@ class Query
 		return $sql;
 	}
 
-	protected function CreateSqlSelect ()
+	private function CreateSqlSelect ()
 	{
 		$helper = new Lib\SqlHelper();
 		$sqlSelect = "SELECT\n\t";
@@ -765,7 +759,7 @@ class Query
 		return $sqlSelect."\n";
 	}
 
-	protected function CreateSqlFrom ()
+	private function CreateSqlFrom ()
 	{
 		$sqlFrom = "FROM\n\t";
 		$helper = new Lib\SqlHelper();
@@ -802,7 +796,7 @@ class Query
 		return $sqlFrom."\n";
 	}
 
-	protected function CreateSqlWhere ()
+	private function CreateSqlWhere ()
 	{
 		$sqlWhere = "";
 
@@ -1012,7 +1006,7 @@ class Query
 		return $sqlWhere;
 	}
 
-	protected function CreateSqlGroup ()
+	private function CreateSqlGroup ()
 	{
 		$sqlGroup = "";
 		$helper = new Lib\SqlHelper();
@@ -1039,7 +1033,7 @@ class Query
 		return $sqlGroup;
 	}
 
-	protected function CreateSqlOrder ()
+	private function CreateSqlOrder ()
 	{
 		$sqlOrder = "";
 		$helper = new Lib\SqlHelper();
@@ -1065,7 +1059,7 @@ class Query
 		return $sqlOrder;
 	}
 
-	protected function CreateSqlLimit ()
+	private function CreateSqlLimit ()
 	{
 		$sqlLimit = "";
 		if (!is_null($this->getLimit()))
@@ -1082,7 +1076,7 @@ class Query
 		return $sqlLimit;
 	}
 
-	protected function BuildQuerySelect ()
+	private function BuildQuerySelect ()
 	{
 		$sql = "";
 
@@ -1112,7 +1106,7 @@ class Query
 	 *
 	 * @return string $sql
 	 */
-	protected function BuildQueryCreate ()
+	private function BuildQueryCreate ()
 	{
 		$helper = new Lib\SqlHelper();
 		$arMap = $this->getTableMap();
@@ -1211,7 +1205,7 @@ class Query
 		return $sql;
 	}
 
-	protected function BuildQueryInsert ()
+	private function BuildQueryInsert ()
 	{
 		$helper = new Lib\SqlHelper ();
 
@@ -1360,7 +1354,7 @@ class Query
 
 	}
 
-	protected function BuildQueryUpdate ()
+	private function BuildQueryUpdate ()
 	{
 		$helper = new Lib\SqlHelper();
 		$arMap = $this->getTableMap();
@@ -1441,7 +1435,7 @@ class Query
 		return $sql;
 	}
 
-	protected function BuildQueryDelete ()
+	private function BuildQueryDelete ()
 	{
 		$helper = new Lib\SqlHelper();
 		$arMap = $this->getTableMap();
@@ -1496,7 +1490,7 @@ class Query
 	}
 
 	//TODO: Протестировать
-	protected function sqlMassDelete ($query=null)
+	private function sqlMassDelete ($query=null)
 	{
 		try
 		{
@@ -1538,10 +1532,13 @@ class Query
 							foreach ($arRes as $delID)
 							{
 								$deleteQuery = new Query('delete');
-								$deleteQuery->setDeletePrimary($delID);
-								$deleteQuery->setTableLinks(Lib\Tools::runTableClassFunction ($linkTable,'getTableLinks'));
-								$deleteQuery->setTableMap(Lib\Tools::runTableClassFunction ($linkTable,'getTableMap'));
-								$deleteQuery->setDeleteConfirm(true);
+								$deleteQuery->setDeleteParams(
+									$delID,
+									true,
+									null,
+									Lib\Tools::runTableClassFunction ($linkTable,'getTableMap'),
+									Lib\Tools::runTableClassFunction ($linkTable,'getTableLinks')
+								);
 								$deleteQuery->exec();
 							}
 						}
@@ -1562,10 +1559,13 @@ class Query
 						foreach ($arRes as $delID)
 						{
 							$deleteQuery = new Query('delete');
-							$deleteQuery->setDeletePrimary($delID);
-							$deleteQuery->setTableLinks(Lib\Tools::runTableClassFunction ($linkTable,'getTableLinks'));
-							$deleteQuery->setTableMap(Lib\Tools::runTableClassFunction ($linkTable,'getTableMap'));
-							$deleteQuery->setDeleteConfirm(true);
+							$deleteQuery->setDeleteParams(
+								$delID,
+								true,
+								Lib\Tools::runTableClassFunction ($linkTable,'getTableName'),
+								Lib\Tools::runTableClassFunction ($linkTable,'getTableMap'),
+								Lib\Tools::runTableClassFunction ($linkTable,'getTableLinks')
+							);
 							$deleteQuery->exec();
 						}
 					}
@@ -1602,7 +1602,7 @@ class Query
 	}
 
 	//TODO: Протестировать
-	protected function checkCanDelete($query=null)
+	private function checkCanDelete($query=null)
 	{
 		try
 		{
@@ -1664,7 +1664,7 @@ class Query
 		return $bCanDelete;
 	}
 
-	protected function maskField ($field=null)
+	private function maskField ($field=null)
 	{
 		static $triple_char = array(
 			"!><" => "NB",  //not between

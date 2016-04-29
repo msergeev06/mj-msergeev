@@ -80,13 +80,12 @@ class DataManager {
 
 	public static function add ($parameters)
 	{
-		$arMapArray = static::getMapArray();
-		$arInsertValues = $parameters["VALUES"];
-		$tableName = static::getTableName();
 		$query = static::query("insert");
-		$query->setTableName($tableName);
-		$query->setTableMap($arMapArray);
-		$query->setInsertArray($arInsertValues);
+		$query->setInsertParams(
+			$parameters["VALUES"],
+			static::getTableName(),
+			static::getMapArray()
+		);
 		$res = $query->exec();
 
 		return $res;
@@ -94,29 +93,27 @@ class DataManager {
 
 	public static function update ($primary, $parameters)
 	{
-		$arMapArray = static::getMapArray();
-		$arUpdateValues = $parameters["VALUES"];
-		$tableName = static::getTableName();
 		$query = static::query("update");
-		$query->setTableName($tableName);
-		$query->setTableMap($arMapArray);
-		$query->setUpdateArray($arUpdateValues);
-		$query->setUpdatePrimary($primary);
+		$query->setUpdateParams(
+			$parameters["VALUES"],
+			$primary,
+			static::getTableName(),
+			static::getMapArray()
+		);
 		$query->exec();
 
 	}
 
 	public static function delete ($primary,$confirm=false)
 	{
-		$arMapArray = static::getMapArray();
-		$tableName = static::getTableName();
-		$arLinks = static::getTableLinks();
 		$query = static::query("delete");
-		$query->setTableName($tableName);
-		$query->setTableMap($arMapArray);
-		$query->setDeletePrimary($primary);
-		$query->setDeleteConfirm($confirm);
-		$query->setTableLinks($arLinks);
+		$query->setDeleteParams(
+			$primary,
+			$confirm,
+			static::getTableName(),
+			static::getMapArray(),
+			static::getTableLinks()
+		);
 		$query->exec();
 	}
 
@@ -260,15 +257,15 @@ class DataManager {
 
 	public static function insertDefaultRows ()
 	{
-		$arMapArray = static::getMapArray();
 		$arDefaultValues = static::getArrayDefaultValues();
 		if (count($arDefaultValues)>0)
 		{
-			$tableName = static::getTableName();
 			$query = new Entity\Query("insert");
-			$query->setTableName($tableName);
-			$query->setTableMap($arMapArray);
-			$query->setInsertArray($arDefaultValues);
+			$query->setInsertParams(
+				$arDefaultValues,
+				static::getTableName(),
+				static::getMapArray()
+			);
 			$res = $query->exec();
 
 			return $res;
@@ -280,13 +277,13 @@ class DataManager {
 
 	public static function createTable ()
 	{
-		$arMap = static::getMapArray();
-		$tableName = static::getTableName();
 		$AUTO_INCREMENT = count(static::getArrayDefaultValues())+1;
 		$query = static::query("create");
-		$query->setTableName($tableName);
-		$query->setTableMap($arMap);
-		$query->setAutoIncrement($AUTO_INCREMENT);
+		$query->setCreateParams(
+			$AUTO_INCREMENT,
+			static::getTableName(),
+			static::getMapArray()
+		);
 		$res = $query->exec();
 
 		return $res;

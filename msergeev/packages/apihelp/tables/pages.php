@@ -15,6 +15,14 @@ class PagesTable extends Lib\DataManager
 	{
 		return 'Страницы помощи';
 	}
+	public static function getLinks()
+	{
+		return array(
+			'ID' => array(
+				'ms_apihelp_sections_pages' => 'SECTION_ID'
+			)
+		);
+	}
 	public static function getMap()
 	{
 		return array(
@@ -28,12 +36,6 @@ class PagesTable extends Lib\DataManager
 			new Entity\StringField('NAME',array(
 				'required' => true,
 				'title' => 'Название страницы'
-			)),
-			new Entity\IntegerField('SECTION_ID',array(
-				'required' => true,
-				'default' => 0,
-				'link' => 'ms_apihelp_sections.ID',
-				'title' => 'ID раздела'
 			)),
 			new Entity\TextField('DESCRIPTION',array(
 				'title' => 'Текст страницы'

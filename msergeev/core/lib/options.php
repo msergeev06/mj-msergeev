@@ -47,9 +47,11 @@ class Options {
 				)
 			);
 			$query = new Query('insert');
-			$query->setTableName(Tables\OptionsTable::getTableName());
-			$query->setTableMap(Tables\OptionsTable::getMap());
-			$query->setInsertArray($arInsert);
+			$query->setInsertParams(
+				$arInsert,
+				Tables\OptionsTable::getTableName(),
+				Tables\OptionsTable::getMap()
+			);
 			$res = $query->exec();
 			if ($res->getResult())
 			{

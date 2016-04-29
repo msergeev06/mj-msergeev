@@ -58,9 +58,11 @@ class CarModel
 				'NAME' => $modelName
 			);
 			$query = new Query('insert');
-			$query->setTableName(CarModelTable::getTableName());
-			$query->setTableMap(CarModelTable::getMapArray());
-			$query->setInsertArray($arInsert);
+			$query->setInsertParams(
+				$arInsert,
+				CarModelTable::getTableName(),
+				CarModelTable::getMapArray()
+			);
 			$res = $query->exec();
 
 			if ($res->getResult())

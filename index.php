@@ -73,7 +73,7 @@ msDebug($res);
 	'NAME' => 'Аткенсон, Рон',
 	'PARENT_SECTION_ID' => 9
 );*/
-//$res = MSergeev\Core\Lib\Sections::addSection($arSection);
+//$res = MSergeev\Core\Lib\Sections::activateSection(6);
 //msDebug($res);
 
 

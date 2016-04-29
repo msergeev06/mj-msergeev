@@ -242,9 +242,11 @@ class Points
 		);
 
 		$query = new Query('insert');
-		$query->setTableMap(Tables\PointsTable::getMapArray());
-		$query->setTableName(Tables\PointsTable::getTableName());
-		$query->setInsertArray($arAdd);
+		$query->setInsertParams(
+			$arAdd,
+			Tables\PointsTable::getTableName(),
+			Tables\PointsTable::getMapArray()
+		);
 		$res = $query->exec();
 		if ($res->getResult())
 		{

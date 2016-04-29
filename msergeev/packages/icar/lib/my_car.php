@@ -54,9 +54,11 @@ class MyCar
 		}
 
 		$query = new Query('insert');
-		$query->setTableName(MyCarTable::getTableName());
-		$query->setTableMap(MyCarTable::getMapArray());
-		$query->setInsertArray($arInsert);
+		$query->setInsertParams(
+			$arInsert,
+			MyCarTable::getTableName(),
+			MyCarTable::getMapArray()
+		);
 		$res = $query->exec();
 
 		return $res;
@@ -114,11 +116,17 @@ class MyCar
 		}
 
 		$query = new Query('update');
-		$query->setTableName(MyCarTable::getTableName());
-		$query->setTableMap(MyCarTable::getMapArray());
-		$query->setUpdateArray($arUpdate);
+		$query->setUpdateParams(
+			$arUpdate,
+			null,
+			MyCarTable::getTableName(),
+			MyCarTable::getMapArray()
+		);
 		if (isset($arUpdate['ID']) && intval($arUpdate['ID']) > 0)
-			$query->setUpdatePrimary(intval($arUpdate['ID']));
+			$query->setUpdateParams(
+				null,
+				intval($arUpdate['ID'])
+			);
 		$res = $query->exec();
 
 		return $res;
@@ -168,11 +176,13 @@ class MyCar
 		}
 
 		$query = new Query("delete");
-		$query->setDeletePrimary($carID);
-		$query->setTableMap(MyCarTable::getMapArray());
-		$query->setTableLinks(MyCarTable::getTableLinks());
-		$query->setTableName(MyCarTable::getTableName());
-		//$query->setDeleteConfirm(true);
+		$query->setDeleteParams(
+			$carID,
+			null,   //true
+			MyCarTable::getTableName(),
+			MyCarTable::getMapArray(),
+			MyCarTable::getTableLinks()
+		);
 		$res = $query->exec();
 		if ($ar_res = $res->fetch())
 		{

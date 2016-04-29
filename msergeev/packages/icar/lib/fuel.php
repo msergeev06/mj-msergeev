@@ -381,10 +381,12 @@ class Fuel
 		if (!empty($arUpdate))
 		{
 			$query = new Query('update');
-			$query->setUpdatePrimary($post['id']);
-			$query->setTableMap(Tables\FuelTable::getMapArray());
-			$query->setTableName(Tables\FuelTable::getTableName());
-			$query->setUpdateArray($arUpdate);
+			$query->setUpdateParams(
+				$arUpdate,
+				$post['id'],
+				Tables\FuelTable::getTableName(),
+				Tables\FuelTable::getMapArray()
+			);
 			$res = $query->exec();
 			if ($res->getResult())
 			{
@@ -421,11 +423,7 @@ class Fuel
 		}
 
 		$query = new Query('delete');
-		$query->setDeletePrimary($fuelID);
-		$query->setDeleteConfirm(true);
-		$query->setTableName(Tables\FuelTable::getTableName());
-		$query->setTableMap(Tables\FuelTable::getMapArray());
-		$query->setTableLinks(Tables\FuelTable::getTableLinks());
+		$query->setDeleteParams($fuelID,true,Tables\FuelTable::getTableName(),Tables\FuelTable::getMapArray(),Tables\FuelTable::getTableLinks());
 		$res = $query->exec();
 		if ($res->getResult())
 		{
@@ -683,9 +681,11 @@ class Fuel
 		}
 
 		$query = new Query('insert');
-		$query->setTableName(Tables\FuelTable::getTableName());
-		$query->setTableMap(Tables\FuelTable::getMapArray());
-		$query->setInsertArray(array(0 => $arData));
+		$query->setInsertParams(
+			array(0 => $arData),
+			Tables\FuelTable::getTableName(),
+			Tables\FuelTable::getMapArray()
+		);
 		$res = $query->exec();
 		if ($res->getResult())
 		{
@@ -880,10 +880,7 @@ class Fuel
 		}
 
 		$query = new Query('update');
-		$query->setTableName(Tables\FuelTable::getTableName());
-		$query->setTableMap(Tables\FuelTable::getMapArray());
-		$query->setUpdateArray($arUpdate);
-		$query->setUpdatePrimary($primary);
+		$query->setUpdateParams($arUpdate,$primary,Tables\FuelTable::getTableName(),Tables\FuelTable::getMapArray());
 		$res = $query->exec();
 		if ($res->getResult())
 		{

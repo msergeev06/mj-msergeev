@@ -250,7 +250,7 @@ class Sections
 		if ($arSection['PARENT_SECTION_ID']==0)
 		{
 			$query = new Query('select');
-			$sql = "SELECT MAX(".$helper->wrapQuotes('RIGHT_MARGIN').") as RIGHT_MARGIN FROM "
+			$sql = "SELECT\n\tMAX(".$helper->wrapQuotes('RIGHT_MARGIN').") as RIGHT_MARGIN\nFROM\n\t"
 				.$helper->wrapQuotes(static::getTableName());
 			$query->setQueryBuildParts($sql);
 			$res = $query->exec();
@@ -268,9 +268,9 @@ class Sections
 
 			//1. Обновляем ключи существующего дерева, узлы стоящие за родительским узлом:
 			$query = new Query('update');
-			$sql = "UPDATE ".$helper->wrapQuotes(static::getTableName())." SET ".$helper->wrapQuotes('LEFT_MARGIN')
-				." = ".$helper->wrapQuotes('LEFT_MARGIN')." + 2, ".$helper->wrapQuotes('RIGHT_MARGIN')
-				." = ".$helper->wrapQuotes('RIGHT_MARGIN')." + 2 WHERE ".$helper->wrapQuotes('LEFT_MARGIN')." > ".$right_key;
+			$sql = "UPDATE\n\t".$helper->wrapQuotes(static::getTableName())."\nSET\n\t".$helper->wrapQuotes('LEFT_MARGIN')
+				." = ".$helper->wrapQuotes('LEFT_MARGIN')." + 2,\n\t".$helper->wrapQuotes('RIGHT_MARGIN')
+				." = ".$helper->wrapQuotes('RIGHT_MARGIN')." + 2\nWHERE\n\t".$helper->wrapQuotes('LEFT_MARGIN')." > ".$right_key;
 			$query->setQueryBuildParts($sql);
 			$res = $query->exec();
 /*			Но мы обновили только те узлы в которых изменяются оба ключа, при этом родительскую ветку (не узел, а все
@@ -281,9 +281,9 @@ class Sections
 
 		//2. Обновляем родительскую ветку:
 		$query = new Query('update');
-		$sql = "UPDATE ".$helper->wrapQuotes(static::getTableName())." SET ".$helper->wrapQuotes('RIGHT_MARGIN')
-			." = ".$helper->wrapQuotes('RIGHT_MARGIN')." + 2 WHERE ".$helper->wrapQuotes('RIGHT_MARGIN')." >= "
-			.$right_key." AND ".$helper->wrapQuotes('LEFT_MARGIN')." < ".$right_key;
+		$sql = "UPDATE\n\t".$helper->wrapQuotes(static::getTableName())."\nSET\n\t".$helper->wrapQuotes('RIGHT_MARGIN')
+			." = ".$helper->wrapQuotes('RIGHT_MARGIN')." + 2\nWHERE\n\t".$helper->wrapQuotes('RIGHT_MARGIN')." >= "
+			.$right_key."\n\tAND\n\t".$helper->wrapQuotes('LEFT_MARGIN')." < ".$right_key;
 		$query->setQueryBuildParts($sql);
 		$res = $query->exec();
 
@@ -292,6 +292,10 @@ class Sections
 		$arSection['LEFT_MARGIN'] = $right_key;
 		$arSection['RIGHT_MARGIN'] = $right_key + 1;
 		$arSection['DEPTH_LEVEL'] = $level + 1;
+		if (isset($arSection['ID']))
+		{
+			unset($arSection['ID']);
+		}
 		$query->setInsertParams($arSection,static::getTableName(),$className::getMapArray());
 		$res = $query->exec();
 		$insertID = $res->getInsertId();
@@ -378,6 +382,121 @@ class Sections
 		$res = $query->exec();
 	}
 
+	public static function deleteSection ($sectionID)
+	{
+/*		Удаление узла не намного сложнее, но требуется учесть, что у удаляемого узла могут быть подчиненные узлы. Для
+		осуществления этого действия нам потребуется левый и правый ключ удаляемого узла.*/
+
+		$tableName = static::getTableName();
+		$helper = new SqlHelper();
+
+		//Пусть $left_key – левый ключ удаляемого узла, а $right_key – правый
+		$arSection = static::getInfo($sectionID);
+		$left_key = $arSection['LEFT_MARGIN'];
+		$right_key = $arSection['RIGHT_MARGIN'];
+
+		//1. Удаляем узел (ветку)
+		$query = new Query('delete');
+		/*
+		DELETE FROM
+			tableName
+		WHERE
+			`LEFT_MARGIN` >= $left_key
+			AND
+			`RIGHT_MARGIN` <= $right_key
+		 */
+		$sql = "DELETE FROM\n\t".$helper->wrapQuotes($tableName)."\nWHERE\n\t ".$helper->wrapQuotes('LEFT_MARGIN')." >= "
+			.$left_key."\n\tAND\n\t".$helper->wrapQuotes('RIGHT_MARGIN')." <= ".$right_key;
+		$query->setQueryBuildParts($sql);
+		$res = $query->exec();
+
+		//2. Обновляем ключи оставшихся веток:
+/*		Как и в случае с добавлением обновление происходит двумя командами: обновление ключей родительской ветки и
+		обновление ключей узлов, стоящих за родительской веткой. Следует правда учесть, что обновление будет
+		производиться в другом порядке, так как ключи у нас уменьшаются.*/
+		//2.1. Обновление родительской ветки :
+		$query = new Query('update');
+		/*
+		UPDATE
+			tableName
+		SET
+			`RIGHT_MARGIN` = `RIGHT_MARGIN` – ($right_key - $left_key + 1)
+		WHERE
+			`RIGHT_MARGIN` > $right_key
+			AND
+			`LEFT_MARGIN` < $left_key
+		 */
+		$sql = "UPDATE\n\t".$helper->wrapQuotes($tableName)."\nSET\n\t".$helper->wrapQuotes('RIGHT_MARGIN')." = "
+			.$helper->wrapQuotes('RIGHT_MARGIN')." – (".$right_key." - ".$left_key." + 1)\nWHERE\n\t"
+			.$helper->wrapQuotes('RIGHT_MARGIN')." > ".$right_key."\n\tAND\n\t".$helper->wrapQuotes('LEFT_MARGIN')." < "
+			.$left_key;
+		$query->setQueryBuildParts($sql);
+		$res = $query->exec();
+
+		//2.2. Обновление последующих узлов :
+		$query = new Query('update');
+		/*
+		UPDATE
+			tableName
+		SET
+			`LEFT_MARGIN` = `LEFT_MARGIN` – ($right_key - $left_key + 1),
+			`RIGHT_MARGIN` = `RIGHT_MARGIN` – ($right_key - $left_key + 1)
+		WHERE
+			`LEFT_MARGIN` > $right_key
+		 */
+		$sql = "UPDATE\n\t".$helper->wrapQuotes($tableName)."\nSET\n\t".$helper->wrapQuotes('LEFT_MARGIN')." = "
+			.$helper->wrapQuotes('LEFT_MARGIN')." – (".$right_key." - ".$left_key." + 1),\n\t"
+			.$helper->wrapQuotes('RIGHT_MARGIN')." = ".$helper->wrapQuotes('RIGHT_MARGIN')." – (".$right_key." - "
+			.$left_key." + 1)\nWHERE\n\t".$helper->wrapQuotes('LEFT_MARGIN')." > ".$right_key;
+		$query->setQueryBuildParts($sql);
+		$res = $query->exec();
+		//3. Проверяем.
+
+/*		//Теперь можно объединить последние два запроса в один, что бы не делать лишних действий.
+		$query = new Query('update');
+		/*
+		UPDATE
+			tableName
+		SET
+			`LEFT_MARGIN` = IF(`LEFT_MARGIN` > $left_key, `LEFT_MARGIN` – ($right_key - $left_key + 1), `LEFT_MARGIN`),
+			`RIGHT_MARGIN` = `RIGHT_MARGIN` – ($right_key - $left_key + 1)
+		WHERE
+			`RIGHT_MARGIN` > $right_key
+		 *
+		$sql = "UPDATE\n\t".$helper->wrapQuotes($tableName)."\nSET\n\t".$helper->wrapQuotes('LEFT_MARGIN')." = IF("
+			.$helper->wrapQuotes('LEFT_MARGIN')." > ".$left_key.", ".$helper->wrapQuotes('LEFT_MARGIN')." – ("
+			.$right_key." - ".$left_key." + 1), ".$helper->wrapQuotes('LEFT_MARGIN')."),\n\t "
+			.$helper->wrapQuotes('RIGHT_MARGIN')." = ".$helper->wrapQuotes('RIGHT_MARGIN')." – (".$right_key." - "
+			.$left_key." + 1)\nWHERE\n\t".$helper->wrapQuotes('RIGHT_MARGIN')." > ".$right_key;
+		$query->setQueryBuildParts($sql);
+		$res = $query->exec();*/
+	}
+
+	public static function deactivateSection($sectionID)
+	{
+		$className = static::getClassName();
+		$tableName = static::getTableName();
+		$arUpdate = array('ACTIVE'=>false);
+		$query = new Query('update');
+		$query->setUpdateParams($arUpdate,$sectionID,$tableName,$className::getMapArray());
+		$res = $query->exec();
+
+		return $res;
+	}
+
+	public static function activateSection ($sectionID)
+	{
+		$className = static::getClassName();
+		$tableName = static::getTableName();
+		$arUpdate = array('ACTIVE'=>true);
+		$query = new Query('update');
+		$query->setUpdateParams($arUpdate,$sectionID,$tableName,$className::getMapArray());
+		$res = $query->exec();
+
+		return $res;
+	}
+
+	/*
 	public static function moveSection ($arSection)
 	{
 		msDebug($arSection);
@@ -406,7 +525,7 @@ class Sections
 		//3. Правый ключ узла за который мы вставляем узел (ветку)
 /*		Данный параметр, а не ключи нового родительского узла, выбираем по одной простой причине: Для обычного
 		перемещения этого ключа нам будет достаточно, а при изменении порядка узлов и переноса в "корень" дерева
-		данный параметр нам просто необходим.*/
+		данный параметр нам просто необходим.*
 
 		// * При изменении порядка, когда родительский узел не меняется – правый ключ узла за которым будет стоять перемещаемый;
 		//SELECT left_key, right_key FROM my_tree WHERE id = [id соседнего узла с который будет(!) выше (левее)]****
@@ -471,7 +590,7 @@ class Sections
 				`RIGHT_MARGIN` < $left_key
 				AND
 				`RIGHT_MARGIN` > $right_key_near
-			 */
+			 *
 			$sql = "UPDATE ".$helper->wrapQuotes($tableName)." SET ".$helper->wrapQuotes('RIGHT_MARGIN')
 				." = ".$helper->wrapQuotes('RIGHT_MARGIN')." + ".$skew_tree." WHERE "
 				.$helper->wrapQuotes('RIGHT_MARGIN')." < ".$left_key." AND ".$helper->wrapQuotes('RIGHT_MARGIN')
@@ -489,7 +608,7 @@ class Sections
 				`LEFT_MARGIN` < $left_key
 				AND
 				`LEFT_MARGIN` > $right_key_near
-			 */
+			 *
 			$sql = "UPDATE ".$helper->wrapQuotes($tableName)." SET ".$helper->wrapQuotes('LEFT_MARGIN')
 				." = ".$helper->wrapQuotes('LEFT_MARGIN')." + ".$skew_tree." WHERE ".$helper->wrapQuotes('LEFT_MARGIN')
 				." < ".$left_key." AND ".$helper->wrapQuotes('LEFT_MARGIN')." > ".$near_key;
@@ -507,7 +626,7 @@ class Sections
 				`DEPTH_LEVEL` = `DEPTH_LEVEL` + $skew_level
 			WHERE
 				`ID` IN ($id_edit)
-			 */
+			 *
 			$sql = "UPDATE ".$helper->wrapQuotes($tableName)." SET ".$helper->wrapQuotes('LEFT_MARGIN')." = "
 				.$helper->wrapQuotes('LEFT_MARGIN')." + ".$skew_edit.", ".$helper->wrapQuotes('RIGHT_MARGIN')." = "
 				.$helper->wrapQuotes('RIGHT_MARGIN')." + ".$skew_edit.", ".$helper->wrapQuotes('DEPTH_LEVEL')." = "
@@ -543,10 +662,10 @@ class Sections
 				.$near_key." AND ".$helper->wrapQuotes('LEFT_MARGIN')." < ".$right_key;
 			$query->setQueryBuildParts($sql);
 			$res = $query->exec();
-			*/
+			*
 /*			В данной команде особое внимание нужно уделить порядку изменения полей таблицы, самым последним полем должно
 			изменяться поле левого ключа (left_key), так как его значение является условием для изменения других полей.
-			Замечу, что при использовании этой команды, выбирать узлы перемещаемой ветки не нужно.*/
+			Замечу, что при использовании этой команды, выбирать узлы перемещаемой ветки не нужно.*
 
 		}
 		else
@@ -557,7 +676,7 @@ class Sections
 			внимание на тот факт, что в условии: "левый ключ узла меньше $near_key" узел в котором находится
 			$near_key тоже попадает в диапазон изменения, следует иметь ввиду, что при сравнении не однотипных
 			ключей (правый <-> левый) текущий узел попадает или не попадает в диапазон без использования равенства в
-			условии.*/
+			условии.*
 			//Определяем смещение ключей редактируемого узла $right_key_near - $left_key + 1 - $skew_tree = $skew_edit.
 			$skew_edit = $near_key - $left_key + 1 - $skew_tree;
 
@@ -571,7 +690,7 @@ class Sections
 				`RIGHT_MARGIN` > $right_key
 				AND
 				`RIGHT_MARGIN` <= $right_key_near
-			 */
+			 *
 			$sql = "UPDATE ".$helper->wrapQuotes($tableName)." SET ".$helper->wrapQuotes('RIGHT_MARGIN')." = "
 				.$helper->wrapQuotes('RIGHT_MARGIN')." - ".$skew_tree." WHERE ".$helper->wrapQuotes('RIGHT_MARGIN')
 				." > ".$right_key." AND ".$helper->wrapQuotes('RIGHT_MARGIN')." <= ".$near_key;
@@ -588,7 +707,7 @@ class Sections
 				`LEFT_MARGIN` < $left_key
 				AND
 				`LEFT_MARGIN` > $right_key_near
-			 */
+			 *
 			$sql = "UPDATE ".$helper->wrapQuotes($tableName)." SET ".$helper->wrapQuotes('LEFT_MARGIN')." = "
 				.$helper->wrapQuotes('LEFT_MARGIN')." - ".$skew_tree." WHERE ".$helper->wrapQuotes('LEFT_MARGIN')
 				." < ".$left_key." AND ".$helper->wrapQuotes('LEFT_MARGIN')." > ".$near_key;
@@ -606,7 +725,7 @@ class Sections
 				`DEPTH_LEVEL` = `DEPTH_LEVEL` + $skew_level
 			WHERE
 				`ID` IN ($id_edit)
-			 */
+			 *
 			$sql = "UPDATE ".$helper->wrapQuotes($tableName)." SET ".$helper->wrapQuotes('LEFT_MARGIN')." = "
 				.$helper->wrapQuotes('LEFT_MARGIN')." + ".$skew_edit.", ".$helper->wrapQuotes('RIGHT_MARGIN')." = "
 				.$helper->wrapQuotes('RIGHT_MARGIN')." + ".$skew_edit.", ".$helper->wrapQuotes('DEPTH_LEVEL')." = "
@@ -642,11 +761,12 @@ class Sections
 				." <= ".$near_key;
 			$query->setQueryBuildParts($sql);
 			$res = $query->exec();
-			//Замечания те же, что и при перемещении ветки вверх по дереву.*/
+			//Замечания те же, что и при перемещении ветки вверх по дереву.*
 
 		}
 
 	}
+	*/
 
 	private static function checkFields ($arSection=null)
 	{

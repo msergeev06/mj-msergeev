@@ -20,7 +20,7 @@ class SectionsTable extends Lib\DataManager
 		return array(
 			'ID' => array(
 				'ms_apihelp_sections' => 'PARENT_SECTION_ID',
-				'ms_apihelp_pages' => 'SECTION_ID'
+				'ms_apihelp_sections_pages' => 'PAGE_ID'
 			)
 		);
 	}
