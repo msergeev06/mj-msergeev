@@ -4,15 +4,8 @@ namespace MSergeev\Packages\Icar\Lib;
 
 use MSergeev\Core\Entity\Query;
 use MSergeev\Core\Exception;
-use MSergeev\Core\Lib\Buffer;
-use MSergeev\Core\Lib\DataManager;
-use MSergeev\Core\Lib\Loader;
-use MSergeev\Core\Lib\Options;
-use MSergeev\Core\Lib\SqlHelper;
-use MSergeev\Core\Lib\Tools;
-use MSergeev\Core\Lib\Webix;
-use MSergeev\Core\Lib\WebixHelper;
 use MSergeev\Packages\Icar\Tables;
+use MSergeev\Core\Lib as CoreLib;
 
 class Fuel
 {
@@ -33,7 +26,7 @@ class Fuel
 			$carID = MyCar::getDefaultCarID();
 		}
 
-		$sqlHelper = new SqlHelper();
+		$sqlHelper = new CoreLib\SqlHelper();
 		$fuelTable = Tables\FuelTable::getTableName();
 		$query = new Query('select');
 		$sql = "SELECT\n\t"
@@ -118,7 +111,7 @@ class Fuel
 
 		$total = 0;
 
-		$sqlHelper = new SqlHelper();
+		$sqlHelper = new CoreLib\SqlHelper();
 		$fuelTable = Tables\FuelTable::getTableName();
 		$query = new Query('select');
 		$sql = "SELECT\n\t"
@@ -141,6 +134,8 @@ class Fuel
 	 * Подготавливает данные из формы для добавления в БД
 	 *
 	 * @param array $post
+	 *
+	 * @return bool
 	 */
 	public static function addFuelFromPost ($post=null)
 	{
@@ -537,7 +532,7 @@ class Fuel
 			$carID = MyCar::getDefaultCarID();
 		}
 
-		$helper = new SqlHelper();
+		$helper = new CoreLib\SqlHelper();
 		$sql = "SELECT\n\t".$helper->wrapQuotes('ID')."\nFROM\n\t"
 			.$helper->wrapQuotes(Tables\FuelTable::getTableName())."\nWHERE\n\t"
 			.$helper->wrapQuotes('MY_CAR_ID')." = ".$carID;
@@ -557,9 +552,9 @@ class Fuel
 
 		echo '<div id="fuelList"></div><div id="fuelPager"></div>';
 
-		$dateHelper = new DateHelper();
+		$dateHelper = new CoreLib\DateHelper();
 		$arList = static::getFuelList($carID);
-		$imgSrcPath = Tools::getSitePath(Loader::getTemplate('icar')."images/");
+		$imgSrcPath = CoreLib\Tools::getSitePath(CoreLib\Loader::getTemplate('icar')."images/");
 
 		//msDebug($arList);
 		$arDatas = array();
@@ -588,9 +583,9 @@ class Fuel
 			);
 		}
 
-		$webixHelper = new WebixHelper();
+		$webixHelper = new IcarWebixHelper();
 
-		$webixHelper->addFunctionSoftByTimestamp();
+		$webixHelper->addFunctionSortByTimestamp();
 
 		$arData = array(
 			'grid' => 'fuelGrid',
@@ -621,7 +616,7 @@ class Fuel
 			'data' => $arDatas
 		);
 
-		return Webix::showDataTable($arData);
+		return CoreLib\Webix::showDataTable($arData);
 	}
 
 
@@ -682,7 +677,7 @@ class Fuel
 
 		$query = new Query('insert');
 		$query->setInsertParams(
-			array(0 => $arData),
+			$arData,
 			Tables\FuelTable::getTableName(),
 			Tables\FuelTable::getMapArray()
 		);
@@ -920,7 +915,7 @@ class Fuel
 			$carID = MyCar::getDefaultCarID();
 		}
 
-		if (!Options::setOption('icar_last_fuelmark_'.$carID,$fuelMark))
+		if (!CoreLib\Options::setOption('icar_last_fuelmark_'.$carID,$fuelMark))
 		{
 			return false;
 		}

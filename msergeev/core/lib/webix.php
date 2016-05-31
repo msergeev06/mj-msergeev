@@ -2,10 +2,7 @@
 
 namespace MSergeev\Core\Lib;
 
-
-
-use MSergeev\Core\Exception\ArgumentNullException;
-use MSergeev\Core\Exception\ArgumentTypeException;
+use MSergeev\Core\Exception;
 
 class Webix
 {
@@ -22,37 +19,37 @@ class Webix
 		{
 			if (is_null($arData))
 			{
-				throw new ArgumentNullException('arData');
+				throw new Exception\ArgumentNullException('arData');
 			}
 			elseif (!is_array($arData))
 			{
-				throw new ArgumentTypeException('arData');
+				throw new Exception\ArgumentTypeException('arData');
 			}
 			else
 			{
 				if (!isset($arData['grid']))
 				{
-					throw new ArgumentNullException ('arData[grid]');
+					throw new Exception\ArgumentNullException ('arData[grid]');
 				}
 				if (!isset($arData['container']))
 				{
-					throw new ArgumentNullException ('arData[container');
+					throw new Exception\ArgumentNullException ('arData[container');
 				}
 				if (!isset($arData['columns']))
 				{
-					throw new ArgumentNullException ('arData[columns]');
+					throw new Exception\ArgumentNullException ('arData[columns]');
 				}
 				if (!isset($arData['data']))
 				{
-					throw new ArgumentNullException ('arData[data]');
+					throw new Exception\ArgumentNullException ('arData[data]');
 				}
 			}
 		}
-		catch (ArgumentNullException $e1)
+		catch (Exception\ArgumentNullException $e1)
 		{
 			die($e1->showException());
 		}
-		catch (ArgumentTypeException $e2)
+		catch (Exception\ArgumentTypeException $e2)
 		{
 			die($e2->showException());
 		}

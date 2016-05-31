@@ -3,7 +3,6 @@
 namespace MSergeev\Core\Lib;
 
 use MSergeev\Core\Exception;
-use MSergeev\Packages\Icar\Lib\DateHelper;
 
 class Tools {
 	public static function generateCode ()

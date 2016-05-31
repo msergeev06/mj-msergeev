@@ -13,17 +13,25 @@ class Loader {
 		static::$packagesRoot = Config::getConfig("PACKAGES_ROOT");
 		static::$publicRoot = Config::getConfig("PUBLIC_ROOT");
 		static::$uploadRoot = Config::getConfig("MSERGEEV_ROOT")."upload/";
-		if (is_dir(static::$packagesRoot)) {
-			if ($dh = opendir(static::$packagesRoot)) {
-				while (($file = @readdir($dh)) !== false) {
-					if ($file != "." && $file != ".." && $file != "packages.php") {
+		if (is_dir(static::$packagesRoot))
+		{
+			if ($dh = opendir(static::$packagesRoot))
+			{
+				while (($file = @readdir($dh)) !== false)
+				{
+					if ($file != "." && $file != ".." && $file != "packages.php")
+					{
 						static::$arPackage[$file]["INCLUDE"] = static::$packagesRoot.$file."/include.php";
 						static::$arPackage[$file]["PUBLIC"] = static::$publicRoot.$file."/";
+						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace(Config::getConfig('SITE_ROOT'),"",static::$arPackage[$file]["PUBLIC"]);
+						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace('\\',"/",static::$arPackage[$file]["SITE_PUBLIC"]);
 						static::$arPackage[$file]["UPLOAD"] = static::$uploadRoot.$file."/";
-						if ($temp = Config::getConfig($file."_TEMPLATE")) {
+						if ($temp = Config::getConfig($file."_TEMPLATE"))
+						{
 							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/".$temp."/";
 						}
-						else {
+						else
+						{
 							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/.default/";
 						}
 					}
@@ -33,48 +41,74 @@ class Loader {
 		}
 	}
 
-	public static function IncludePackage ($namePackage=null) {
-		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage])) {
+	public static function IncludePackage ($namePackage=null)
+	{
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		{
 			__include_once(static::$arPackage[$namePackage]["INCLUDE"]);
 			return true;
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
 
-    public static function issetPackage ($namePackage=null) {
-        if (!is_null($namePackage) && isset(static::$arPackage[$namePackage])) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+	public static function issetPackage ($namePackage=null) {
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
-	public static function getPublic ($namePackage=null) {
-		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage])) {
+	public static function getPublic ($namePackage=null)
+	{
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		{
 			return static::$arPackage[$namePackage]["PUBLIC"];
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
 
-	public static function getTemplate ($namePackage=null) {
-		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage])) {
+	public static function getSitePublic ($namePackage=null)
+	{
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		{
+			return static::$arPackage[$namePackage]["SITE_PUBLIC"];
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static function getTemplate ($namePackage=null)
+	{
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		{
 			return static::$arPackage[$namePackage]["TEMPLATE"];
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
 
-	public static function getUpload ($namePackage=null) {
-		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage])) {
+	public static function getUpload ($namePackage=null)
+	{
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		{
 			return static::$arPackage[$namePackage]["UPLOAD"];
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
@@ -110,9 +144,12 @@ class Loader {
 				$noLoad[] = $files;
 			}
 		}
-		if (is_dir($dir)) {
-			if ($dh = opendir($dir)) {
-				while (($file = readdir($dh)) !== false) {
+		if (is_dir($dir))
+		{
+			if ($dh = opendir($dir))
+			{
+				while (($file = readdir($dh)) !== false)
+				{
 					if (!in_array($file,$noLoad))
 					{
 						__include_once($dir . $file);

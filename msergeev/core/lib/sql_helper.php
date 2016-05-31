@@ -44,21 +44,21 @@ class SqlHelper
 	{
 		if ($column=="") return "";
 
-		return 'MAX('.$column.')';
+		return 'MAX('.$this->wrapQuotes($column).')';
 	}
 
 	public function getMinFunction ($column="")
 	{
 		if ($column=="") return "";
 
-		return 'MIN('.$column.')';
+		return 'MIN('.$this->wrapQuotes($column).')';
 	}
 
 	public function getSumFunction ($column="")
 	{
 		if ($column=="") return "";
 
-		return 'SUM('.$column.')';
+		return 'SUM('.$this->wrapQuotes($column).')';
 	}
 
 }

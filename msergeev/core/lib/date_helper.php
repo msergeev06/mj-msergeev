@@ -1,6 +1,6 @@
 <?php
 
-namespace MSergeev\Packages\Icar\Lib;
+namespace MSergeev\Core\Lib;
 
 use MSergeev\Core\Exception;
 
@@ -328,5 +328,115 @@ class DateHelper
 				return $dayRus[2];
 			}
 		}
+	}
+
+	public static function checkDate ($date)
+	{
+		$arData = array();
+		if (strpos($date,'.') !== false)
+		{
+			$arData = explode('.',$date);
+			if (
+				(intval($arData[0]) >= 1 && intval($arData[0]) <= 31)
+				&& (intval($arData[1]) >= 1 && intval($arData[1] <= 12))
+				&& (intval($arData[2]) >= 1970 && intval($arData[2]) <= 9999)
+			)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		elseif (strpos($date,'-') !== false)
+		{
+			$arData = explode('-',$date);
+			if (
+				(intval($arData[2]) >= 1 && intval($arData[2]) <= 31)
+				&& (intval($arData[1]) >= 1 && intval($arData[1] <= 12))
+				&& (intval($arData[0]) >= 1970 && intval($arData[0]) <= 9999)
+			)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	public static function validateDate ($date)
+	{
+		$value = "";
+		if (strpos($date,'.') !== false)
+		{
+			$arData = explode('.',$date);
+			if (
+				(intval($arData[0]) >= 1 && intval($arData[0]) <= 31)
+				&& (intval($arData[1]) >= 1 && intval($arData[1] <= 12))
+				&& (intval($arData[2]) >= 1970 && intval($arData[2]) <= 9999)
+			)
+			{
+				$bFirst = true;
+				for ($i=0; $i<3; $i++) {
+					if ($bFirst)
+					{
+						$bFirst = false;
+					}
+					else
+					{
+						$value .= ".";
+					}
+					if (intval($arData[$i]) >= 1 && intval($arData[$i])<=9)
+					{
+						$value .= "0";
+					}
+					$value .= intval($arData[$i]);
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		elseif (strpos($date,'-') !== false)
+		{
+			$arData = explode('-',$date);
+			if (
+				(intval($arData[2]) >= 1 && intval($arData[2]) <= 31)
+				&& (intval($arData[1]) >= 1 && intval($arData[1] <= 12))
+				&& (intval($arData[0]) >= 1970 && intval($arData[0]) <= 9999)
+			)
+			{
+				$bFirst = true;
+				for ($i=0; $i<3; $i++) {
+					if ($bFirst)
+					{
+						$bFirst = false;
+					}
+					else
+					{
+						$value .= "-";
+					}
+					if (intval($arData[$i]) >= 1 && intval($arData[$i])<=9)
+					{
+						$value .= "0";
+					}
+					$value .= intval($arData[$i]);
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		return $value;
 	}
 }

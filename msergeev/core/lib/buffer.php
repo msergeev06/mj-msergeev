@@ -2,7 +2,7 @@
 
 namespace MSergeev\Core\Lib;
 
-use MSergeev\Core\Exception\ArgumentNullException;
+use MSergeev\Core\Exception;
 
 class Buffer {
 
@@ -110,10 +110,10 @@ class Buffer {
 		{
 			if(is_null($js))
 			{
-				throw new ArgumentNullException ('js');
+				throw new Exception\ArgumentNullException ('js');
 			}
 		}
-		catch (ArgumentNullException $e)
+		catch (Exception\ArgumentNullException $e)
 		{
 			die($e->showException());
 		}

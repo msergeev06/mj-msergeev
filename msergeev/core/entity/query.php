@@ -394,7 +394,14 @@ class Query
 	{
 		if (!is_null($insertArray))
 		{
-			$this->setInsertArray(array($insertArray));
+			if (isset($insertArray[0]))
+			{
+				$this->setInsertArray($insertArray);
+			}
+			else
+			{
+				$this->setInsertArray(array($insertArray));
+			}
 		}
 		if (!is_null($tableName))
 		{
@@ -1212,7 +1219,7 @@ class Query
 		$arDefaultValues = $this->getInsertArray();
 		$tableName = $this->getTableName();
 		$arMapArray = $this->getTableMap();
-		//msDebug($tableName);
+		//msDebug($arDefaultValues);
 		$sql = "";
 
 		$bFFirts = true;

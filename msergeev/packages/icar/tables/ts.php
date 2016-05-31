@@ -42,7 +42,7 @@ class TsTable extends DataManager {
 			)),
 			new Entity\IntegerField ('EXECUTORS_ID', array(
 				'required' => true,
-				'link' => 'ms_icar_executors.ID',
+				'link' => 'ms_icar_executor.ID',
 				'title' => 'ID исполнителя работ'
 			)),
 			new Entity\FloatField ('COST', array(

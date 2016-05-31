@@ -199,7 +199,7 @@ class Odo
 
 		$title = 'Данные за период: с '.$from.' по '.$to;
 
-		$arRes = OdoTable::getList(array(
+		$arRes = Tables\OdoTable::getList(array(
 			'select' => array('DATE','ODO'),
 			'filter' => array(
 				'MY_CAR_ID' => $carID,
