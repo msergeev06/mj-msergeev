@@ -41,13 +41,9 @@ class RatesTable extends CoreLib\DataManager
 				'link' => 'ms_currency_currency.CODE',
 				'title' => 'Валюта, базовая для курса'
 			)),
-			new Entity\FloatField('RATE_BUY',array(
+			new Entity\FloatField('RATE',array(
 				'required' => true,
-				'title' => 'Курс покупки'
-			)),
-			new Entity\FloatField('RATE_CELL',array(
-				'required' => true,
-				'title' => 'Курс продажи'
+				'title' => 'Курс'
 			))
 		);
 	}

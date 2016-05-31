@@ -3,12 +3,13 @@
 //echo "Open public directory: /msergeev/public/[package]";
 
 include_once ($_SERVER["DOCUMENT_ROOT"]."/msergeev_config.php");
+header('Content-type: text/html; charset=utf-8');
 //MSergeev\Core\Lib\Loader::IncludePackage("dates");
 //MSergeev\Core\Lib\Loader::IncludePackage("icar");
 //MSergeev\Core\Lib\Loader::IncludePackage("apihelp");
 //MSergeev\Core\Lib\Loader::IncludePackage("products");
 //MSergeev\Core\Lib\Loader::IncludePackage("tasks");
-header('Content-type: text/html; charset=utf-8');
+MSergeev\Core\Lib\Loader::IncludePackage("finances");
 
 use MSergeev\Packages\Dates\Tables;
 use MSergeev\Packages\ICar\Tables\CarGearboxTable;
@@ -51,7 +52,10 @@ $res = WorkCalendarTable::getList(array(
 //$code = Tools::generateCode("Михаил Сергеев");
 //CarGearboxTable::insertDefaultRows();
 //$res = Tools::getClassNameByTableName("ms_icar_car_gearbox");
-//Installer::createPackageTables("icar");
+//Installer::createPackageTables("currency");
+//\MSergeev\Packages\Currency\Lib\Currency::getRates("RUB",array("USD","EUR"));
+//msDebug(\MSergeev\Packages\Currency\Lib\Currency::getCurrencyRate("RUB","JPY"));
+//msDebug(\MSergeev\Packages\Currency\Lib\Currency::convertCurrency(10,"USD","RUB"));
 /*
 $res = MSergeev\Packages\Products\Tables\FreezerTable::createTable();
 msDebug($res);

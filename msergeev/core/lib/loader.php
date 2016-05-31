@@ -2,12 +2,15 @@
 
 namespace MSergeev\Core\Lib;
 
+use MSergeev\Core\Lib\Loc;
+
 class Loader {
 
 	protected static $arPackage;
 	protected static $packagesRoot;
 	protected static $publicRoot;
 	protected static $uploadRoot;
+	protected static $arIncludedPackages;
 
 	public static function init () {
 		static::$packagesRoot = Config::getConfig("PACKAGES_ROOT");
@@ -22,6 +25,7 @@ class Loader {
 					if ($file != "." && $file != ".." && $file != "packages.php")
 					{
 						static::$arPackage[$file]["INCLUDE"] = static::$packagesRoot.$file."/include.php";
+						static::$arPackage[$file]["REQUIRED"] = static::$packagesRoot.$file."/required.php";
 						static::$arPackage[$file]["PUBLIC"] = static::$publicRoot.$file."/";
 						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace(Config::getConfig('SITE_ROOT'),"",static::$arPackage[$file]["PUBLIC"]);
 						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace('\\',"/",static::$arPackage[$file]["SITE_PUBLIC"]);
@@ -43,9 +47,39 @@ class Loader {
 
 	public static function IncludePackage ($namePackage=null)
 	{
-		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]) && !isset(static::$arIncludedPackages[$namePackage]))
 		{
+			if (file_exists(static::$arPackage[$namePackage]["REQUIRED"]))
+			{
+				include_once(static::$arPackage[$namePackage]["REQUIRED"]);
+				if (!empty($arRequiredPackages))
+				{
+					foreach ($arRequiredPackages as $required)
+					{
+						if (isset(static::$arPackage[$required]) && !isset(static::$arIncludedPackages[$required]))
+						{
+							static::IncludePackage($required);
+						}
+						else
+						{
+							die("ERROR-[".$namePackage."]: Необходимо установить обязательный пакет [".$required."]");
+						}
+					}
+				}
+				if (!empty($arAdditionalPackages))
+				{
+					foreach ($arAdditionalPackages as $additional)
+					{
+						if (isset(static::$arPackage[$additional]) && !isset(static::$arIncludedPackages[$additional]))
+						{
+							static::IncludePackage($additional);
+						}
+					}
+				}
+			}
 			__include_once(static::$arPackage[$namePackage]["INCLUDE"]);
+			static::$arIncludedPackages[$namePackage] = true;
+			Loc::setModuleMessages($namePackage);
 			return true;
 		}
 		else

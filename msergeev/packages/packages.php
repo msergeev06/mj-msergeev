@@ -1,6 +1,7 @@
 <?php
 
 /*
+ *
 use \MSergeev\Core\Lib\Config;
 
 $dir = Config::getConfig('PACKAGES_ROOT');

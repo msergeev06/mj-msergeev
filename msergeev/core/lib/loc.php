@@ -34,7 +34,7 @@ class Loc
 						require_once ($dir . $file);
 						foreach ($arMessages as $field=>$text)
 						{
-							static::$arMessage[$prefix.$field] = $text;
+							static::$arMessage[strtoupper($prefix).strtoupper($field)] = $text;
 						}
 					}
 				}
@@ -46,7 +46,7 @@ class Loc
 
 	public static function getMessage ($name,$arReplace=array())
 	{
-		$message = static::$arMessage[$name];
+		$message = static::$arMessage[strtoupper($name)];
 		if (!empty($arReplace))
 		{
 			foreach ($arReplace as $field=>$value)
@@ -62,6 +62,7 @@ class Loc
 	{
 		if ($name=='') $name='core';
 		$prefix .= $name.'_';
+		$prefix = strtoupper($prefix);
 
 		$arMessages = array();
 		$arMess = static::$arMessage;
