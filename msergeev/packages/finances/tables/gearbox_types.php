@@ -17,6 +17,15 @@ class GearboxTypesTable extends Lib\DataManager
 		return 'Типы коробок передач';
 	}
 
+	public static function getTableLinks ()
+	{
+		return array(
+			'ID' => array(
+				'ms_finances_account_car' => 'GEARBOX_TYPE_ID'
+			)
+		);
+	}
+
 	public static function getMap ()
 	{
 		return array(

@@ -17,6 +17,15 @@ class CardTypesTable extends Lib\DataManager
 		return 'Типы пластиковых карт';
 	}
 
+	public static function getTableLinks ()
+	{
+		return array(
+			'ID' => array(
+				'ms_finances_account_bank' => 'CARD_TYPE_ID'
+			)
+		);
+	}
+
 	public static function getMap ()
 	{
 		return array(

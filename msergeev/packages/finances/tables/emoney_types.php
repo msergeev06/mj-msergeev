@@ -18,6 +18,15 @@ class EmoneyTypesTable extends Lib\DataManager
 		return 'Типы электронных денег';
 	}
 
+	public static function getTableLinks ()
+	{
+		return array(
+			'ID' => array(
+				'ms_finances_account_emoney' => 'EMONEY_TYPE_ID'
+			)
+		);
+	}
+
 	public static function getMap ()
 	{
 		return array(

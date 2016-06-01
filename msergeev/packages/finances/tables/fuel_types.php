@@ -17,6 +17,15 @@ class FuelTypesTable extends Lib\DataManager
 		return 'Типы топлива';
 	}
 
+	public static function getTableLinks ()
+	{
+		return array(
+			'ID' => array(
+				'ms_finances_account_car' => 'FUEL_TYPE_ID'
+			)
+		);
+	}
+
 	public static function getMap ()
 	{
 		return array(

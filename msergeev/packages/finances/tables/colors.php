@@ -17,6 +17,15 @@ class ColorsTable extends Lib\DataManager
 		return 'Цвета';
 	}
 
+	public static function getTableLinks ()
+	{
+		return array(
+			'ID' => array(
+				'ms_finances_account_car' => 'COLOR_ID'
+			)
+		);
+	}
+
 	public static function getMap ()
 	{
 		return array(

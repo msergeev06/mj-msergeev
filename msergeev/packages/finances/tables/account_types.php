@@ -21,7 +21,8 @@ class AccountTypesTable extends Lib\DataManager
 	{
 		return array(
 			'ID' => array(
-				'ms_finances_account_types' => 'PARENT_SECTION_ID'
+				'ms_finances_account_types' => 'PARENT_SECTION_ID',
+				'ms_finances_accounts' => 'ACCOUNT_TYPE_ID'
 			)
 		);
 	}
