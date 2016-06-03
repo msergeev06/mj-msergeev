@@ -29,6 +29,7 @@ class Loader {
 						static::$arPackage[$file]["PUBLIC"] = static::$publicRoot.$file."/";
 						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace(Config::getConfig('SITE_ROOT'),"",static::$arPackage[$file]["PUBLIC"]);
 						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace('\\',"/",static::$arPackage[$file]["SITE_PUBLIC"]);
+						//msDebug(static::$arPackage[$file]["SITE_PUBLIC"]);
 						static::$arPackage[$file]["UPLOAD"] = static::$uploadRoot.$file."/";
 						if ($temp = Config::getConfig($file."_TEMPLATE"))
 						{

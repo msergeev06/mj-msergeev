@@ -270,7 +270,7 @@ class Webix
 		Buffer::addCSS(static::$otherCssCatalog.'samples.css');
 	}
 
-	protected static function init()
+	public static function init()
 	{
 		if (is_null(static::$coreRoot))
 		{

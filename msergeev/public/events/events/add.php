@@ -220,10 +220,12 @@
 </div> */ ?>
 <p><a href="#" class="popup-link-1">Добавить событие</a></p>
 <div class="event_info" <?/*style="display: none;"*/?>>
+<? /*
 	&nbsp;
 </div>
 <div class="popup-box" id="popup-box-1">
 	<div class="close">X</div>
+ */?>
 	<div class="top">
 		<h2>Добавление события:</h2>
 	</div>

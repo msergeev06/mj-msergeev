@@ -1,0 +1,112 @@
+body, table, tr, td, th, thead, tbody {
+	margin: 0; padding: 0;
+	border: 0;
+}
+body {
+	width: 100%;
+}
+.finances {
+	margin: 0 auto;
+	padding: 0;
+	width: 1115px;
+	height: 50px;
+}
+	.finances td.logo, .finances td.left {
+		width: 200px;
+	}
+	.finances td.menu {
+		background-color: #EEEEEE;
+		height: 50px;
+	}
+	.finances td.left .buttons {
+		padding: 5px;
+		border: 1px solid #EEEEEE;
+	}
+		.finances td.left .buttons a.left-button {
+			display: block;
+			margin: 5px auto;
+			min-width: 180px;
+			width: 180px;
+			text-decoration: none;
+			text-align: center;
+			line-height: 50px;
+			height: 50px;
+			color: white;
+			border-radius: 10px;
+		}
+		.finances td.left .buttons a.button-op {
+			background-color: #16A085;
+		}
+			.finances td.left .buttons a.button-op:hover {
+				background-color: #6cbd45;
+			}
+		.finances td.left .buttons a.button-cal {
+			background-color: #FF7C45;
+		}
+			.finances td.left .buttons a.button-cal:hover {
+				background-color: #FFA342;
+			}
+	.finances td.left .left-tabs {
+		border: 1px solid #EEEEEE;
+	}
+		.finances td.left .left-tabs .tab-menu {
+			background-color: #EEEEEE;
+			height: 30px;
+		}
+			.finances td.left .left-tabs .tab-menu .tab-1, .finances td.left .left-tabs .tab-menu .tab-2, .finances td.left .left-tabs .tab-menu .tab-3 {
+				display: block;
+				float: left;
+				height: 30px;
+				width: 30px;
+			}
+			.finances td.left .left-tabs .tab-menu div{
+				width: 30px;
+				height: 30px;
+				background: url("../images/controlPanel.png") no-repeat;
+			}
+			.finances td.left .left-tabs .tab-menu .tab-1 {
+				background-position: 5px 5px;
+			}
+				.finances td.left .left-tabs .tab-menu .tab-1:hover, .finances td.left .left-tabs .tab-menu .tab-1.active{
+					background-position: -50px 5px;
+					background-color: #ffffff;
+				}
+			.finances td.left .left-tabs .tab-menu .tab-2 {
+				background-position: 7px -30px;
+			}
+				.finances td.left .left-tabs .tab-menu .tab-2:hover, .finances td.left .left-tabs .tab-menu .tab-2.active{
+					background-position: -50px -30px;
+					background-color: #ffffff;
+				}
+			.finances td.left .left-tabs .tab-menu .tab-3 {
+				background-position: 7px -160px;
+			}
+				.finances td.left .left-tabs .tab-menu .tab-3:hover, .finances td.left .left-tabs .tab-menu .tab-3.active{
+					background-position: -50px -160px;
+					background-color: #ffffff;
+				}
+		.finances td.left .left-tabs .tab-content {
+			background-color: #ffffff;
+		}
+			.finances td.left .left-tabs .tab-content .hidden {
+				display: none;
+			}
+			.finances td.left .left-tabs .tab-content .content-1, .finances td.left .left-tabs .tab-content .content-2, .finances td.left .left-tabs .tab-content .content-3 {
+				width: 100%;
+			}
+				.finances td.left .left-tabs .tab-content .content-1 a.add, .finances td.left .left-tabs .tab-content .content-2 a.add {
+					display: block;
+					text-decoration: none;
+					color: #16A085;
+					position: relative;
+					left: 40px;
+					margin-top: 10px;
+					margin-bottom: 10px;
+					font-size: 13px;
+					background: url("../images/controlPanel.png") no-repeat -12px -137px;
+
+				}
+				.finances td.left .left-tabs .tab-content .content-1 a.add:hover, .finances td.left .left-tabs .tab-content .content-2 a.add:hover {
+					color: #6cbd45;
+				}
+
