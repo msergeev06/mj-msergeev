@@ -5,6 +5,12 @@ body, table, tr, td, th, thead, tbody {
 body {
 	width: 100%;
 }
+.green {
+	color: #16A085;
+}
+.red {
+	color: #E74C3C;
+}
 .finances {
 	margin: 0 auto;
 	padding: 0;
@@ -52,6 +58,7 @@ body {
 		.finances td.left .left-tabs .tab-menu {
 			background-color: #EEEEEE;
 			height: 30px;
+			cursor: pointer;
 		}
 			.finances td.left .left-tabs .tab-menu .tab-1, .finances td.left .left-tabs .tab-menu .tab-2, .finances td.left .left-tabs .tab-menu .tab-3 {
 				display: block;
@@ -85,28 +92,199 @@ body {
 					background-position: -50px -160px;
 					background-color: #ffffff;
 				}
+				.finances td.left .left-tabs .tab-menu .tab-1.active,
+				.finances td.left .left-tabs .tab-menu .tab-2.active,
+				.finances td.left .left-tabs .tab-menu .tab-3.active {
+					cursor: default;
+				}
+
 		.finances td.left .left-tabs .tab-content {
 			background-color: #ffffff;
 		}
 			.finances td.left .left-tabs .tab-content .hidden {
 				display: none;
 			}
-			.finances td.left .left-tabs .tab-content .content-1, .finances td.left .left-tabs .tab-content .content-2, .finances td.left .left-tabs .tab-content .content-3 {
+			.finances td.left .left-tabs .tab-content .content-1,
+			.finances td.left .left-tabs .tab-content .content-2,
+			.finances td.left .left-tabs .tab-content .content-3 {
 				width: 100%;
 			}
-				.finances td.left .left-tabs .tab-content .content-1 a.add, .finances td.left .left-tabs .tab-content .content-2 a.add {
+				.finances td.left .left-tabs .tab-content .content-1 a.add,
+				.finances td.left .left-tabs .tab-content .content-2 a.add,
+				.finances td.left .left-tabs .tab-content .content-3 a.journal {
 					display: block;
 					text-decoration: none;
 					color: #16A085;
 					position: relative;
-					left: 40px;
 					margin-top: 10px;
 					margin-bottom: 10px;
 					font-size: 13px;
-					background: url("../images/controlPanel.png") no-repeat -12px -137px;
-
+					left: 40px;
 				}
-				.finances td.left .left-tabs .tab-content .content-1 a.add:hover, .finances td.left .left-tabs .tab-content .content-2 a.add:hover {
+				.finances td.left .left-tabs .tab-content .content-1 a.add,
+				.finances td.left .left-tabs .tab-content .content-2 a.add {
+					background: url("../images/controlPanel.png") no-repeat -12px -137px;
+				}
+				.finances td.left .left-tabs .tab-content .content-1 a.add:hover,
+				.finances td.left .left-tabs .tab-content .content-2 a.add:hover {
+					color: #6cbd45;
+				}
+				.finances td.left .left-tabs .tab-content .content-3 a.journal {
+					background: url("../images/controlPanel.png") no-repeat -63px -233px;
+				}
+				.finances td.left .left-tabs .tab-content .content-3 a.journal:hover {
+					background: url("../images/controlPanel.png") no-repeat -63px -250px;
 					color: #6cbd45;
 				}
 
+				.finances td.left .left-tabs .tab-content .content-1 .category {
+					width: 100%;
+				}
+				.finances td.left .left-tabs .tab-content .content-1 .category .header{
+					width: 100%;
+					background-color: #eeeeee;
+					height: 30px;
+					cursor: pointer;
+				}
+					.finances td.left .left-tabs .tab-content .content-1 .category .header .arrow {
+						display: block;
+						float: left;
+						left: 7px;
+						position: relative;
+						width: 20px;
+						height: 30px;
+						background: url("../images/controlPanel.png") no-repeat 0 -280px;
+					}
+					.finances td.left .left-tabs .tab-content .content-1 .category .header.open .arrow {
+						background: url("../images/controlPanel.png") no-repeat 0 -330px;
+					}
+					.finances td.left .left-tabs .tab-content .content-1 .category .header .name {
+						display: block;
+						float: left;
+						position: relative;
+						top: 8px;
+						font-size: 13px;
+						font-weight: bold;
+						color: #595959;
+						z-index: 1;
+						overflow: hidden;
+					}
+					.finances td.left .left-tabs .tab-content .content-1 .category .header .money {
+						display: block;
+						float: right;
+						position: relative;
+						top: 8px;
+						font-weight: bold;
+						font-size: 13px;
+						right: 5px;
+						z-index: 2;
+					}
+				.finances td.left .left-tabs .tab-content .content-1 .category .item {
+					width: 100%;
+					background-color: #ffffff;
+					height: 30px;
+					border-bottom: 1px solid #eeeeee;
+					display: block;
+					z-index: 1;
+					cursor: pointer;
+				}
+				.finances td.left .left-tabs .tab-content .content-1 .category .item:hover {
+					background-color: #10e9d7;
+					z-index: 1;
+				}
+
+					.finances td.left .left-tabs .tab-content .content-1 .category .item .name {
+						display: block;
+						float: left;
+						position: relative;
+						top: 9px;
+						font-size: 13px;
+						color: #595959;
+						left: 5px;
+					}
+					.finances td.left .left-tabs .tab-content .content-1 .category .item .money {
+						display: block;
+						float: right;
+						position: relative;
+						top: 9px;
+						font-weight: bold;
+						font-size: 13px;
+						right: 5px;
+					}
+					.finances td.left .left-tabs .tab-content .content-1 .category .item .description {
+						display: block;
+						position: relative;
+						top: 30px;
+						border: 1px solid #eeeeee;
+						vertical-align: top;
+						z-index: 5;
+						margin: 0;
+						padding: 0;
+						background-color: #ffffff;
+					}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .description .info {
+							width: 100%;
+							font-size: 13px;
+							margin: 0;
+							padding: 0;
+							color: #595959;
+						}
+							.finances td.left .left-tabs .tab-content .content-1 .category .item .description .info .left {
+								text-align: left;
+								width: 100px;
+								vertical-align: top;
+							}
+							.finances td.left .left-tabs .tab-content .content-1 .category .item .description .info .right{
+								text-align: right;
+								width: 80px;
+								vertical-align: top;
+							}
+					.finances td.left .left-tabs .tab-content .content-1 .category #cat-list {
+						border-bottom: 2px solid #ffffff;
+					}
+
+				.finances td.left .left-tabs .tab-content .content-2 .labels {
+					width: 100%;
+					border-bottom: 1px solid #eeeeee;
+				}
+					.finances td.left .left-tabs .tab-content .content-2 .labels h2 {
+						width: 180px;
+						background-color: #eeeeee;
+						height: 20px;
+						font-size: 13px;
+						color: #595959;
+						padding-left: 20px;
+						padding-top: 10px;
+					}
+					.finances td.left .left-tabs .tab-content .content-2 .labels .search {
+						width: 100%;
+						padding-left: 15px;
+						padding-bottom: 10px;
+					}
+						.finances td.left .left-tabs .tab-content .content-2 .labels input {
+							width: 160px;
+							border: 1px solid #eeeeee;
+							color: #595959;
+							font-size: 13px;
+							margin: 0 auto;
+						}
+					.finances td.left .left-tabs .tab-content .content-2 .labels .nav {
+						width: 100%;
+						padding-left: 15px;
+						padding-bottom: 10px;
+						height: 20px;
+					}
+					.finances td.left .left-tabs .tab-content .content-2 .labels .list {
+						width: 100%;
+					}
+						.finances td.left .left-tabs .tab-content .content-2 .labels .list .item {
+							width: 180px;
+							height: 15px;
+							margin: 10px;
+							color: #595959;
+							font-size: 13px;
+							padding: 10px;
+						}
+							.finances td.left .left-tabs .tab-content .content-2 .labels .list .item:hover {
+								background-color: #10e9d7;
+							}

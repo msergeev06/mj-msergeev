@@ -51,6 +51,7 @@ class AccountsTable extends Lib\DataManager
 				'title' => 'Статус счета (1 - обычный, 2 - избранный, 0 - скрытый)'
 			)),
 			new Entity\StringField('NAME',array(
+				'size' => 20,
 				'required' => true,
 				'title' => 'Название счета'
 			)),
