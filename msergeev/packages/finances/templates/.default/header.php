@@ -37,8 +37,8 @@ $path=Lib\Loader::getSitePublic('finances');
 				</div>
 				<div class="tab-content">
 					<div class="content-1">
-						<a href="#" class="add">&nbsp;&nbsp;&nbsp;&nbsp;Добавить счет</a>
-						<div class="category liked">
+						<a href="<?=$path?>add_account.php" class="add">&nbsp;&nbsp;&nbsp;&nbsp;Добавить счет</a>
+						<div class="category">
 							<div class="header open" data-id="1">
 								<div class="arrow"></div>
 								<div class="name">Избранные</div>
@@ -48,6 +48,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="1">
 									<div class="name">ЗП Макслевел</div>
 									<div class="money green">42&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like checked"><span title="Убрать из избранного"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -88,6 +94,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="2">
 									<div class="name">Кошелек</div>
 									<div class="money green">17&nbsp;931&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like checked"><span title="Убрать из избранного"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -116,6 +128,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="3">
 									<div class="name">QiWi</div>
 									<div class="money green">2&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like checked"><span title="Убрать из избранного"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -151,6 +169,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="1">
 									<div class="name">ЗП Макслевел</div>
 									<div class="money green">42&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like checked"><span title="Убрать из избранного"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -191,6 +215,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="2">
 									<div class="name">ЗП Сбербанк</div>
 									<div class="money green">0&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -231,6 +261,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="3">
 									<div class="name">Кошелек</div>
 									<div class="money green">17&nbsp;931&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like checked"><span title="Убрать из избранного"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -259,6 +295,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="4">
 									<div class="name">ПЛЮС-Банк (Оплачено)</div>
 									<div class="money green">206&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -307,6 +349,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="5">
 									<div class="name">Сберегательный счет</div>
 									<div class="money green">1&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -339,6 +387,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="6">
 									<div class="name">Momentum</div>
 									<div class="money green">1&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -379,6 +433,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="7">
 									<div class="name">QiWi</div>
 									<div class="money green">2&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like checked"><span title="Убрать из избранного"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -412,8 +472,14 @@ $path=Lib\Loader::getSitePublic('finances');
 							</div>
 							<div id="cat-list" class="list-3">
 								<div class="item" data-id="1">
-									<div class="name">Автокредит ПЛЮС-банк</div>
+									<div class="name">Автокредит ПЛЮС-б</div>
 									<div class="money red">-656&nbsp;402&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -454,6 +520,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="2">
 									<div class="name">Тинькофф карта</div>
 									<div class="money red">-38&nbsp;167&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -517,6 +589,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="1">
 									<div class="name">Datsun</div>
 									<div class="money green">565&nbsp;000&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -584,6 +662,12 @@ $path=Lib\Loader::getSitePublic('finances');
 								<div class="item" data-id="1">
 									<div class="name">Миг кредит</div>
 									<div class="money green">0&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button add"><span title="Добавить операцию"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button like"><span title="Добавить в избранное"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
 									<div class="description" style="display: none">
 										<table class="info">
 											<tr>
@@ -636,129 +720,61 @@ $path=Lib\Loader::getSitePublic('finances');
 							</div>
 							<div class="nav"></div>
 							<div class="list">
-								<div class="item" data-id="1">день рождения</div>
-								<div class="item" data-id="2">метро</div>
+								<div class="label" data-id="1">
+									<div class="name">день рождения</div>
+									<div class="buttons" style="display: none">
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
+								</div>
+								<div class="label" data-id="2">
+									<div class="name">метро</div>
+									<div class="buttons" style="display: none">
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 					<div class="content-3" style="display: none;">
 						<a href="#" class="journal">&nbsp;&nbsp;&nbsp;&nbsp;Журнал событий</a>
+						<div class="planing">
+							<div class="header open" data-id="1">
+								<div class="arrow"></div>
+								<div class="name red">Просроченные</div>
+							</div>
+							<div id="cat-list" class="list-1">
+								<div class="plan" data-id="1">
+									<div class="name">05.06<br>Квартплата</div>
+									<div class="money red">-3500.00&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button confirm"><span title="Подтвердить"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
+								</div>
+							</div>
+							<div class="header open" data-id="2">
+								<div class="arrow"></div>
+								<div class="name green">Запланированные</div>
+							</div>
+							<div id="cat-list" class="list-2">
+								<div class="plan" data-id="2">
+									<div class="name">10.06<br>Заработная плата</div>
+									<div class="money green">7000.00&nbsp;Р</div>
+									<div class="buttons" style="display: none">
+										<div class="button confirm"><span title="Подтвердить"></span></div>
+										<div class="button edit"><span title="Редактировать"></span></div>
+										<div class="button delete"><span title="Удалить"></span></div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</td>
-		<td class="info"></td>
-	</tr>
-	<tr>
-		<td colspan="2" class="bottom"></td>
-	</tr>
-</table>
-<script type="text/javascript">
-	/*Верхнее меню*/
-	webix.ui({
-		container:"header_menu",
-		view:"menu",
-		data:[
-			{
-				//id:"1",
-				value:"Инфо",
-				links:"<?=$path?>info/"
-			},
-			{
-				//id:"2",
-				value:"Учет",
-				links:"<?=$path?>operation/",
-				submenu:[
-					{
-						//id:"2",
-						value:"Операции",
-						links:"<?=$path?>operation/"
-					},
-					{
-						//id:"3",
-						value:"Категории",
-						links:"<?=$path?>category/"
-					},
-					{
-						//id:"4",
-						value:"Корзина",
-						links:"<?=$path?>bucket/"
-					}
-				]
-			},
-			{
-				//id:"5",
-				value:"План",
-				links:"<?=$path?>budget/",
-				config: {
-					width: 210
-				},
-				submenu:[
-					{
-						//id:"5",
-						value:"Бюджет",
-						links:"<?=$path?>budget/"
-					},
-					{
-						//id:"6",
-						value:"Финансовые цели",
-						links:"<?=$path?>targets/"
-					},
-					{
-						//id:"7",
-						value:"Кредитный калькулятор",
-						links:"<?=$path?>calculator-credit/"
-					},
-					{
-						//id:"8",
-						value:"Депозитный калькулятор",
-						links:"<?=$path?>calculator-deposit/"
-					}
-				]
-			},
-			{
-				//id:"9",
-				value:"Календарь",
-				links:"<?=$path?>calendar/",
-				submenu:[
-					{
-						//id:"9",
-						value:"Календарь",
-						link:"<?=$path?>calendar/"
-					},
-					{
-						//id:"10",
-						value:"События",
-						links:"<?=$path?>events/"
-					}
-				]
-			},
-			{
-				//id:"11",
-				value:"Отчеты",
-				links:"<?=$path?>reports/"
-			},
-			{
-				//id:"12",
-				value:"Настройки",
-				links:"<?=$path?>setup/"
-			},
-			{
-				//id:"13",
-				value:"Пользователь",
-				links:"<?=$path?>user/"
-			}
-		],
-		on:{
-			onMenuItemClick:function(id){
-				//webix.message("Click: "+this.getMenuItem(id).links);
-				location.pathname = this.getMenuItem(id).links;
-			}
-		},
-		type:{
-			subsign:true,
-			height: 50,
-			width: 120
-		}
-	});
-</script>
+		<td class="info">
+			<div class="main">
+				<h1><?=MSergeev\Core\Lib\Buffer::showTitle()?></h1>

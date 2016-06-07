@@ -72,6 +72,11 @@ class AccountsTable extends Lib\DataManager
 				'required' => true,
 				'size' => 3,
 				'title' => 'Валюта счета'
+			)),
+			new Entity\BooleanField('LIKE',array(
+				'required' => true,
+				'default_value' => false,
+				'title' => 'Избранный счет'
 			))
 		);
 	}

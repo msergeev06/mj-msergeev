@@ -4,12 +4,30 @@ body, table, tr, td, th, thead, tbody {
 }
 body {
 	width: 100%;
+	font-size: 13px;
+	color: #595959;
+}
+
+h1 {
+	font-size: 14px;
+	color: #595959;
+	text-transform: uppercase;
+	width: 100%;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #595959;
+}
+a, a:visited {
+	color: #16A085;
+	text-decoration: none;
+}
+a:hover {
+	color: #6cbd45;
 }
 .green {
-	color: #16A085;
+	color: #16A085 !important;
 }
 .red {
-	color: #E74C3C;
+	color: #E74C3C !important;
 }
 .finances {
 	margin: 0 auto;
@@ -24,6 +42,9 @@ body {
 		background-color: #EEEEEE;
 		height: 50px;
 	}
+	.finances td.left {
+		vertical-align: top;
+	}
 	.finances td.left .buttons {
 		padding: 5px;
 		border: 1px solid #EEEEEE;
@@ -36,6 +57,7 @@ body {
 			text-decoration: none;
 			text-align: center;
 			line-height: 50px;
+			font-size: 15px;
 			height: 50px;
 			color: white;
 			border-radius: 10px;
@@ -145,6 +167,7 @@ body {
 					background-color: #eeeeee;
 					height: 30px;
 					cursor: pointer;
+					z-index: 1;
 				}
 					.finances td.left .left-tabs .tab-content .content-1 .category .header .arrow {
 						display: block;
@@ -166,7 +189,7 @@ body {
 						font-size: 13px;
 						font-weight: bold;
 						color: #595959;
-						z-index: 1;
+						z-index: inherit;
 						overflow: hidden;
 					}
 					.finances td.left .left-tabs .tab-content .content-1 .category .header .money {
@@ -185,12 +208,13 @@ body {
 					height: 30px;
 					border-bottom: 1px solid #eeeeee;
 					display: block;
-					z-index: 1;
+					z-index: inherit;
 					cursor: pointer;
+					position: relative;
 				}
 				.finances td.left .left-tabs .tab-content .content-1 .category .item:hover {
 					background-color: #10e9d7;
-					z-index: 1;
+					z-index: inherit;
 				}
 
 					.finances td.left .left-tabs .tab-content .content-1 .category .item .name {
@@ -213,7 +237,8 @@ body {
 					}
 					.finances td.left .left-tabs .tab-content .content-1 .category .item .description {
 						display: block;
-						position: relative;
+						position: absolute;
+						min-width: 196px;
 						top: 30px;
 						border: 1px solid #eeeeee;
 						vertical-align: top;
@@ -228,17 +253,70 @@ body {
 							margin: 0;
 							padding: 0;
 							color: #595959;
+							z-index: inherit;
 						}
 							.finances td.left .left-tabs .tab-content .content-1 .category .item .description .info .left {
 								text-align: left;
 								width: 100px;
 								vertical-align: top;
+								z-index: inherit;
 							}
 							.finances td.left .left-tabs .tab-content .content-1 .category .item .description .info .right{
 								text-align: right;
 								width: 80px;
 								vertical-align: top;
+								z-index: inherit;
 							}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons {
+							width: 110px;
+							position: absolute;
+							height: 25px;
+							max-height: 25px;
+							top: 3px;
+							left: 90px;
+							z-index: 10;
+							margin: 0;
+							padding: 0;
+							border: 0;
+							/*background-color: #004e55;*/
+
+						}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .button {
+							display: block;
+							float: left;
+							width: 25px;
+							height: 25px;
+							margin-left: 1px;
+							margin-right: 1px;
+							background: url("../images/activePanel.png") no-repeat -26px 0;
+						}
+							.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .button:hover,
+							.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .button.checked {
+								background: url("../images/activePanel.png") no-repeat 0 0;
+							}
+								.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .button.checked:hover {
+									background: url("../images/activePanel.png") no-repeat -26px 0;
+								}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons span{
+							display: block;
+							width: 15px;
+							height: 15px;
+							margin: 4px auto;
+							/*background-color: #ffffff;*/
+						}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .add span {
+							background: url("../images/activePanel.png") no-repeat -102px -30px;
+						}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .edit span {
+							background: url("../images/activePanel.png") no-repeat -2px -30px;
+						}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .like span {
+							background: url("../images/activePanel.png") no-repeat -52px -30px;
+						}
+						.finances td.left .left-tabs .tab-content .content-1 .category .item .buttons .delete span {
+							background: url("../images/activePanel.png") no-repeat -77px -30px;
+						}
+
 					.finances td.left .left-tabs .tab-content .content-1 .category #cat-list {
 						border-bottom: 2px solid #ffffff;
 					}
@@ -277,14 +355,267 @@ body {
 					.finances td.left .left-tabs .tab-content .content-2 .labels .list {
 						width: 100%;
 					}
-						.finances td.left .left-tabs .tab-content .content-2 .labels .list .item {
-							width: 180px;
-							height: 15px;
-							margin: 10px;
-							color: #595959;
-							font-size: 13px;
-							padding: 10px;
+						.finances td.left .left-tabs .tab-content .content-2 .labels .list .label {
+							width: 200px;
+							height: 25px;
+							position: relative;
+							cursor: pointer;
 						}
-							.finances td.left .left-tabs .tab-content .content-2 .labels .list .item:hover {
+							.finances td.left .left-tabs .tab-content .content-2 .labels .list .label:hover {
 								background-color: #10e9d7;
 							}
+							.finances td.left .left-tabs .tab-content .content-2 .labels .list .label .name {
+								display: block;
+								position: absolute;
+								color: #595959;
+								font-size: 13px;
+								padding-left: 5px;
+								padding-top: 5px;
+								padding-bottom: 5px;
+							}
+							.finances td.left .left-tabs .tab-content .content-2 .labels .list .label .buttons {
+								width: 60px;
+								position: absolute;
+								height: 25px;
+								max-height: 25px;
+								top: 0;
+								left: 140px;
+								z-index: 10;
+								margin: 0;
+								padding: 0;
+								border: 0;
+								/*background-color: #004e55;*/
+							}
+							.finances td.left .left-tabs .tab-content .content-2 .labels .list .label .buttons .button {
+								display: block;
+								float: left;
+								width: 25px;
+								height: 25px;
+								margin-left: 2px;
+								margin-right: 2px;
+								background: url("../images/activePanel.png") no-repeat -26px 0;
+							}
+							.finances td.left .left-tabs .tab-content .content-2 .labels .list .label .buttons .button:hover{
+								background: url("../images/activePanel.png") no-repeat 0 0;
+							}
+							.finances td.left .left-tabs .tab-content .content-2 .labels .list .label .buttons span{
+								display: block;
+								width: 15px;
+								height: 15px;
+								margin: 4px auto;
+								/*background-color: #ffffff;*/
+							}
+								.finances td.left .left-tabs .tab-content .content-2 .labels .list .label .buttons .edit span {
+									background: url("../images/activePanel.png") no-repeat -2px -30px;
+								}
+								.finances td.left .left-tabs .tab-content .content-2 .labels .list .label .buttons .delete span {
+									background: url("../images/activePanel.png") no-repeat -77px -30px;
+								}
+				.finances td.left .left-tabs .tab-content .content-3 .planing {
+					width: 100%;
+				}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .header{
+						width: 100%;
+						background-color: #eeeeee;
+						height: 30px;
+						cursor: pointer;
+						z-index: 1;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .header .arrow {
+						display: block;
+						float: left;
+						left: 7px;
+						position: relative;
+						width: 20px;
+						height: 30px;
+						background: url("../images/controlPanel.png") no-repeat 0 -280px;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .header.open .arrow {
+						background: url("../images/controlPanel.png") no-repeat 0 -330px;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .header .name {
+						display: block;
+						float: left;
+						position: relative;
+						top: 8px;
+						font-size: 13px;
+						font-weight: bold;
+						color: #595959;
+						z-index: inherit;
+						overflow: hidden;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan {
+						width: 100%;
+						background-color: #ffffff;
+						height: 50px;
+						border-bottom: 1px solid #eeeeee;
+						display: block;
+						z-index: inherit;
+						cursor: pointer;
+						position: relative;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan:hover {
+						background-color: #10e9d7;
+						z-index: inherit;
+					}
+
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .name {
+						display: block;
+						float: left;
+						position: relative;
+						top: 9px;
+						font-size: 13px;
+						color: #595959;
+						left: 5px;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .money {
+						display: block;
+						float: right;
+						position: relative;
+						top: 9px;
+						font-weight: bold;
+						font-size: 13px;
+						right: 5px;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons {
+						width: 110px;
+						position: absolute;
+						height: 25px;
+						max-height: 25px;
+						top: 10px;
+						left: 115px;
+						z-index: 10;
+						margin: 0;
+						padding: 0;
+						border: 0;
+						/*background-color: #004e55;*/
+
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons .button {
+						display: block;
+						float: left;
+						width: 25px;
+						height: 25px;
+						margin-left: 1px;
+						margin-right: 1px;
+						background: url("../images/activePanel.png") no-repeat -26px 0;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons .button:hover,
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons .button.checked {
+						background: url("../images/activePanel.png") no-repeat 0 0;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons .button.checked:hover {
+						background: url("../images/activePanel.png") no-repeat -26px 0;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons span{
+						display: block;
+						width: 15px;
+						height: 15px;
+						margin: 4px auto;
+						/*background-color: #ffffff;*/
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons .confirm span {
+						background: url("../images/activePanel.png") no-repeat -27px -30px;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons .edit span {
+						background: url("../images/activePanel.png") no-repeat -2px -30px;
+					}
+					.finances td.left .left-tabs .tab-content .content-3 .planing .plan .buttons .delete span {
+						background: url("../images/activePanel.png") no-repeat -77px -30px;
+					}
+	.finances td.info {
+		/*background-color: #004e55;*/
+		width: 915px;
+		vertical-align: top;
+	}
+	.finances td.info .main {
+		/*background-color: #0056cc;*/
+		width: 690px;
+		/*min-height: 90%;*/
+		float: left;
+		margin: 5px 5px;
+		border: 1px solid #eeeeee;
+	}
+	.finances td.info .right {
+		/*background-color: #00abbb;*/
+		display: block;
+		float: right;
+		width: 200px;
+		margin-top: 5px;
+		border: 1px solid #eeeeee;
+	}
+.account-type select {
+	width: 300px;
+}
+.img-like {
+	background: url("../images/states.png") no-repeat scroll 0 1px transparent;
+	display: inline-block;
+	height: 15px;
+	width: 15px;
+	vertical-align: bottom;
+}
+.img-hidden {
+	background: url("../images/states.png") no-repeat scroll 0 -29px;
+	display: inline-block;
+	height: 15px;
+	width: 15px;
+	vertical-align: bottom;
+}
+.form-element {
+	min-width: 300px;
+	margin-left: 20px;
+	margin-bottom: 20px;
+	color: #595959;
+	display: block;
+	float: left;
+}
+.clearfix {
+	display: block;
+	float: none;
+}
+.form-element label {
+	display: block;
+	margin-bottom: 5px;
+}
+.form-element select {
+	color: #595959;
+}
+.form-element input[type=text],
+.form-element select {
+	width: 300px;
+}
+.account-description textarea {
+	width: 300px;
+	height: 50px;
+}
+.setup-link {
+	position: relative;
+	left: 330px;
+	top: -15px;
+}
+.button-additional {
+	display: block;
+	min-width: 200px;
+	width: 200px;
+	text-decoration: none;
+	text-align: center;
+	line-height: 30px;
+	font-size: 15px;
+	height: 30px;
+	color: white;
+	border-radius: 10px;
+	background-color: #16A085;
+	cursor: pointer;
+}
+.button-additional:hover {
+	background-color: #6cbd45;
+}
+.account-card-validity select,
+.account-date-open select,
+.account-date-close select,
+.account-date-extradition select,
+.account-date-return select,
+.account-real-estate-date-buy select,
+.account-auto-date-buy select {
+	width: 60px;
+}

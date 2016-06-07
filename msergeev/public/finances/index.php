@@ -1,5 +1,7 @@
 <? include_once(__DIR__."/include/header.php"); MSergeev\Core\Lib\Buffer::setTitle("Главная"); ?>
+<?
 
+?>
 
 
 <? $curDir = basename(__DIR__); ?>
