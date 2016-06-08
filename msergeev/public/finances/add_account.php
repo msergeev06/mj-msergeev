@@ -1,53 +1,23 @@
 <? include_once(__DIR__."/include/header.php"); MSergeev\Core\Lib\Buffer::setTitle("Добавить счёт"); ?>
-<?if (!isset($_POST["action"])):?>
-<form name="add-account" method="post">
+<?
+use MSergeev\Packages\Finances\Lib\Accounts;
+if (isset($_POST["action"]))
+{
+	//Обрабатываем форму
+	if (Accounts::addAccountFromPost($_POST))
+	{
+		//OK
+	}
+	else
+	{
+		//ERROR
+	}
+}
+?>
+<form id="add-account" name="add-account" method="post">
 	<div class="form-element account-type clearfix">
 		<label>Тип счета:</label>
-		<select id="account-type" name="account-type">
-			<optgroup label="Деньги">
-				<option class="item" value="1" selected>Наличные</option>
-				<option class="item" value="2">Дебетовая карта</option>
-				<option class="item" value="3">Депозит</option>
-				<option class="item" value="4">Электронный кошелёк</option>
-				<option class="item" value="5">Банковский счёт</option>
-			</optgroup>
-			<optgroup label="Мне должны">
-				<option class="item" value="6">Мне должны (заем выданный)</option>
-			</optgroup>
-			<optgroup label="Я должен">
-				<option class="item" value="7">Я должен (заем полученный)</option>
-				<option class="item" value="8">Кредитная карта</option>
-				<option class="item" value="9">Кредит</option>
-			</optgroup>
-			<optgroup label="Инвестиции">
-				<option class="item" value="10">Брокерский счет</option>
-				<option class="item" value="11">Металлический счет (ОМС)</option>
-				<option class="item" value="12">Акции</option>
-				<option class="item" value="13">Облигации</option>
-				<option class="item" value="14">Другие ценные бумаги</option>
-				<option class="item" value="15">ПИФ</option>
-				<option class="item" value="16">ОФБУ</option>
-				<option class="item" value="17">Фонд</option>
-				<option class="item" value="18">Накопительное страхование жизни</option>
-				<option class="item" value="19">Накопительный план</option>
-				<option class="item" value="20">Негосударственный пенсионный фонд</option>
-				<option class="item" value="21">Пенсионный счет</option>
-				<option class="item" value="22">ПАММ-счет</option>
-			</optgroup>
-			<optgroup label="Имущество">
-				<option class="item" value="23">Недвижимость</option>
-				<option class="item" value="24">Автомобиль</option>
-				<option class="item" value="25">Водный транспорт</option>
-				<option class="item" value="26">Произведение искусства</option>
-				<option class="item" value="27">Бизнес</option>
-				<option class="item" value="28">Прочее имущество</option>
-				<option class="item" value="29">Мототехника</option>
-				<option class="item" value="30">Воздушный транспорт</option>
-			</optgroup>
-			<optgroup label="Карты лояльности">
-				<option class="item" value="31">Бонусная карта</option>
-			</optgroup>
-		</select>
+		<?=Accounts::showSelectAccountType('account-type','account-type');?>
 	</div>
 	<div class="form-element account-status clearfix">
 		<label>Статус:</label>
@@ -61,41 +31,7 @@
 	</div>
 	<div class="form-element account-emoney-type clearfix" style="display: none">
 		<label>Тип электронных денег</label>
-		<select name="account-emoney-type">
-			<option value="0">Выберите тип электронных денег</option>
-			<option value="1">WebMoney</option>
-			<option value="2">Яндекс.Деньги</option>
-			<option value="3">QIWI</option>
-			<option value="4">Деньги@Mail.Ru</option>
-			<option value="5">RBK Money</option>
-			<option value="6">Rapida Online</option>
-			<option value="7">Единый кошелёк (Wallet1, W1)</option>
-			<option value="8">Z-Payment</option>
-			<option value="9">MoneyMail</option>
-			<option value="10">HandyBank</option>
-			<option value="11">Perfect Money</option>
-			<option value="12">OKPAY</option>
-			<option value="13">Payeer</option>
-			<option value="14">IntellectMoney</option>
-			<option value="15">GlobalMoney</option>
-			<option value="16">LiqPay</option>
-			<option value="17">EasyPay</option>
-			<option value="18">PayPal</option>
-			<option value="19">E-gold</option>
-			<option value="20">Google Wallet</option>
-			<option value="21">Payoneer</option>
-			<option value="22">Skrill (ex-Moneybookers)</option>
-			<option value="23">Payza (ex-AlertPay)</option>
-			<option value="24">Paxum</option>
-			<option value="25">NETELLER</option>
-			<option value="26">SolidTrustPay</option>
-			<option value="27">Click2Pay</option>
-			<option value="28">Commerce Gold (c-gold)</option>
-			<option value="29">EgoPay</option>
-			<option value="30">KZM</option>
-			<option value="31">cashU</option>
-			<option value="32">Другой</option>
-		</select>
+		<?=Accounts::showSelectEMoneyType('account-emoney-type');?>
 	</div>
 	<div class="form-element account-name clearfix">
 		<label>Название:</label>
@@ -108,6 +44,8 @@
 	<div class="form-element account-start-balance clearfix">
 		<label id="start-balance">Начальный баланс:</label>
 		<label id="start-debt" style="display: none">Начальный долг:</label>
+		<label id="start-debet" style="display: none">Начальная задолженность:</label>
+		<label id="price-buy" style="display: none">Цена покупки:</label>
 		<input type="text" name="account-start-balance" value="0">
 	</div>
 	<div class="form-element account-market-price clearfix" style="display: none">
@@ -127,25 +65,7 @@
 	<div class="additional" style="display: none">
 		<div class="form-element account-card-type" style="display: none">
 			<label>Тип карты:</label>
-			<select name="account-card-type">
-				<option value="1" selected>Visa</option>
-				<option value="2">Mastercard</option>
-				<option value="3">Maestro</option>
-				<option value="4">American Express</option>
-				<option value="5">ПРО100</option>
-				<option value="6">China Unionpay</option>
-				<option value="7">JCB</option>
-				<option value="8">Diners Club</option>
-				<option value="9">УЭК</option>
-				<option value="10">Золотая Корона</option>
-				<option value="11">Сберкарт</option>
-				<option value="12">ChronoPay</option>
-				<option value="13">Белкарт</option>
-				<option value="14">KAZNNSS</option>
-				<option value="15">Армениан Кард</option>
-				<option value="16">НСМЭП</option>
-				<option value="17">Алтын Асыр</option>
-			</select>
+			<?=Accounts::showSelectCardType('account-card-type');?>
 		</div>
 		<div class="form-element account-card-validity" style="display: none">
 			<label>Срок действия карты:</label>
@@ -303,7 +223,7 @@
 		</div>
 		<div class="form-element account-real-estate-type" style="display: none">
 			<label>Тип имущества</label>
-			<select name="account-real-estate-type">
+			<select id="account-real-estate-type" name="account-real-estate-type">
 				<option value="1">Дом</option>
 				<option value="2">Квартира</option>
 			</select>
@@ -380,66 +300,15 @@
 		</div>
 		<div class="form-element account-auto-fuel-type" style="display: none">
 			<label>Тип топлива</label>
-			<select name="account-auto-fuel-type">
-				<option value="0">&nbsp;</option>
-				<option value="1">Бензин</option>
-				<option value="2">Дизель</option>
-				<option value="3">Газ</option>
-				<option value="4">Любой</option>
-				<option value="5">Инжектор</option>
-				<option value="6">Карбюратор</option>
-				<option value="7">Гибрид</option>
-				<option value="8">Бензин / Газ</option>
-				<option value="9">Электро</option>
-			</select>
+			<?=Accounts::showSelectFuelType('account-auto-fuel-type');?>
 		</div>
 		<div class="form-element account-auto-gearbox-type" style="display: none">
 			<label>Тип коробки передач</label>
-			<select name="account-auto-gearbox-type">
-				<option value="0">&nbsp;</option>
-				<option value="1">Механическая</option>
-				<option value="2">Автоматическая</option>
-				<option value="3">Любая</option>
-				<option value="4">Робот</option>
-			</select>
+			<?=Accounts::showSelectGearboxType('account-auto-gearbox-type');?>
 		</div>
 		<div class="form-element account-auto-color" style="display: none">
 			<label>Цвет</label>
-			<select name="account-auto-color">
-				<option value="0">&nbsp;</option>
-				<option value="1">Бежевый</option>
-				<option value="2">Бежевый металлик</option>
-				<option value="3">Белый</option>
-				<option value="4">Белый металлик</option>
-				<option value="5">Голубой</option>
-				<option value="6">Голубой металлик</option>
-				<option value="7">Желтый</option>
-				<option value="8">Желтый металлик</option>
-				<option value="9">Зеленый</option>
-				<option value="10">Зеленый металлик</option>
-				<option value="11">Золотой</option>
-				<option value="12">Золотой металлик</option>
-				<option value="13">Коричневый</option>
-				<option value="14">Коричневый металлик</option>
-				<option value="15">Красный</option>
-				<option value="16">Красный металлик</option>
-				<option value="17">Оранжевый</option>
-				<option value="18">Оранжевый металлик</option>
-				<option value="19">Пурпурный</option>
-				<option value="20">Пурпурный металлик</option>
-				<option value="21">Серебряный</option>
-				<option value="22">Серебряный металлик</option>
-				<option value="23">Серый</option>
-				<option value="24">Серый металлик</option>
-				<option value="25">Синий</option>
-				<option value="26">Синий металлик</option>
-				<option value="27">Фиолетовый</option>
-				<option value="28">Фиолетовый металлик</option>
-				<option value="29">Черный</option>
-				<option value="30">Черный металлик</option>
-				<option value="31">Розовый</option>
-				<option value="32">Розовый металлик</option>
-			</select>
+			<?=Accounts::showSelectColor('account-auto-color');?>
 		</div>
 		<div class="form-element account-auto-year" style="display: none">
 			<label>Год выпуска</label>
@@ -457,13 +326,7 @@
 		</div>
 		<div class="form-element account-auto-region" style="display: none">
 			<label>Регион регистрации</label>
-			<select name="account-auto-region">
-				<option value="0">&nbsp;</option>
-				<option value="1">Москва</option>
-				<option value="2">Московская область</option>
-				<option value="3">Санкт-Петербург</option>
-				<option value="4">Ленинградская область</option>
-			</select>
+			<?=Accounts::showSelectRegion('account-auto-region');?>
 		</div>
 		<div class="form-element account-auto-start-odo" style="display: none">
 			<label>Начальный пробег, км</label>
@@ -490,10 +353,14 @@
 			</select>
 		</div>
 	</div>
+	<div class="clearfix"></div>
+	<div class="button-submit">
+		<div class="cancel"><span>Отмена</span></div>
+		<div class="submit"><span>Сохранить</span></div>
+	</div>
+	<input type="hidden" name="action" value="1">
 </form>
 <script type="text/javascript" src="../../packages/finances/templates/.default/js/accounts.js"></script>
-<?else:?>
-<?endif;?>
 
 <? $curDir = basename(__DIR__); ?>
 <? include_once(MSergeev\Core\Lib\Loader::getPublic("finances")."include/footer.php"); ?>

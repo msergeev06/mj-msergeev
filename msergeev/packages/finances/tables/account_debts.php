@@ -32,7 +32,7 @@ class AccountDebtsTable extends Lib\DataManager
 				'title' => 'ID счета'
 			)),
 			new Entity\DateField('DATE_START',array(
-				'title' => 'Дата выдачи/пролучения'
+				'title' => 'Дата выдачи/получения'
 			)),
 			new Entity\DateField('DATE_END',array(
 				'title' => 'Дата возврата/погашения'

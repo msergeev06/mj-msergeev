@@ -619,3 +619,37 @@ a:hover {
 .account-auto-date-buy select {
 	width: 60px;
 }
+.button-submit {
+	display: block;
+	float: right;
+	width: 220px;
+	margin-bottom: 10px;
+}
+.button-submit .cancel, .button-submit .submit {
+	display: inline-block;
+	float: left;
+	margin-left: 5px;
+	width: 100px;
+	height: 30px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+.button-submit .cancel span, .button-submit .submit span{
+	display: block;
+	position: relative;
+	color: #ffffff;
+	/*font-weight: bold;*/
+	font-size: 14px;
+	top: 6px;
+	text-align: center;
+}
+.button-submit .cancel {
+	background-color: #808080;
+}
+.button-submit .cancel:hover, .button-submit .submit:hover {
+	background-color: #10c4b2;
+}
+.button-submit .submit {
+	background-color: #16A085;
+}
+
