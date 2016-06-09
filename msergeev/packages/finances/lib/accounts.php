@@ -636,6 +636,670 @@ class Accounts
 		return static::addAccount($arData);
 	}
 
+	public static function getAccountsList ()
+	{
+		$arAccounts = array();
+		$arRes = Tables\AccountsTable::getList(array(
+			'select' => array(
+				'ID',
+				'ACCOUNT_TYPE_ID',
+				'ACCOUNT_TYPE_ID.NAME' => 'ACCOUNT_TYPE_NAME',
+				'STATUS',
+				'NAME',
+				'DESCRIPTION',
+				'START_BALANCE',
+				'CURRENT_MARKET_PRICE',
+				'CURRENCY'
+			)//,
+			//'filter' => array('STATUS'=>2)//,
+			//'order' => array('NAME'=>'ASC')
+		));
+		//msDebug($arRes);
+		if ($arRes)
+		{
+			foreach ($arRes as $ar_res)
+			{
+				$ar_res['BALANCE'] = static::getAccountBalance($ar_res['ID']);
+
+				if ($ar_res['STATUS']==0)
+				{
+					//Скрытый
+					$accountCode = 'HIDDEN';
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID']>=static::$a_cash && $ar_res['ACCOUNT_TYPE_ID']<=static::$a_bank)
+				{
+					//Деньги
+					$accountCode = 'MONEY';
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID']==static::$a_mne)
+				{
+					//Мне должны
+					$accountCode = 'ME';
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID']>=static::$a_i && $ar_res['ACCOUNT_TYPE_ID']<=static::$a_credit)
+				{
+					//Я должел
+					$accountCode = 'I_AM';
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID']>=static::$a_broker && $ar_res['ACCOUNT_TYPE_ID']<=static::$a_pamm)
+				{
+					//Инвестиции
+					$accountCode = 'INVEST';
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID']>=static::$a_estate && $ar_res['ACCOUNT_TYPE_ID']<=static::$a_air)
+				{
+					//Имущество
+					$accountCode = 'ESTATE';
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID']==static::$a_bonus)
+				{
+					//Карты лояльности
+					$accountCode = 'BONUS';
+				}
+				else
+				{
+					//Если что-то пошло не так, делаем счет скрытым
+					$accountCode = 'HIDDEN';
+				}
+
+				$arData = $ar_res;
+				$arData['BALANCE_SHOW'] = number_format(
+					floor($ar_res['BALANCE']),
+					0,
+					'.',
+					'&nbsp;'
+				);
+				//Далее идет запрос дополнительных параметров баланса для вывода, в зависимости от типа счета
+				if ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_cash)
+				{
+					//Наличные
+					$arData['ADDITIONAL'] = static::getAdditionalInfoCash($ar_res);
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_debet_card)
+				{
+					//Дебетовая карта
+					$arData['ADDITIONAL'] = static::getAdditionalInfoDebetCard($ar_res);
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_deposit)
+				{
+					//Дебетовая карта
+					$arData['ADDITIONAL'] = static::getAdditionalInfoDeposit($ar_res);
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_emoney)
+				{
+					//Электронный кошелек
+					$arData['ADDITIONAL'] = static::getAdditionalInfoEMoney($ar_res);
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_bank)
+				{
+					//Банковский счет
+					$arData['ADDITIONAL'] = static::getAdditionalInfoBank($ar_res);
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_mne)
+				{
+					//Мне должны
+					$arData['ADDITIONAL'] = static::getAdditionalInfoMe($ar_res);
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_i)
+				{
+					//Я должен
+					$arData['ADDITIONAL'] = static::getAdditionalInfoIam($ar_res);
+				}
+				elseif ($ar_res['ACCOUNT_TYPE_ID'] == static::$a_credit_card)
+				{
+					//Кредитная карта
+					$arData['ADDITIONAL'] = static::getAdditionalInfoCreditCard($ar_res);
+				}
+
+
+				$arAccounts[$accountCode]['DATA'][$ar_res['ID']] = $arData;
+				if (!isset($arAccounts[$accountCode]['SUM'])) $arAccounts[$accountCode]['SUM'] = 0;
+				$arAccounts[$accountCode]['SUM'] += $ar_res['BALANCE'];
+				if ($ar_res['STATUS']==2)
+				{
+					$arAccounts['LIKE']['DATA'][$ar_res['ID']] = $arData;
+					if (!isset($arAccounts['LIKE']['SUM'])) $arAccounts['LIKE']['SUM'] = 0;
+					$arAccounts['LIKE']['SUM'] += $ar_res['BALANCE'];
+				}
+			}
+		}
+
+		//msDebug($arAccounts);
+
+		if (empty($arAccounts))
+		{
+			return false;
+		}
+		else
+		{
+			return $arAccounts;
+		}
+	}
+
+	protected static function getAdditionalInfoCash ($ar_res)
+	{
+		$arAdditional = array();
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		if (strlen($ar_res['DESCRIPTION'])>0)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Описание',
+				'VALUE' => $ar_res['DESCRIPTION']
+			);
+		}
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+
+		return $arAdditional;
+	}
+
+	protected static function getAdditionalInfoDebetCard ($ar_res)
+	{
+		$arAdditional = array();
+
+		$arRes2 = static::getAccountBankInfoByAccountID($ar_res['ID']);
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Банк',
+				'VALUE' => $arRes2['BANK_NAME']
+			);
+		}
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Срок действия карты',
+				'VALUE' => $arRes2['DATE_CARD']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Стоимость годового обслуживания',
+				'VALUE' => number_format($arRes2['ANNUAL_MAINTENANCE_COST'],2,'.','&nbsp;')
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Годовая ставка на остаток, %',
+				'VALUE' => number_format($arRes2['ANNUAL_RATE'],2,'.','&nbsp;')
+			);
+		}
+
+		return $arAdditional;
+	}
+
+	protected static function getAdditionalInfoDeposit ($ar_res)
+	{
+		$arAdditional = array();
+
+		$arRes2 = static::getAccountBankInfoByAccountID($ar_res['ID']);
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Банк',
+				'VALUE' => $arRes2['BANK_NAME']
+			);
+		}
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Годовая ставка, %',
+				'VALUE' => number_format($arRes2['ANNUAL_RATE'],2,'.',' ')
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Дата открытия',
+				'VALUE' => $arRes2['DATE_START']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Дата закрытия',
+				'VALUE' => $arRes2['DATE_END']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Период начисления %',
+				'VALUE' => $arRes2['ACCRUAL_PERIOD_NAME']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Капитализация',
+				'VALUE' => $arRes2['CAPITALIZATION_NAME']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Тип депозита',
+				'VALUE' => $arRes2['DEPOSIT_TYPE_NAME']
+			);
+		}
+
+		return $arAdditional;
+	}
+
+	protected static function getAdditionalInfoEMoney ($ar_res)
+	{
+		$arAdditional = array();
+
+		$arRes2 = static::getAccountEMoneyInfoByAccountID($ar_res['ID']);
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Тип эл. денег',
+				'VALUE' => $arRes2['EMONEY_TYPE_NAME']
+			);
+		}
+
+		return $arAdditional;
+	}
+
+	protected static function getAdditionalInfoBank ($ar_res)
+	{
+		$arAdditional = array();
+
+		$arRes2 = static::getAccountBankInfoByAccountID($ar_res['ID']);
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Банк',
+				'VALUE' => $arRes2['BANK_NAME']
+			);
+		}
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+
+		return $arAdditional;
+	}
+
+	protected static function getAdditionalInfoMe ($ar_res)
+	{
+		$arAdditional = array();
+
+		$arRes2 = static::getAccountDebtInfoByAccountID($ar_res['ID']);
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Годовая ставка, %',
+				'VALUE' => $arRes2['ANNUAL_RATE']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Дата выдачи',
+				'VALUE' => $arRes2['DATE_START']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Дата возврата',
+				'VALUE' => $arRes2['DATE_END']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Email получателя',
+				'VALUE' => $arRes2['EMAIL']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Телефон получателя',
+				'VALUE' => $arRes2['PHONE']
+			);
+		}
+
+		return $arAdditional;
+	}
+
+	protected static function getAdditionalInfoIam ($ar_res)
+	{
+		$arAdditional = array();
+
+		$arRes2 = static::getAccountDebtInfoByAccountID($ar_res['ID']);
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Годовая ставка, %',
+				'VALUE' => $arRes2['ANNUAL_RATE']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Дата получения',
+				'VALUE' => $arRes2['DATE_START']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Дата погашения',
+				'VALUE' => $arRes2['DATE_END']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Email кредитора',
+				'VALUE' => $arRes2['EMAIL']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Телефон кредитора',
+				'VALUE' => $arRes2['PHONE']
+			);
+		}
+
+		return $arAdditional;
+	}
+
+	protected static function getAdditionalInfoCreditCard ($ar_res)
+	{
+		$arAdditional = array();
+
+		$arRes2 = static::getAccountBankInfoByAccountID($ar_res['ID']);
+		$arAdditional[] = array(
+			'NAME' => 'Название',
+			'VALUE' => $ar_res['NAME']
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Тип',
+			'VALUE' => $ar_res['ACCOUNT_TYPE_NAME']
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Банк',
+				'VALUE' => $arRes2['BANK_NAME']
+			);
+		}
+		$arAdditional[] = array(
+			'NAME' => 'Остаток',    //В валюте счета
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		$arAdditional[] = array(
+			'NAME' => 'Остаток в валюте по умолчанию',
+			'VALUE' => number_format($ar_res['BALANCE'],2,'.','&nbsp;')
+		);
+		if ($arRes2)
+		{
+			$arAdditional[] = array(
+				'NAME' => 'Срок действия карты',
+				'VALUE' => $arRes2['DATE_CARD']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Тип карты',
+				'VALUE' => $arRes2['CARD_TYPE_NAME']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Кредитный лимит',
+				'VALUE' => number_format($arRes2['CREDIT_LIMIT'],2,'.','&nbsp;')
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Льготный период, дней',
+				'VALUE' => $arRes2['GRACE_PERIOD']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'День минимального платежа',
+				'VALUE' => $arRes2['DAY_MINIMUM_PAYMENT']
+			);
+			$arAdditional[] = array(
+				'NAME' => 'Стоимость ежегодного обслуживания',
+				'VALUE' => number_format($arRes2['ANNUAL_MAINTENANCE_COST'],2,'.','&nbsp;')
+			);
+			$balance = $ar_res['BALANCE'];
+			if ($balance>0) $balance = $balance * (-1);
+			$arAdditional[] = array(
+				'NAME' => 'Остаток кредитных средств',
+				'VALUE' => number_format(($arRes2['CREDIT_LIMIT']+$balance),2,'.','&nbsp;')
+			);
+		}
+
+		return $arAdditional;
+	}
+
+	protected static function getAccountBankInfoByAccountID ($accountID)
+	{
+		$arRes = Tables\AccountBankTable::getList(array(
+			'select' => array(
+				'ID',
+				'ACCOUNT_ID',
+				'BANK_NAME',
+				'CARD_TYPE_ID',
+				'CARD_TYPE_ID.NAME' => 'CARD_TYPE_NAME',
+				'DATE_CARD',
+				'CREDIT_LIMIT',
+				'ANNUAL_RATE',
+				'GRACE_PERIOD',
+				'MINIMUM_PAYMENT_PERCENTAGE',
+				'DAY_MINIMUM_PAYMENT',
+				'CASH_BANK_ATM',
+				'CASH_OTHER_ATM',
+				'ANNUAL_MAINTENANCE_COST',
+				'PAYMENT_TYPE',
+				'DATE_START',
+				'DATE_END',
+				'ONE_TIME_FEE',
+				'MONTHLY_FEE',
+				'ACCRUAL_PERIOD',
+				'CAPITALIZATION',
+				'DEPOSIT_TYPE'
+			),
+			'filter' => array('ACCOUNT_ID'=>$accountID)
+		));
+		if ($arRes)
+		{
+			$arRes = $arRes[0];
+			$arRes['DATE_CARD'] = substr($arRes['DATE_CARD'],3);
+			$arRes['DATE_CARD'] = str_replace('.','/',$arRes['DATE_CARD']);
+			if ($arRes['PAYMENT_TYPE']==1)
+			{
+				$arRes['PAYMENT_TYPE_NAME'] = 'Аннуитетный';
+			}
+			else
+			{
+				$arRes['PAYMENT_TYPE_NAME'] = 'Дифференцированный';
+			}
+			if ($arRes['DATE_START']=='30.11.1999')
+			{
+				$arRes['DATE_START'] = null;
+			}
+			if ($arRes['DATE_END']=='30.11.1999')
+			{
+				$arRes['DATE_END'] = null;
+			}
+			switch ($arRes['ACCRUAL_PERIOD'])
+			{
+				case 1:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'В конце срока';
+					break;
+				case 2:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Ежедневно';
+					break;
+				case 3:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Еженедельно';
+					break;
+				case 4:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Ежемесячно на дату вложения';
+					break;
+				case 5:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Ежемесячно в последний день месяца';
+					break;
+				case 6:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Ежемесячно в первый день месяца';
+					break;
+				case 7:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Раз в три месяца на день вклада';
+					break;
+				case 8:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Ежеквартально в последний день квартала';
+					break;
+				case 9:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Раз в полугодие';
+					break;
+				case 10:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Раз в год';
+					break;
+				case 11:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Через заданный интервал';
+					break;
+				default:
+					$arRes['ACCRUAL_PERIOD_NAME'] = 'Не задано';
+					break;
+			}
+			switch ($arRes['DEPOSIT_TYPE'])
+			{
+				case 1:
+					$arRes['DEPOSIT_TYPE_NAME'] = 'Непополняемый';
+					break;
+				case 2:
+					$arRes['DEPOSIT_TYPE_NAME'] = 'Пополняемый';
+					break;
+				default:
+					$arRes['DEPOSIT_TYPE_NAME'] = 'Не задано';
+					break;
+			}
+			if ($arRes['CAPITALIZATION'])
+			{
+				$arRes['CAPITALIZATION_NAME'] = 'Да';
+			}
+			else
+			{
+				$arRes['CAPITALIZATION_NAME'] = 'Нет';
+			}
+		}
+
+		return $arRes;
+	}
+
+	protected static function getAccountEMoneyInfoByAccountID ($accountID)
+	{
+		$arRes = Tables\AccountEmoneyTable::getList(array(
+			'select' => array(
+				'ID',
+				'ACCOUNT_ID',
+				'EMONEY_TYPE_ID',
+				'EMONEY_TYPE_ID.NAME' => 'EMONEY_TYPE_NAME'
+			),
+			'filter' => array('ACCOUNT_ID'=>$accountID)
+		));
+		if ($arRes)
+		{
+			$arRes = $arRes[0];
+		}
+
+		return $arRes;
+	}
+
+	protected static function getAccountDebtInfoByAccountID ($accountID)
+	{
+		$arRes = Tables\AccountDebtsTable::getList(array(
+			'filter' => array('ACCOUNT_ID'=>$accountID)
+		));
+		if ($arRes)
+		{
+			$arRes = $arRes[0];
+		}
+
+		return $arRes;
+	}
+
+	protected static function getAccountBalance ($accountID)
+	{
+		$arRes = Tables\AccountsTable::getList(array(
+			'select' => array('START_BALANCE'),
+			'filter' => array('ID'=>$accountID)
+		));
+		$fSum = 0;
+		if ($arRes)
+		{
+			$fSum += floatval($arRes[0]['START_BALANCE']);
+		}
+
+		//TODO: Далее будет запрос операций по данному счету
+
+		return $fSum;
+	}
+
 	protected static function addAccount ($arData)
 	{
 		msDebug($arData);
@@ -756,6 +1420,8 @@ class Accounts
 		}
 	}
 
+
+
 	protected static function deleteAccount ($primary,$confirm=null)
 	{
 		$query = new Entity\Query('delete');
@@ -768,4 +1434,6 @@ class Accounts
 		);
 		$res = $query->exec();
 	}
+
+
 }

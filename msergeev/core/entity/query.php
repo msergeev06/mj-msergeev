@@ -546,12 +546,13 @@ class Query
 		$tableName = $this->getTableName();
 		$arMap = $this->getTableMap();
 		$arSelect = $this->getSelect();
+//		msDebug($arSelect);
 
 		if (!isset($this->arSqlFrom[$tableName]))
 		{
 			$this->arSqlFrom[$tableName] = 1;
 		}
-
+//		msDebug($this->arSqlFrom);
 		if (!empty($arSelect)) {
 			$bSelectFirst = true;
 			foreach ($arSelect as $key=>$value)
@@ -661,6 +662,7 @@ class Query
 				}
 				else
 				{
+					//msDebug($key); msDebug($value);
 					if (!strpos($key,'.'))
 					{
 						try
@@ -689,12 +691,18 @@ class Query
 						$aliasField = $value;
 						$arFieldTable = array();
 						$arFields = explode('.',$key);
+						//msDebug($arFields);
 						foreach ($arFields as $k=>$field)
 						{
+							//msDebug(isset($arFields[$k+1]));
 							if (isset($arFields[$k+1]))
 							{
 								try
 								{
+									//msDebug($field);
+									//msDebug($this->arFieldsEntity);
+									//msDebug($arMap);
+									//msDebug($linkedMap);
 									if (isset($this->arFieldsEntity[$field]))
 									{
 										$fieldMap = $this->arFieldsEntity[$field];
@@ -774,6 +782,7 @@ class Query
 		$tableAlias = $this->getTableAliasPostfix();
 		$bTableAlias = ($tableAlias != '');
 		$bFirst = true;
+		//msDebug($this->arSqlFrom);
 		foreach ($this->arSqlFrom as $table=>$value)
 		{
 			if ($bFirst)
@@ -805,14 +814,15 @@ class Query
 
 	private function CreateSqlWhere ()
 	{
-		$sqlWhere = "";
+		$sqlWhere = "WHERE\n\t";
 
 		$helper = new Lib\SqlHelper();
 		$tableName = $this->getTableName();
 		$arWhere = $this->getWhere();
+		//msDebug($arWhere);
+
 		if (!empty($arWhere))
 		{
-			$sqlWhere = "WHERE\n\t";
 			$arMap = $this->getTableMap();
 			$bFirst = true;
 			foreach ($arWhere as $field=>$value)
@@ -987,7 +997,7 @@ class Query
 		$arSqlWhere = $this->arSqlWhere;
 		if (!empty($arSqlWhere))
 		{
-			if ($sqlWhere != "")
+			if ($sqlWhere != "" && $sqlWhere != "WHERE\n\t")
 			{
 				$sqlWhere.= " AND\n\t";
 			}
@@ -1005,6 +1015,9 @@ class Query
 				$sqlWhere.= $first." = ".$second;
 			}
 		}
+
+		if ($sqlWhere == "WHERE\n\t")
+			$sqlWhere = "";
 
 		if ($sqlWhere != "")
 		{
@@ -1045,19 +1058,28 @@ class Query
 		$sqlOrder = "";
 		$helper = new Lib\SqlHelper();
 		$arOrder = $this->getOrder();
+		$tableName = $this->getTableName();
 		if (!empty($arOrder)) {
 			$sqlOrder .= "ORDER BY\n\t";
 			$bFirst = true;
+			//msDebug($arOrder);
 			foreach ($arOrder as $sort=>$by)
 			{
 				if ($bFirst)
 				{
-					$sqlOrder .= $helper->wrapQuotes($sort).' '.$by;
+					if (!strpos($sort,'.'))
+						$sqlOrder .= $helper->wrapQuotes($tableName).'.'.$helper->wrapQuotes($sort).' '.$by;
+					else
+						$sqlOrder .= $helper->wrapQuotes($sort).' '.$by;
 					$bFirst = false;
 				}
 				else
 				{
-					$sqlOrder .= ",\n\t".$helper->wrapQuotes($sort).' '.$by;
+					if (!strpos($sort,'.'))
+						$sqlOrder .= ",\n\t".$helper->wrapQuotes($tableName).'.'.$helper->wrapQuotes($sort).' '.$by;
+					else
+						$sqlOrder .= ",\n\t".$helper->wrapQuotes($sort).' '.$by;
+
 				}
 			}
 			$sqlOrder.="\n";

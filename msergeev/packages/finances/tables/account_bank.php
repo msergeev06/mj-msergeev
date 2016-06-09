@@ -87,7 +87,7 @@ class AccountBankTable extends Lib\DataManager
 			new Entity\IntegerField('PAYMENT_TYPE',array(
 				'required' => true,
 				'default_value' => 0,
-				'title' => 'Тип платежа (0 - аннуитетный, 1 - дифференцированный)'
+				'title' => 'Тип платежа (1 - аннуитетный, 2 - дифференцированный)'
 			)),
 			new Entity\DateField('DATE_START',array(
 				'title' => 'Дата открытия'

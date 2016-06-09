@@ -1,5 +1,6 @@
 <?
 use MSergeev\Core\Lib;
+use MSergeev\Packages\Finances\Lib\Accounts;
 
 header('Content-type: text/html; charset=utf-8');
 Lib\Buffer::start("page");
@@ -39,432 +40,82 @@ $path=Lib\Loader::getSitePublic('finances');
 					<div class="content-1">
 						<a href="<?=$path?>add_account.php" class="add">&nbsp;&nbsp;&nbsp;&nbsp;Добавить счет</a>
 						<div class="category">
-							<div class="header open" data-id="1">
-								<div class="arrow"></div>
-								<div class="name">Избранные</div>
-								<div class="money green">17 976 Р</div>
-							</div>
-							<div id="cat-list" class="list-1">
-								<div class="item" data-id="1">
-									<div class="name">ЗП Макслевел</div>
-									<div class="money green">42&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like checked"><span title="Убрать из избранного"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">ЗП Макслевел</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Дебетовая карта</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">Промсвязьбанк</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">42.71&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">42.71&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Срок действия карты</td>
-												<td class="right">02/20</td>
-											</tr>
-											<tr>
-												<td class="left">Стоимость годового обслуживания</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Годовая ставка на остаток, %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-										</table>
-									</div>
+						<? $arAccounts = Accounts::getAccountsList(); ?>
+						<?if ($arAccounts):?>
+							<?if (isset($arAccounts['LIKE']) && !empty($arAccounts['LIKE'])):?>
+								<div class="header open" data-id="1">
+									<div class="arrow"></div>
+									<div class="name">Избранные</div>
+									<div class="money green"><?=floor($arAccounts['LIKE']['SUM'])?>&nbsp;Р</div>
 								</div>
-								<div class="item" data-id="2">
-									<div class="name">Кошелек</div>
-									<div class="money green">17&nbsp;931&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like checked"><span title="Убрать из избранного"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Кошелёк</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Наличные</td>
-											</tr>
-											<tr>
-												<td class="left">Описание</td>
-												<td class="right">Мои наличные деньги</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">17&nbsp;931.15&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">17&nbsp;931.15&nbsp;Р</td>
-											</tr>
-										</table>
-									</div>
+								<div id="cat-list" class="list-1">
+									<?if(!empty($arAccounts['LIKE']['DATA'])):?>
+										<?foreach($arAccounts['LIKE']['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=$arData['NAME']?></div>
+												<div class="money green"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like checked"><span title="Убрать из избранного"></span></div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+												<div class="description" style="display: none">
+													<table class="info">
+														<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+														<tr>
+															<td class="left"><?=$arInfo['NAME']?></td>
+															<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+														</tr>
+														<?endforeach;?>
+													</table>
+												</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
 								</div>
-								<div class="item" data-id="3">
-									<div class="name">QiWi</div>
-									<div class="money green">2&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like checked"><span title="Убрать из избранного"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">QiWi</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Электронный кошелек</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">2.80&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">2.80&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Тип эл. денег</td>
-												<td class="right">QIWI</td>
-											</tr>
-										</table>
-									</div>
+							<?endif;?>
+							<?if (isset($arAccounts['MONEY']) && !empty($arAccounts['MONEY'])):?>
+								<div class="header open" data-id="2">
+									<div class="arrow"></div>
+									<div class="name">Деньги</div>
+									<div class="money green"><?=floor($arAccounts['MONEY']['SUM'])?>&nbsp;Р</div>
 								</div>
-							</div>
-							<div class="header open" data-id="2">
-								<div class="arrow"></div>
-								<div class="name">Деньги</div>
-								<div class="money green">18&nbsp;185&nbsp;Р</div>
-							</div>
-							<div id="cat-list" class="list-2">
-								<div class="item" data-id="1">
-									<div class="name">ЗП Макслевел</div>
-									<div class="money green">42&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like checked"><span title="Убрать из избранного"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">ЗП Макслевел</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Дебетовая карта</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">Промсвязьбанк</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">42.71&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">42.71&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Срок действия карты</td>
-												<td class="right">02/20</td>
-											</tr>
-											<tr>
-												<td class="left">Стоимость годового обслуживания</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Годовая ставка на остаток, %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-										</table>
-									</div>
+								<div id="cat-list" class="list-2">
+									<?if(!empty($arAccounts['MONEY']['DATA'])):?>
+										<?foreach($arAccounts['MONEY']['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=$arData['NAME']?></div>
+												<div class="money green"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like<?=($arData['STATUS']==2)?' checked':''?>">
+														<span title="<?=($arData['STATUS']==2)?'Убрать из избранного':'Добавить в избранное'?>"></span>
+													</div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+													<div class="description" style="display: none">
+														<table class="info">
+															<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+																<tr>
+																	<td class="left"><?=$arInfo['NAME']?></td>
+																	<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+																</tr>
+															<?endforeach;?>
+														</table>
+													</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
 								</div>
-								<div class="item" data-id="2">
-									<div class="name">ЗП Сбербанк</div>
-									<div class="money green">0&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">ЗП Сбербанк</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Дебетовая карта</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">Сбербанк России</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">0&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">0&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Срок действия карты</td>
-												<td class="right">11/18</td>
-											</tr>
-											<tr>
-												<td class="left">Стоимость годового обслуживания</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Годовая ставка на остаток, %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-								<div class="item" data-id="3">
-									<div class="name">Кошелек</div>
-									<div class="money green">17&nbsp;931&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like checked"><span title="Убрать из избранного"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Кошелёк</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Наличные</td>
-											</tr>
-											<tr>
-												<td class="left">Описание</td>
-												<td class="right">Мои наличные деньги</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">17&nbsp;931.15&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">17&nbsp;931.15&nbsp;Р</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-								<div class="item" data-id="4">
-									<div class="name">ПЛЮС-Банк (Оплачено)</div>
-									<div class="money green">206&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">ПЛЮС-Банк (Оплачено)</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Депозит</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">ПЛЮС-Банк</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">206.36&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">206.36&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Годовая ставка, %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Дата закрытия</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Период начисления %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Капитализация</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Тип депозита</td>
-												<td class="right red">Не указано</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-								<div class="item" data-id="5">
-									<div class="name">Сберегательный счет</div>
-									<div class="money green">1&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Сберегательный счет</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Банковский счет</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">Сбербанк России</td>
-											</tr>
-											<tr>
-												<td class="left">Описание</td>
-												<td class="right">1,5%</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">1.58&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">1.58&nbsp;Р</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-								<div class="item" data-id="6">
-									<div class="name">Momentum</div>
-									<div class="money green">1&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Momentum</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Дебетовая карта</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">Сбербанк России</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">1.11&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">1.11&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Срок действия карты</td>
-												<td class="right">11/16</td>
-											</tr>
-											<tr>
-												<td class="left">Стоимость годового обслуживания</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Годовая ставка на остаток, %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-								<div class="item" data-id="7">
-									<div class="name">QiWi</div>
-									<div class="money green">2&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like checked"><span title="Убрать из избранного"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">QiWi</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Электронный кошелек</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">2.80&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">2.80&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Тип эл. денег</td>
-												<td class="right">QIWI</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-							</div>
+							<?endif;?>
+						<?endif;?>
+
 							<div class="header open" data-id="3">
 								<div class="arrow"></div>
 								<div class="name">Я должен</div>

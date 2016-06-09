@@ -4,7 +4,6 @@ namespace MSergeev\Packages\Finances\Tables;
 
 use MSergeev\Core\Lib;
 use MSergeev\Core\Entity;
-use MSergeev\Packages\Apihelp\Tables\SectionsTable;
 
 class EmoneyTypesTable extends Lib\DataManager
 {
