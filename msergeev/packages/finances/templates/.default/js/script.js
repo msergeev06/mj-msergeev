@@ -43,16 +43,30 @@ $(document).on("ready",function(){
     /**При клике на категории разворачиваем/сворачиваем ее*/
     $(".header").on("click",function(){
         var id = $(this).data("id");
+        var cat = $(this).data("cat");
+        var stat;
         if ($(this).hasClass("open"))
         {
             $(this).removeClass("open");
             $(".list-"+id).hide();
+            stat = 0;
         }
         else
         {
             $(this).addClass("open");
             $(".list-"+id).show();
+            stat = 1;
         }
+        $.ajax({
+            type: "POST",
+            url: "/msergeev/packages/finances/tools/accounts_category_deploy.php",
+            data: {
+                category: cat,
+                status: stat
+            },
+            success:function(data){},
+            dataType: "json"
+        });
     });
     /**Кнопка добавления операции по счету*/
     $(".item .button.add").on("click",function(){

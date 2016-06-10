@@ -63,6 +63,7 @@ $res = MSergeev\Packages\Products\Tables\FreezerTable::insertDefaultRows();
 msDebug($res);
 
 */
+//\MSergeev\Core\Lib\Options::setOption('finances_default_currency','RUB');
 //Installer::createPackageTables("tasks");
 //$arResult = TaskLib\Groups::getGroupTree();
 //$arResult['SELECT'] = TaskLib\Groups::getSelectArray($arResult['ITEMS']);

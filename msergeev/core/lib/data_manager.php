@@ -170,7 +170,7 @@ class DataManager {
 		return static::getList($params[0]);
 	}
 
-	public static function getList ($parameters)
+	public static function getList ($arParams,$showSql=false)
 	{
 		$query = new Entity\Query("select");
 
@@ -183,7 +183,7 @@ class DataManager {
 		$primaryField = static::getPrimaryField();
 		$query->setPrimaryKey($primaryField);
 
-		foreach ($parameters as $field=>$values)
+		foreach ($arParams as $field=>$values)
 		{
 			switch ($field)
 			{
@@ -241,12 +241,29 @@ class DataManager {
 			}
 
 			if (!empty($arResult))
+			{
+				if ($showSql)
+				{
+					$arResult['SQL'] = $res->getSql();
+				}
 				return $arResult;
+			}
 			else
 				return false;
 		}
 		else
-			return false;
+		{
+			if ($showSql)
+			{
+				$arResult['SQL'] = $res->getSql();
+				return $arResult;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 
 	}
 

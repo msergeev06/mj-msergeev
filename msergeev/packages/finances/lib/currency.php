@@ -8,6 +8,20 @@ class Currency
 {
 	public static function getDefaultCurrency ()
 	{
-		return CoreLib\Options::getOptionStr('default_currency');
+		return CoreLib\Options::getOptionStr('finances_default_currency');
+	}
+
+	public static function getCurrencySign ($currency)
+	{
+		//TODO: Сделать нормально все валюты
+		switch ($currency)
+		{
+			case 'RUB':
+				return 'Р';
+			case 'USD':
+				return '$';
+			case 'EUR':
+				return "&euro";
+		}
 	}
 }

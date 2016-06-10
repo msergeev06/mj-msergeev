@@ -37,7 +37,7 @@ class AccountBankTable extends Lib\DataManager
 			)),
 			new Entity\IntegerField('CARD_TYPE_ID',array(
 				'required' => true,
-				'default_value' => 0,
+				'default_value' => 1,
 				'link' => 'ms_finances_card_types.ID',
 				'title' => 'Тип карты'
 			)),

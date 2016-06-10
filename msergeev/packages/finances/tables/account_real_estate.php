@@ -34,7 +34,7 @@ class AccountRealEstateTable extends Lib\DataManager
 			new Entity\IntegerField('ESTATE_TYPE',array(
 				'required' => true,
 				'default_value' => 0,
-				'title' => 'Тип имущества (1 - квартира, 2 - дом)'
+				'title' => 'Тип имущества (1 - дом, 2 - квартира)'
 			)),
 			new Entity\FloatField('TOTAL_AREA',array(
 				'title' => 'Площадь общая, кв.м.'

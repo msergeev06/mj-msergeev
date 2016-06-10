@@ -18,6 +18,7 @@ class DBResult
 	protected $mysql_num_fields=null;
 	protected $mysql_num_rows=null;
 	protected $arFieldsEntity;
+	protected $sql;
 
 	function __construct($res, Query $obQuery)
 	{
@@ -25,6 +26,7 @@ class DBResult
 		$this->table_map = $obQuery->getTableMap();
 		$this->query_type = $obQuery->getType();
 		$this->arFieldsEntity = $obQuery->getFieldsEntity();
+		$this->sql = $obQuery->getQueryBuildParts();
 		if ($res)
 		{
 			if ($this->query_type == "select"){
@@ -32,6 +34,11 @@ class DBResult
 				$this->mysql_num_rows = mysql_num_rows($res);
 			}
 		}
+	}
+
+	public function getSql ()
+	{
+		return $this->sql;
 	}
 
 	public function fetch ()

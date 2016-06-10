@@ -136,21 +136,27 @@ class Currency
 		$baseCur = strtoupper($baseCur);
 		$rateCur = strtoupper($rateCur);
 
-		$res = Tables\RatesTable::getList(array(
-			"select" => "RATE",
-			"filter" => array(
-				"<=DATE" => $date,
-				"CURRENCY_CURRENT" => $rateCur,
-				"CURRENCY_BASE" => $baseCur
-			)
-		));
-		if ($res)
+		if ($baseCur == $rateCur)
 		{
-			return floatval($res[0]["RATE"]);
+			return 1;
 		}
-		else
-		{
-			return false;
+		else{
+			$res = Tables\RatesTable::getList(array(
+				"select" => "RATE",
+				"filter" => array(
+					"<=DATE" => $date,
+					"CURRENCY_CURRENT" => $rateCur,
+					"CURRENCY_BASE" => $baseCur
+				)
+			));
+			if ($res)
+			{
+				return floatval($res[0]["RATE"]);
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 

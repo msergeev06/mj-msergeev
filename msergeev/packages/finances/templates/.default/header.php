@@ -40,20 +40,37 @@ $path=Lib\Loader::getSitePublic('finances');
 					<div class="content-1">
 						<a href="<?=$path?>add_account.php" class="add">&nbsp;&nbsp;&nbsp;&nbsp;Добавить счет</a>
 						<div class="category">
-						<? $arAccounts = Accounts::getAccountsList(); ?>
+						<?
+						$arAccounts = Accounts::getAccountsList();
+						$deploy = array(
+							'LIKE'		=> Lib\Options::getOptionInt('FINANCES_DEPLOY_LIKE'),
+							'MONEY'		=> Lib\Options::getOptionInt('FINANCES_DEPLOY_MONEY'),
+							'ME'		=> Lib\Options::getOptionInt('FINANCES_DEPLOY_ME'),
+							'I_AM'		=> Lib\Options::getOptionInt('FINANCES_DEPLOY_I_AM'),
+							'INVEST'	=> Lib\Options::getOptionInt('FINANCES_DEPLOY_INVEST'),
+							'ESTATE'	=> Lib\Options::getOptionInt('FINANCES_DEPLOY_ESTATE'),
+							'BONUS'		=> Lib\Options::getOptionInt('FINANCES_DEPLOY_BONUS'),
+							'CAPITAL'	=> Lib\Options::getOptionInt('FINANCES_DEPLOY_CAPITAL'),
+							'HIDDEN'	=> Lib\Options::getOptionInt('FINANCES_DEPLOY_HIDDEN')
+						);
+						//msDebug($deploy);
+						?>
 						<?if ($arAccounts):?>
-							<?if (isset($arAccounts['LIKE']) && !empty($arAccounts['LIKE'])):?>
-								<div class="header open" data-id="1">
+							<? $section = 'LIKE'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="1" data-cat="<?=$section?>">
 									<div class="arrow"></div>
 									<div class="name">Избранные</div>
-									<div class="money green"><?=floor($arAccounts['LIKE']['SUM'])?>&nbsp;Р</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
 								</div>
-								<div id="cat-list" class="list-1">
-									<?if(!empty($arAccounts['LIKE']['DATA'])):?>
-										<?foreach($arAccounts['LIKE']['DATA'] as $id=>$arData):?>
+								<div id="cat-list" class="list-1"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
 											<div class="item" data-id="<?=$id?>">
-												<div class="name"><?=$arData['NAME']?></div>
-												<div class="money green"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
 												<div class="buttons" style="display: none">
 													<div class="button add"><span title="Добавить операцию"></span></div>
 													<div class="button edit"><span title="Редактировать"></span></div>
@@ -77,18 +94,282 @@ $path=Lib\Loader::getSitePublic('finances');
 									<?endif;?>
 								</div>
 							<?endif;?>
-							<?if (isset($arAccounts['MONEY']) && !empty($arAccounts['MONEY'])):?>
-								<div class="header open" data-id="2">
+							<? $section = 'MONEY'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="2" data-cat="<?=$section?>">
 									<div class="arrow"></div>
 									<div class="name">Деньги</div>
-									<div class="money green"><?=floor($arAccounts['MONEY']['SUM'])?>&nbsp;Р</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
 								</div>
-								<div id="cat-list" class="list-2">
-									<?if(!empty($arAccounts['MONEY']['DATA'])):?>
-										<?foreach($arAccounts['MONEY']['DATA'] as $id=>$arData):?>
+								<div id="cat-list" class="list-2"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
 											<div class="item" data-id="<?=$id?>">
-												<div class="name"><?=$arData['NAME']?></div>
-												<div class="money green"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like<?=($arData['STATUS']==2)?' checked':''?>">
+														<span title="<?=($arData['STATUS']==2)?'Убрать из избранного':'Добавить в избранное'?>"></span>
+													</div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+													<div class="description" style="display: none">
+														<table class="info">
+															<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+																<tr>
+																	<td class="left"><?=$arInfo['NAME']?></td>
+																	<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+																</tr>
+															<?endforeach;?>
+														</table>
+													</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
+								</div>
+							<?endif;?>
+							<? $section = 'ME'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="3" data-cat="<?=$section?>">
+									<div class="arrow"></div>
+									<div class="name">Мне должны</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
+								</div>
+								<div id="cat-list" class="list-3"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like<?=($arData['STATUS']==2)?' checked':''?>">
+														<span title="<?=($arData['STATUS']==2)?'Убрать из избранного':'Добавить в избранное'?>"></span>
+													</div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+													<div class="description" style="display: none">
+														<table class="info">
+															<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+																<tr>
+																	<td class="left"><?=$arInfo['NAME']?></td>
+																	<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+																</tr>
+															<?endforeach;?>
+														</table>
+													</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
+								</div>
+							<?endif;?>
+							<? $section = 'I_AM'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="4" data-cat="<?=$section?>">
+									<div class="arrow"></div>
+									<div class="name">Я должен</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
+								</div>
+								<div id="cat-list" class="list-4"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like<?=($arData['STATUS']==2)?' checked':''?>">
+														<span title="<?=($arData['STATUS']==2)?'Убрать из избранного':'Добавить в избранное'?>"></span>
+													</div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+													<div class="description" style="display: none">
+														<table class="info">
+															<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+																<tr>
+																	<td class="left"><?=$arInfo['NAME']?></td>
+																	<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+																</tr>
+															<?endforeach;?>
+														</table>
+													</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
+								</div>
+							<?endif;?>
+							<? $section = 'INVEST'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="5" data-cat="<?=$section?>">
+									<div class="arrow"></div>
+									<div class="name">Инвестиции</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
+								</div>
+								<div id="cat-list" class="list-5"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like<?=($arData['STATUS']==2)?' checked':''?>">
+														<span title="<?=($arData['STATUS']==2)?'Убрать из избранного':'Добавить в избранное'?>"></span>
+													</div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+													<div class="description" style="display: none">
+														<table class="info">
+															<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+																<tr>
+																	<td class="left"><?=$arInfo['NAME']?></td>
+																	<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+																</tr>
+															<?endforeach;?>
+														</table>
+													</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
+								</div>
+							<?endif;?>
+							<? $section = 'ESTATE'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="6" data-cat="<?=$section?>">
+									<div class="arrow"></div>
+									<div class="name">Имущество</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
+								</div>
+								<div id="cat-list" class="list-6"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like<?=($arData['STATUS']==2)?' checked':''?>">
+														<span title="<?=($arData['STATUS']==2)?'Убрать из избранного':'Добавить в избранное'?>"></span>
+													</div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+													<div class="description" style="display: none">
+														<table class="info">
+															<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+																<tr>
+																	<td class="left"><?=$arInfo['NAME']?></td>
+																	<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+																</tr>
+															<?endforeach;?>
+														</table>
+													</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
+								</div>
+							<?endif;?>
+							<? $section = 'BONUS'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="7" data-cat="<?=$section?>">
+									<div class="arrow"></div>
+									<div class="name">Карты лояльности</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
+								</div>
+								<div id="cat-list" class="list-7"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
+												<div class="buttons" style="display: none">
+													<div class="button add"><span title="Добавить операцию"></span></div>
+													<div class="button edit"><span title="Редактировать"></span></div>
+													<div class="button like<?=($arData['STATUS']==2)?' checked':''?>">
+														<span title="<?=($arData['STATUS']==2)?'Убрать из избранного':'Добавить в избранное'?>"></span>
+													</div>
+													<div class="button delete"><span title="Удалить"></span></div>
+												</div>
+												<?if(isset($arData['ADDITIONAL']) && !empty($arData['ADDITIONAL'])):?>
+													<div class="description" style="display: none">
+														<table class="info">
+															<?foreach($arData['ADDITIONAL'] as $arInfo):?>
+																<tr>
+																	<td class="left"><?=$arInfo['NAME']?></td>
+																	<td class="right<?=((isset($arInfo['RED']))?' red':'')?>"><?=$arInfo['VALUE']?></td>
+																</tr>
+															<?endforeach;?>
+														</table>
+													</div>
+												<?endif;?>
+											</div>
+										<?endforeach;?>
+									<?endif;?>
+								</div>
+							<?endif;?>
+							<? $section = 'CAPITAL'; ?>
+							<div class="header<?=($deploy[$section])?' open':''?>" data-id="8" data-cat="<?=$section?>">
+								<div class="arrow"></div>
+								<div class="name">МОЙ КАПИТАЛ:</div>
+							</div>
+							<div id="cat-list" class="list-8"<?=(!$deploy[$section])?' style="display: none"':''?>>
+								<? $i=0; ?>
+								<?foreach($arAccounts['CAPITAL']['CURRENCY'] as $currency=>$arCurrency):?>
+								<div class="item" data-id="<?=$i?>">
+									<div class="name"><b><?=$arCurrency['SIGN']?></b></div>
+									<div class="money red"><?=$arCurrency['SUM_SHOW']?></div>
+									<?/*<div class="description" style="display: none"></div>*/?>
+								</div>
+									<? $i++; ?>
+								<?endforeach;?>
+								<div class="item" data-id="<?=$i?>">
+									<div class="name"><b>Итого:</b></div>
+									<div class="money red"><?=$arAccounts['CAPITAL']['SUM_SHOW']?>&nbsp;Р</div>
+									<?/*<div class="description" style="display: none"></div>*/?>
+								</div>
+							</div>
+							<? $section = 'HIDDEN'; ?>
+							<?if (isset($arAccounts[$section]) && !empty($arAccounts[$section])):?>
+								<div class="header<?=($deploy[$section])?' open':''?>" data-id="9" data-cat="<?=$section?>">
+									<div class="arrow"></div>
+									<div class="name">Скрытые</div>
+									<div class="money<?=($arAccounts[$section]['SUM']>0)?' green':' red'?>">
+										<?=$arAccounts[$section]['SUM_SHOW']?>&nbsp;Р
+									</div>
+								</div>
+								<div id="cat-list" class="list-9"<?=(!$deploy[$section])?' style="display: none"':''?>>
+									<?if(!empty($arAccounts[$section]['DATA'])):?>
+										<?foreach($arAccounts[$section]['DATA'] as $id=>$arData):?>
+											<div class="item" data-id="<?=$id?>">
+												<div class="name"><?=substr($arData['NAME'],0,15)?></div>
+												<div class="money<?=($arData['BALANCE']>0)?' green':' red'?>"><?=$arData['BALANCE_SHOW']?>&nbsp;Р</div>
 												<div class="buttons" style="display: none">
 													<div class="button add"><span title="Добавить операцию"></span></div>
 													<div class="button edit"><span title="Редактировать"></span></div>
@@ -115,249 +396,6 @@ $path=Lib\Loader::getSitePublic('finances');
 								</div>
 							<?endif;?>
 						<?endif;?>
-
-							<div class="header open" data-id="3">
-								<div class="arrow"></div>
-								<div class="name">Я должен</div>
-								<div class="money red">-694&nbsp;570&nbsp;Р</div>
-							</div>
-							<div id="cat-list" class="list-3">
-								<div class="item" data-id="1">
-									<div class="name">Автокредит ПЛЮС-б</div>
-									<div class="money red">-656&nbsp;402&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Автокредит ПЛЮС-банк</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Кредит</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">ПЛЮС-Банк</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">-656&nbsp;402.75&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">-656&nbsp;402.75&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Годовая ставка, %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Дата закрытия</td>
-												<td class="right">07.03.2022</td>
-											</tr>
-											<tr>
-												<td class="left">День очередного платежа</td>
-												<td class="right">5</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-								<div class="item" data-id="2">
-									<div class="name">Тинькофф карта</div>
-									<div class="money red">-38&nbsp;167&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Тинькофф карта</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Кредитная карта</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">Тинькофф Банк</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">-38&nbsp;167.62&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">-38&nbsp;167.62&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Срок действия карты</td>
-												<td class="right">10/18</td>
-											</tr>
-											<tr>
-												<td class="left">Тип карты</td>
-												<td class="right">Mastercard</td>
-											</tr>
-											<tr>
-												<td class="left">Кредитный лимит</td>
-												<td class="right">39000.00&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Льготный период, дней</td>
-												<td class="right">55</td>
-											</tr>
-											<tr>
-												<td class="left">День минимального платежа</td>
-												<td class="right">3</td>
-											</tr>
-											<tr>
-												<td class="left">Стоимость ежегодного обслуживания</td>
-												<td class="right">1180.00&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток кредитных средств</td>
-												<td class="right">832.38</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-							</div>
-							<div class="header open" data-id="4">
-								<div class="arrow"></div>
-								<div class="name">Имущество</div>
-								<div class="money green">565&nbsp;000&nbsp;Р</div>
-							</div>
-							<div id="cat-list" class="list-4">
-								<div class="item" data-id="1">
-									<div class="name">Datsun</div>
-									<div class="money green">565&nbsp;000&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Datsun</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Автомобиль</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">565&nbsp;000&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">565&nbsp;000&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Марка</td>
-												<td class="right">Datsun</td>
-											</tr>
-											<tr>
-												<td class="left">Модель</td>
-												<td class="right">on-DO</td>
-											</tr>
-											<tr>
-												<td class="left">Год выпуска</td>
-												<td class="right">2014</td>
-											</tr>
-											<tr>
-												<td class="left">Текущая рыночная стоимость</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Дата последней проверки стоимости</td>
-												<td class="right red">Никогда</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-							</div>
-							<div class="header open" data-id="5">
-								<div class="arrow"></div>
-								<div class="name">МОЙ КАПИТАЛ:</div>
-							</div>
-							<div id="cat-list" class="list-5">
-								<div class="item" data-id="1">
-									<div class="name"><b>Р</b></div>
-									<div class="money red">-111&nbsp;384</div>
-									<?/*<div class="description" style="display: none"></div>*/?>
-								</div>
-								<div class="item" data-id="2">
-									<div class="name"><b>Итого:</b></div>
-									<div class="money red">-111&nbsp;384&nbsp;Р</div>
-									<?/*<div class="description" style="display: none"></div>*/?>
-								</div>
-							</div>
-							<div class="header" data-id="6">
-								<div class="arrow"></div>
-								<div class="name">Скрытые</div>
-								<div class="money green">0&nbsp;Р</div>
-							</div>
-							<div id="cat-list" class="list-6" style="display: none">
-								<div class="item" data-id="1">
-									<div class="name">Миг кредит</div>
-									<div class="money green">0&nbsp;Р</div>
-									<div class="buttons" style="display: none">
-										<div class="button add"><span title="Добавить операцию"></span></div>
-										<div class="button edit"><span title="Редактировать"></span></div>
-										<div class="button like"><span title="Добавить в избранное"></span></div>
-										<div class="button delete"><span title="Удалить"></span></div>
-									</div>
-									<div class="description" style="display: none">
-										<table class="info">
-											<tr>
-												<td class="left">Название</td>
-												<td class="right">Миг кредит</td>
-											</tr>
-											<tr>
-												<td class="left">Тип</td>
-												<td class="right">Кредит</td>
-											</tr>
-											<tr>
-												<td class="left">Банк</td>
-												<td class="right">МИГОМ</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток</td>
-												<td class="right">0&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Остаток в валюте по умолчанию</td>
-												<td class="right">0&nbsp;Р</td>
-											</tr>
-											<tr>
-												<td class="left">Годовая ставка, %</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">Дата закрытия</td>
-												<td class="right red">Не указано</td>
-											</tr>
-											<tr>
-												<td class="left">День очередного платежа</td>
-												<td class="right">1</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-							</div>
-
 						</div>
 					</div>
 					<div class="content-2" style="display: none;">

@@ -41,26 +41,52 @@ class Options {
 		if (!isset(static::$arOptions[$optionName]))
 		{
 			$arInsert = array(
-				0 => array(
-					'NAME' => $optionName,
-					'VALUE' => $optionValue
+				'NAME' => $optionName,
+				'VALUE' => $optionValue
+			);
+			$result = Tables\OptionsTable::getList(array(
+				"filter" => array(
+					"NAME" => $optionName
 				)
-			);
-			$query = new Query('insert');
-			$query->setInsertParams(
-				$arInsert,
-				Tables\OptionsTable::getTableName(),
-				Tables\OptionsTable::getMap()
-			);
-			$res = $query->exec();
-			if ($res->getResult())
+			));
+			if ($result)
 			{
-				static::$arOptions[$optionName] = $optionValue;
-				return true;
+				$query = new Query('update');
+				$query->setUpdateParams(
+					$arInsert,
+					$result[0]['ID'],
+					Tables\OptionsTable::getTableName(),
+					Tables\OptionsTable::getMapArray()
+				);
+				$res = $query->exec();
+				if ($res->getResult())
+				{
+					static::$arOptions[$optionName] = $optionValue;
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			else
 			{
-				return false;
+				$query = new Query('insert');
+				$query->setInsertParams(
+					$arInsert,
+					Tables\OptionsTable::getTableName(),
+					Tables\OptionsTable::getMapArray()
+				);
+				$res = $query->exec();
+				if ($res->getResult())
+				{
+					static::$arOptions[$optionName] = $optionValue;
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
 		else
