@@ -201,6 +201,66 @@ class Accounts
 		return $echo;
 	}
 
+	public static function showSelectAccountsTypes ($accountType='all', $name='target-account-select', $multiple=true, $id=null)
+	{
+		if (is_null($id))
+		{
+			$id = $name;
+		}
+		switch ($accountType)
+		{
+			case 'income':
+				$arCategoriesID = static::getArrayIncomeAccountTypes ();
+				$arAccounts = static::getAccountsArray(array('filter'=>array('ACCOUNT_TYPE_ID'=>$arCategoriesID)));
+				break;
+			case 'debt':
+				$arCategoriesID = static::getArrayDebtAccountTypes ();
+				$arAccounts = static::getAccountsArray(array('filter'=>array('ACCOUNT_TYPE_ID'=>$arCategoriesID)));
+				break;
+			case 'credit':
+				$arCategoriesID = static::getArrayCreditAccountTypes();
+				$arAccounts = static::getAccountsArray(array('filter'=>array('ACCOUNT_TYPE_ID'=>$arCategoriesID)));
+				break;
+			case 'credit-card':
+				$arCategoriesID = static::getArrayCreditCardAccountTypes ();
+				$arAccounts = static::getAccountsArray(array('filter'=>array('ACCOUNT_TYPE_ID'=>$arCategoriesID)));
+				break;
+			case 'debt-other':
+				$arCategoriesID = static::getArrayDebtOtherAccountTypes();
+				$arAccounts = static::getAccountsArray(array('filter'=>array('ACCOUNT_TYPE_ID'=>$arCategoriesID)));
+				break;
+			default:
+				$arAccounts = static::getAccountsArray();
+		}
+
+
+		//msDebug($arAccounts);
+
+		$echo = '<select '.(($multiple)?'multiple size="5" ':'').'id="'.$id.'-'.$accountType.'" name="'.$name.'-'.$accountType.'[]">'."\n";
+		if ($arAccounts)
+		{
+			foreach ($arAccounts as $arAccount)
+			{
+				$arAccount['BALANCE'] = static::getAccountBalance($arAccount['ID']);
+				$arAccount['BALANCE_SHOW'] = static::numberFormat(
+					($arAccount['BALANCE']>0)?floor($arAccount['BALANCE']):ceil($arAccount['BALANCE']),0
+				);
+
+				$echo .= "\t".'<option value="'.$arAccount['ID'].'"';
+				$echo .= '>'.$arAccount['NAME'].' ('
+					.$arAccount['BALANCE_SHOW'].' '
+					.Currency::getCurrencySign($arAccount['CURRENCY']).')</option>'."\n";
+			}
+		}
+		else
+		{
+			$echo .= "\t".'<option value="0" selected>Все счета уже заняты текущими целями</option>'."\n";
+		}
+		$echo .= "</select>\n";
+
+		return $echo;
+	}
+
 	public static function addAccountFromPost ($arPost=null)
 	{
 		try
@@ -654,10 +714,9 @@ class Accounts
 		return static::addAccount($arData);
 	}
 
-	public static function getAccountsList ()
+	public static function getAccountsArray($arParams=array())
 	{
-		$arAccounts = array();
-		$arRes = Tables\AccountsTable::getList(array(
+		$arGetList = array(
 			'select' => array(
 				'ID',
 				'ACCOUNT_TYPE_ID',
@@ -669,9 +728,27 @@ class Accounts
 				'CURRENT_MARKET_PRICE',
 				'CURRENCY'
 			),
-			//'filter' => array('STATUS'=>2)//,
 			'order' => array('NAME'=>'ASC')
-		));
+		);
+		if (isset($arParams['filter']) && !empty($arParams['filter']))
+		{
+			$arGetList['filter'] = $arParams['filter'];
+		}
+		if (isset($arParams['order']) && !empty($arParams['order']))
+		{
+			$arGetList['order'] = $arParams['order'];
+		}
+
+		$arRes = Tables\AccountsTable::getList($arGetList);
+		//echo "<pre>"; print_r($arRes['SQL']); echo "</pre>";
+
+		return $arRes;
+	}
+
+	public static function getAccountsList ()
+	{
+		$arAccounts = array();
+		$arRes = static::getAccountsArray();
 		//msDebug($arRes);
 		if ($arRes)
 		{
@@ -908,6 +985,58 @@ class Accounts
 		{
 			return $arAccounts;
 		}
+	}
+
+	protected static function getArrayIncomeAccountTypes ()
+	{
+		$arTypes = array(
+			static::$a_cash,
+			static::$a_debet_card,
+			static::$a_deposit,
+			static::$a_emoney,
+			static::$a_bank,
+			static::$a_broker,
+			static::$a_oms,
+			static::$a_akcii,
+			static::$a_obligacii,
+			static::$a_other_parer,
+			static::$a_pif,
+			static::$a_ofbu,
+			static::$a_fond,
+			static::$a_nak_strah,
+			static::$a_nak_plan,
+			static::$a_pens_fond,
+			static::$a_pens_acc,
+			static::$a_pamm
+		);
+
+		return $arTypes;
+	}
+
+	protected static function getArrayDebtAccountTypes ()
+	{
+		$arTypes = array(
+			static::$a_i,
+			static::$a_credit_card,
+			static::$a_credit
+		);
+
+		return $arTypes;
+	}
+
+	protected static function getArrayCreditAccountTypes ()
+	{
+		return static::$a_credit;
+	}
+
+	protected static function getArrayCreditCardAccountTypes ()
+	{
+		return static::$a_credit_card;
+	}
+
+	protected static function getArrayDebtOtherAccountTypes ()
+	{
+		return static::$a_i;
 	}
 
 	protected static function getAdditionalInfoCash ($ar_res)

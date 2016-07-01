@@ -2,52 +2,72 @@
 
 namespace MSergeev\Packages\Icar\Tables;
 
-use MSergeev\Core\Lib\DataManager;
 use MSergeev\Core\Entity;
+use MSergeev\Core\Exception;
+use MSergeev\Core\Lib\DataManager;
 
-class RepairPartsTable extends DataManager {
-	public static function getTableName() {
-		return 'ms_icar_repair_parts';
+class RepairTable extends DataManager
+{
+	public static function getTableName ()
+	{
+		return 'ms_icar_repair';
 	}
-	public static function getTableTitle() {
-		return 'Запчасти';
+
+	public static function getTableTitle ()
+	{
+		return 'Затраты на ремонт';
 	}
-	public static function getMap() {
+
+	public static function getTableLinks ()
+	{
 		return array(
-			new Entity\IntegerField ('ID', array(
+			'ID' => array(
+				'ms_icar_repair_parts' => 'REPAIR_ID'
+			)
+		);
+	}
+
+	public static function getMap ()
+	{
+		return array(
+			new Entity\IntegerField('ID',array(
 				'primary' => true,
 				'autocomplete' => true,
-				'title' => 'ID запчасти'
+				'title' => 'ID записи'
 			)),
-			new Entity\IntegerField ('MY_CAR_ID', array(
+			new Entity\IntegerField('MY_CAR_ID',array(
 				'required' => true,
 				'link' => 'ms_icar_my_car.ID',
 				'title' => 'ID автомобиля'
 			)),
 			new Entity\DateField ('DATE', array(
-				'title' => 'Дата покупки'
-			)),
-			new Entity\StringField ('NAME', array(
 				'required' => true,
-				'title' => 'Название запчасти'
-			)),
-			new Entity\IntegerField ('STORAGE_ID', array(
-				'required' => true,
-				'link' => 'ms_icar_storage.ID',
-				'title' => 'ID места хранения'
-			)),
-			new Entity\StringField ('CATALOG_NUMBER', array(
-				'title' => 'Каталожный номер'
-			)),
-			new Entity\FloatField ('NUMBER', array(
-				'required' => true,
-				'default_value' => 1,
-				'title' => 'Количество запчастей'
+				'title' => 'Дата ремонта'
 			)),
 			new Entity\FloatField ('COST', array(
-				'title' => 'Цена'
+				'required' => true,
+				'default_value' => 0,
+				'title' => 'Стоимость'
+			)),
+			new Entity\IntegerField ('EXECUTOR_ID', array(
+				'required' => true,
+				'default_value' => 0,
+				'link' => 'ms_icar_executor.ID',
+				'title' => 'ID исполнителя работ'
+			)),
+			new Entity\StringField('NAME',array(
+				'required' => true,
+				'default_value' => 'Ремонт',
+				'title' => 'Наименование работ'
+			)),
+			new Entity\FloatField ('ODO', array(
+				'required' => true,
+				'default_value' => 0,
+				'title' => 'Пробег'
 			)),
 			new Entity\IntegerField ('REASON_REPLACEMENT_ID', array(
+				'required' => true,
+				'default_value' => 0,
 				'link' => 'ms_icar_reason_replacement.ID',
 				'title' => 'ID причины замены'
 			)),
@@ -63,20 +83,15 @@ class RepairPartsTable extends DataManager {
 				'default_value' => 0,
 				'title' => 'ID причина замены ДТП'
 			)),
-			new Entity\IntegerField('REPAIR_ID',array(
+			new Entity\IntegerField ('WHO_PAID_ID', array(
 				'required' => true,
 				'default_value' => 0,
-				'link' => 'ms_icar_repair.ID',
-				'title' => 'ID записи о ремонте'
-			)),
-			new Entity\IntegerField ('WHO_PAID_ID', array(
 				'link' => 'ms_icar_who_paid.ID',
 				'title' => 'ID плательщика'
 			)),
-			new Entity\FloatField ('ODO', array(
-				'title' => 'Пробег'
-			)),
 			new Entity\IntegerField ('POINTS_ID', array(
+				'required' => true,
+				'default_value' => 0,
 				'link' => 'ms_icar_points.ID',
 				'title' => 'ID путевой точки'
 			)),

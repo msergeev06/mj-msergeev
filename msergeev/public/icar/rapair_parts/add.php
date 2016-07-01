@@ -13,13 +13,17 @@ else
 $pService = Lib\Points::getPointTypeIdByCode ("service");
 $pStore = Lib\Points::getPointTypeIdByCode ("shop");
 $pCarwash = Lib\Points::getPointTypeIdByCode ("wash");
-
+$bError = false;
 if (isset($_POST["action"])) {
 	if ($res = Lib\RepairParts::addRepairPartsFromPost($_POST)) {
 		?><span style="color: green;">Данные успешно добавлены</span><?
+		$bError = false;
 	}
 	else {
-		?><span style="color: red;">Ошибка добавления данных</span><?
+		?><span style="color: red;">Ошибка добавления данных:<?=Lib\RepairParts::showErrorList()?></span><?
+		$bError = true;
+		//msDebug($res);
+
 	}
 }
 ?>
@@ -28,7 +32,7 @@ if (isset($_POST["action"])) {
 	<table class="add_ts">
 		<tr>
 			<td class="title">Автомобиль</td>
-			<td><? echo Lib\MyCar::showSelectCars("my_car",$carID,'class="myCar"'); ?></td>
+			<td><?=Lib\MyCar::showSelectCars("my_car",(($bError)?intval($_POST['my_car']):$carID),'class="myCar"')?></td>
 		</tr>
 		<tr>
 			<td class="title">Дата</td>
@@ -46,135 +50,118 @@ if (isset($_POST["action"])) {
 		</tr>
 		<tr>
 			<td class="title">Название</td>
-			<td><input type="text" name="name" value=""></td>
+			<td><?=InputType('text','name',(($bError)?$_POST['name']:''),'',false,'','class="name"')?></td>
 		</tr>
 		<tr>
 			<td class="title">Место хранения</td>
-			<td><? echo CInvestToCarShowSelect::Storage("storage"); ?></td>
+			<td><?=Lib\Storage::showSelectStorageList("storage",'',(($bError)?intval($_POST['storage']):1))?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("CATALOG_NUMBER")?></td>
-			<td><input type="text" name="catalog_number" value=""></td>
+			<td class="title">Каталожный номер</td>
+			<td><?=InputType('text','catalog_number',(($bError)?$_POST['catalog_number']:''),'',false,'','class="catalog_number"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("NUMBER")?></td>
-			<td><input type="text" name="number" value=""></td>
+			<td class="title">Количество</td>
+			<td><?=InputType('text','number',(($bError)?$_POST['number']:''),'',false,'','class="number"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("AMOUNT")?></td>
-			<td><input type="text" name="cost" value=""></td>
+			<td class="title">Стоимость</td>
+			<td><?=InputType('text','cost',(($bError)?$_POST['cost']:''),'',false,'','class="cost"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("REASON_REPLACEMENT")?></td>
-			<td><? echo CInvestToCarShowSelect::ReasonReplacement("reason"); ?></td>
+			<td class="title">Причина замены</td>
+			<td><?=Lib\ReasonReplacement::showSelectReasonReplacementList("reason",'',(($bError)?intval($_POST['reason']):1))?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("REASON_DETAILS")?></td>
+			<td class="title">Дополнительная причина замены</td>
 			<td class="reason_add">
-				<? echo CInvestToCarShowSelect::ReasonTs("reason_ts",$car); ?>
-				<? echo CInvestToCarShowSelect::ReasonRepair("reason_breakdown",$car,0,' style="display: none;"'); ?>
-				<? echo CInvestToCarShowSelect::ReasonDtp("reason_dtp",$car,0,' style="display: none;"'); ?>
-				<? echo CInvestToCarShowSelect::ReasonRepair("reason_tuning",$car,0,' style="display: none;"'); ?>
-				<? echo CInvestToCarShowSelect::ReasonRepair("reason_upgrade",$car,0,' style="display: none;"'); ?>
+				<?=Lib\Ts::showSelectTsList($carID,"reason_ts",'Не выбрано',(($bError && isset($_POST['reason_ts']))?intval($_POST['reason_ts']):'null'),'id="reason_ts" class="tslistselect"')?>
+				<?=Lib\Repair::showSelectRepairList($carID, "reason_breakdown",'Не выбрано',(($bError && isset($_POST['reason_breakdown']))?intval($_POST['reason_breakdown']):'null'),'id="reason_breakdown" class="repairlistselect" style="display: none;"')?>
+				<?=Lib\Accident::showSelectAccidentList($carID, "reason_dtp",'Не выбрано',(($bError && isset($_POST['reason_dtp']))?intval($_POST['reason_dtp']):'null'),'id="reason_dtp" class="accidentlistselect" style="display: none;"')?>
+				<?=Lib\Repair::showSelectRepairList($carID, "reason_tuning",'Не выбрано',(($bError && isset($_POST['reason_tuning']))?intval($_POST['reason_tuning']):'null'),'id="reason_tuning" class="repairlistselect" style="display: none;"')?>
+				<?=Lib\Repair::showSelectRepairList($carID, "reason_upgrade",'Не выбрано',(($bError && isset($_POST['reason_upgrade']))?intval($_POST['reason_upgrade']):'null'),'id="reason_upgrade" class="repairlistselect" style="display: none;"')?>
 				<span class="reason_tire" style="display: none;">-</span>
 			</td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("WHO_PAID")?></td>
-			<td><? echo CInvestToCarShowSelect::WhoPaid("who_paid"); ?></td>
+			<td class="title">Кто платил</td>
+			<td><?=Lib\WhoPaid::showSelectWhoPaidList("who_paid",(($bError)?intval($_POST['who_paid']):1))?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("ODOMETER_VALUE")?></td>
-			<td><input type="text" name="odo" value=""></td>
+			<td class="title">Пробег</td>
+			<td><?=InputType('text','odo',(($bError)?$_POST['odo']:''),'',false,'','class="odo"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("WAYPOINT")?></td>
-			<td><? echo CInvestToCarShowSelect::Points("waypoint",0,array($pService,$pStore,$pCarwash)); ?></td>
+			<td class="title">Путевая точка</td>
+			<td><? echo Lib\Points::showSelectPoints("ts_point",(($bError && intval($_POST['showSelectPoints'])>0)?intval($_POST['showSelectPoints']):'null'))?></td>
 		</tr>
 		<tr>
-			<td class="center" colspan="2"><?=GetMessage("OR")?></td>
+			<td class="center" colspan="2">или</td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("NAME_NEW_WAYPOINT")?></td>
-			<td><input type="text" name="newpoint_name" value=""></td>
+			<td class="title">Имя новой точки</td>
+			<td><?=InputType('text','newpoint_name',(($bError)?$_POST['newpoint_name']:''),'',false,'','class="newpoint_name"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("ADDRESS_NEW_WAYPOINT")?></td>
-			<td><input type="text" name="newpoint_address" value=""></td>
+			<td class="title">Адрес новой точки</td>
+			<td><?=InputType('text','newpoint_address',(($bError)?$_POST['newpoint_address']:''),'',false,'','class="newpoint_address"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("LONGITUDE_NEW_WAYPOINT")?></td>
-			<td><input type="text" name="newpoint_lon" value=""></td>
+			<td class="title">Широта (55.12345)</td>
+			<td><?=InputType('text','newpoint_lat',(($bError)?$_POST['newpoint_lat']:''),'',false,'','class="newpoint_lat"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("LATITUDE_NEW_WAYPOINT")?></td>
-			<td><input type="text" name="newpoint_lat" value=""></td>
+			<td class="title">Долгота (37.12345)</td>
+			<td><?=InputType('text','newpoint_lon',(($bError)?$_POST['newpoint_lon']:''),'',false,'','class="newpoint_lon"')?></td>
 		</tr>
 		<tr>
-			<td class="title"><?=GetMessage("COMMENT")?></td>
-			<td><input type="text" name="comment" value=""></td>
+			<td class="title">Комментарий</td>
+			<td><?=InputType('text','comment',(($bError)?$_POST['comment']:''),'',false,'','class="comment"')?></td>
 		</tr>
 		<tr>
-			<td class="center" colspan="2"><input type="hidden" name="action" value="1"><input type="submit" value="<?=GetMessage("SUBMIT_ADD")?>"></td>
+			<td class="center" colspan="2"><input type="hidden" name="action" value="1"><input type="submit" value="Добавить запись"></td>
 		</tr>
 	</table>
 </form>
 <script type="text/javascript">
-
+	function hideAllReason()
+	{
+		$('#reason_ts').hide();
+		$('#reason_breakdown').hide();
+		$('#reason_dtp').hide();
+		$('#reason_tuning').hide();
+		$('#reason_upgrade').hide();
+		$(".reason_tire").hide();
+	}
 	$(document).on("ready",function(){
-		$(".reason").on("change",function(){
-			sel = $(this).val();
-			if (sel==<?=intval(CInvestToCarMain::GetInfoByCode ("reason","ts"))?>) {
-				$(".reason_ts").show();
-				$(".reason_breakdown").hide();
-				$(".reason_dtp").hide();
-				$(".reason_tuning").hide();
-				$(".reason_upgrade").hide();
-				$(".reason_tire").hide();
+		$(".reasonreplacementselect").on("change",function(){
+			var sel = $(this).val();
+			if (sel==1) {
+				hideAllReason();
+				$("#reason_ts").show();
 			}
-			if (sel==<?=intval(CInvestToCarMain::GetInfoByCode ("reason","breakdown"))?>) {
-				$(".reason_ts").hide();
-				$(".reason_breakdown").show();
-				$(".reason_dtp").hide();
-				$(".reason_tuning").hide();
-				$(".reason_upgrade").hide();
-				$(".reason_tire").hide();
+			else if (sel==2) {
+				hideAllReason();
+				$("#reason_breakdown").show();
 			}
-			if (sel==<?=intval(CInvestToCarMain::GetInfoByCode ("reason","dtp"))?>) {
-				$(".reason_ts").hide();
-				$(".reason_breakdown").hide();
-				$(".reason_dtp").show();
-				$(".reason_tuning").hide();
-				$(".reason_upgrade").hide();
-				$(".reason_tire").hide();
+			else if (sel==3) {
+				hideAllReason();
+				$("#reason_tuning").show();
 			}
-			if (sel==<?=intval(CInvestToCarMain::GetInfoByCode ("reason","tuning"))?>) {
-				$(".reason_ts").hide();
-				$(".reason_breakdown").hide();
-				$(".reason_dtp").hide();
-				$(".reason_tuning").show();
-				$(".reason_upgrade").hide();
-				$(".reason_tire").hide();
+			else if (sel==4) {
+				hideAllReason();
+				$("#reason_upgrade").show();
 			}
-			if (sel==<?=intval(CInvestToCarMain::GetInfoByCode ("reason","upgrade"))?>) {
-				$(".reason_ts").hide();
-				$(".reason_breakdown").hide();
-				$(".reason_dtp").hide();
-				$(".reason_tuning").hide();
-				$(".reason_upgrade").show();
-				$(".reason_tire").hide();
-			}
-			if (sel==<?=intval(CInvestToCarMain::GetInfoByCode ("reason","tire"))?>) {
-				$(".reason_ts").hide();
-				$(".reason_breakdown").hide();
-				$(".reason_dtp").hide();
-				$(".reason_tuning").hide();
-				$(".reason_upgrade").hide();
+			else if (sel==5) {
+				hideAllReason();
 				$(".reason_tire").show();
+			}
+			else if (sel==6) {
+				hideAllReason();
+				$("#reason_dtp").show();
 			}
 		});
 	});
-
 </script>
 <? $curDir = basename(__DIR__); ?>
 <? include_once(MSergeev\Core\Lib\Loader::getPublic("icar")."include/footer.php"); ?>

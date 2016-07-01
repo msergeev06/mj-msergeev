@@ -23,7 +23,8 @@ class PointsTable extends DataManager {
 				'ms_icar_routs' => array('START_POINTS_ID','END_POINTS_ID'),
 				'ms_icar_other_expense' => 'POINTS_ID',
 				'ms_icar_optional_equip' => 'POINTS_ID',
-				'ms_icar_planer' => 'POINTS_ID'
+				'ms_icar_planer' => 'POINTS_ID',
+				'ms_icar_repair' => 'POINTS_ID'
 			)
 		);
 	}

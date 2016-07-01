@@ -16,7 +16,8 @@ class ReasonReplacementTable extends DataManager {
 	public static function getTableLinks() {
 		return array(
 			'ID' => array(
-				'ms_icar_repair_parts' => 'REASON_REPLACEMENT_ID'
+				'ms_icar_repair_parts' => 'REASON_REPLACEMENT_ID',
+				'ms_icar_repair' => 'REASON_REPLACEMENT_ID'
 			)
 		);
 	}

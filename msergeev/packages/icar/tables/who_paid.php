@@ -17,7 +17,8 @@ class WhoPaidTable extends DataManager {
 		return array(
 			'ID' => array(
 				'ms_icar_repair_parts' => 'WHO_PAID_ID',
-				'ms_icar_accident' => 'WHO_PAID_ID'
+				'ms_icar_accident' => 'WHO_PAID_ID',
+				'ms_icar_repair' => 'WHO_PAID_ID'
 			)
 		);
 	}

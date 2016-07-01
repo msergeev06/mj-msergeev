@@ -550,73 +550,81 @@ class Fuel
 			$carID = MyCar::getDefaultCarID();
 		}
 
-		echo '<div id="fuelList"></div><div id="fuelPager"></div>';
-
-		$dateHelper = new CoreLib\DateHelper();
 		$arList = static::getFuelList($carID);
-		$imgSrcPath = CoreLib\Tools::getSitePath(CoreLib\Loader::getTemplate('icar')."images/");
-
-		//msDebug($arList);
-		$arDatas = array();
-		foreach ($arList as $list)
+		if ($arList)
 		{
-			$arDatas[] = array(
-				'id' => $list['ID'],
-				'date' => $list['DATE'],
-				'timestamp' => "=".$dateHelper->getDateTimestamp($list['DATE']),
-				'odo' => "=".$list['ODO'],
-				'fuelmark_name' => $list['FUELMARK_NAME'],
-				'liter' => "=".$list['LITER'],
-				'liter_cost' => "=".$list['LITER_COST'],
-				'sum' => "=".$list['SUM'],
-				'full' => ($list['FULL'])?"Да":"-",
-				'expence' => "=".$list['EXPENCE'],
-				'point_name' => $list['POINT_NAME'],
-				'point_latitude' => $list['POINT_LATITUDE'],
-				'point_longitude' => $list['POINT_LONGITUDE'],
-				'yandex_map' => "<img src='https://static-maps.yandex.ru/1.x/?l=map&z=12&size=600,450&pt=".$list['POINT_LONGITUDE'].",".$list['POINT_LATITUDE'].",pm2blm'>",
-				'point_type' => $list['POINT_TYPE_NAME'],
-				'info' => (strlen($list['INFO'])>0)?"<img src='".$imgSrcPath."info.png'>":"",
-				'comment' => $list['INFO'],
-				'edit' => "<a href='edit.php?id=".$list['ID']."'><img src='".$imgSrcPath."edit.png'></a>",
-				'delete' => "<a href='delete.php?id=".$list['ID']."'><img src='".$imgSrcPath."delete.png'></a>"
+			echo '<div id="fuelList"></div><div id="fuelPager"></div>';
+
+			$dateHelper = new CoreLib\DateHelper();
+			$imgSrcPath = CoreLib\Tools::getSitePath(CoreLib\Loader::getTemplate('icar')."images/");
+
+			//msDebug($arList);
+			$arDatas = array();
+			foreach ($arList as $list)
+			{
+				$arDatas[] = array(
+					'id' => $list['ID'],
+					'date' => $list['DATE'],
+					'timestamp' => "=".$dateHelper->getDateTimestamp($list['DATE']),
+					'odo' => "=".$list['ODO'],
+					'fuelmark_name' => $list['FUELMARK_NAME'],
+					'liter' => "=".$list['LITER'],
+					'liter_cost' => "=".$list['LITER_COST'],
+					'sum' => "=".$list['SUM'],
+					'full' => ($list['FULL'])?"Да":"-",
+					'expence' => "=".$list['EXPENCE'],
+					'point_name' => $list['POINT_NAME'],
+					'point_latitude' => $list['POINT_LATITUDE'],
+					'point_longitude' => $list['POINT_LONGITUDE'],
+					'yandex_map' => "<img src='https://static-maps.yandex.ru/1.x/?l=map&z=12&size=600,450&pt=".$list['POINT_LONGITUDE'].",".$list['POINT_LATITUDE'].",pm2blm'>",
+					'point_type' => $list['POINT_TYPE_NAME'],
+					'info' => (strlen($list['INFO'])>0)?"<img src='".$imgSrcPath."info.png'>":"",
+					'comment' => $list['INFO'],
+					'edit' => "<a href='edit.php?id=".$list['ID']."'><img src='".$imgSrcPath."edit.png'></a>",
+					'delete' => "<a href='delete.php?id=".$list['ID']."'><img src='".$imgSrcPath."delete.png'></a>"
+				);
+			}
+
+			$webixHelper = new IcarWebixHelper();
+
+			$webixHelper->addFunctionSortByTimestamp();
+
+			$arData = array(
+				'grid' => 'fuelGrid',
+				'container' => 'fuelList',
+				'footer' => true,
+				'tooltip' => true,
+				'pager' => array('container'=>'fuelPager'),
+				'columns' => array(
+					$webixHelper->getColumnArray('DATE',array(
+						'footer'=>'={text:"Итого:", colspan:3}'
+					)),
+					$webixHelper->getColumnArray('ODO'),
+					$webixHelper->getColumnArray('FUELMARK_NAME'),
+					$webixHelper->getColumnArray('LITER',array(
+						'footer'=>'={ content:"summColumn" }'
+					)),
+					$webixHelper->getColumnArray('LITER_COST'),
+					$webixHelper->getColumnArray('LITER_COST_SUM',array(
+						'footer'=>'={ content:"summColumn" }'
+					)),
+					$webixHelper->getColumnArray('FULL'),
+					$webixHelper->getColumnArray('EXPENCE'),
+					$webixHelper->getColumnArray('POINT'),
+					$webixHelper->getColumnArray('INFO'),
+					$webixHelper->getColumnArray('EDIT'),
+					$webixHelper->getColumnArray('DELETE')
+				),
+				'data' => $arDatas
 			);
+
+			return CoreLib\Webix::showDataTable($arData);
 		}
-
-		$webixHelper = new IcarWebixHelper();
-
-		$webixHelper->addFunctionSortByTimestamp();
-
-		$arData = array(
-			'grid' => 'fuelGrid',
-			'container' => 'fuelList',
-			'footer' => true,
-			'tooltip' => true,
-			'pager' => array('container'=>'fuelPager'),
-			'columns' => array(
-				$webixHelper->getColumnArray('DATE',array(
-					'footer'=>'={text:"Итого:", colspan:3}'
-				)),
-				$webixHelper->getColumnArray('ODO'),
-				$webixHelper->getColumnArray('FUELMARK_NAME'),
-				$webixHelper->getColumnArray('LITER',array(
-					'footer'=>'={ content:"summColumn" }'
-				)),
-				$webixHelper->getColumnArray('LITER_COST'),
-				$webixHelper->getColumnArray('LITER_COST_SUM',array(
-					'footer'=>'={ content:"summColumn" }'
-				)),
-				$webixHelper->getColumnArray('FULL'),
-				$webixHelper->getColumnArray('EXPENCE'),
-				$webixHelper->getColumnArray('POINT'),
-				$webixHelper->getColumnArray('INFO'),
-				$webixHelper->getColumnArray('EDIT'),
-				$webixHelper->getColumnArray('DELETE')
-			),
-			'data' => $arDatas
-		);
-
-		return CoreLib\Webix::showDataTable($arData);
+		else
+		{
+			echo 'Нет данных о заправках';
+			return false;
+		}
 	}
 
 

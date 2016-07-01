@@ -554,6 +554,13 @@ a:hover {
 	width: 15px;
 	vertical-align: bottom;
 }
+.img-final {
+	background: url("../images/states.png") no-repeat scroll 0 -62px transparent;
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	vertical-align: bottom;
+}
 .img-hidden {
 	background: url("../images/states.png") no-repeat scroll 0 -29px;
 	display: inline-block;
@@ -584,7 +591,8 @@ a:hover {
 .form-element select {
 	width: 300px;
 }
-.account-description textarea {
+.account-description textarea,
+.target-description textarea{
 	width: 300px;
 	height: 50px;
 }
@@ -619,6 +627,14 @@ a:hover {
 .account-auto-date-buy select {
 	width: 60px;
 }
+.target-pay-first input,
+.target-pay-date input {
+	width: 100px !important;
+	margin-left: 10px;
+}
+.form-element #monthly-average-pay, .form-element #monthly-average-buy {
+	color: #808080;
+}
 .button-submit {
 	display: block;
 	float: right;
@@ -652,4 +668,200 @@ a:hover {
 .button-submit .submit {
 	background-color: #16A085;
 }
+.target-image {
+	width: 220px;
+	height: 200px;
+	display: block;
+	float: right;
+}
+.target-image .image {
+	display: block;
+	margin: 5px auto;
+	/*background-color: #00abbb;*/
+	width: 210px;
+	height: 144px;
+	background: url("../images/target.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-car-1 {
+	background: url("../images/automobile.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-car-2 {
+	background: url("../images/automobile.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-car-3 {
+	background: url("../images/automobile.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-computer-1 {
+	background: url("../images/computer.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-computer-2 {
+	background: url("../images/computer.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-computer-3 {
+	background: url("../images/computer.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-education-1 {
+	background: url("../images/education.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-education-2 {
+	background: url("../images/education.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-education-3 {
+	background: url("../images/education.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-electronics-1 {
+	background: url("../images/electronics.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-electronics-2 {
+	background: url("../images/electronics.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-electronics-3 {
+	background: url("../images/electronics.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-flat-1 {
+	background: url("../images/flat.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-flat-2 {
+	background: url("../images/flat.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-flat-3 {
+	background: url("../images/flat.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-fur-coat-1 {
+	background: url("../images/fur_coat.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-fur-coat-2 {
+	background: url("../images/fur_coat.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-fur-coat-3 {
+	background: url("../images/fur_coat.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-furniture-1 {
+	background: url("../images/furniture.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-furniture-2 {
+	background: url("../images/furniture.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-furniture-3 {
+	background: url("../images/furniture.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-health-1 {
+	background: url("../images/health.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-health-2 {
+	background: url("../images/health.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-health-3 {
+	background: url("../images/health.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-house-1 {
+	background: url("../images/house.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-house-2 {
+	background: url("../images/house.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-house-3 {
+	background: url("../images/house.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-jewelry-1 {
+	background: url("../images/jewelry.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-jewelry-2 {
+	background: url("../images/jewelry.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-jewelry-3 {
+	background: url("../images/jewelry.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-land-1 {
+	background: url("../images/land.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-land-2 {
+	background: url("../images/land.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-land-3 {
+	background: url("../images/land.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-motocycle-1 {
+	background: url("../images/motocycle.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-motocycle-2 {
+	background: url("../images/motocycle.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-motocycle-3 {
+	background: url("../images/motocycle.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-pillow-1 {
+	background: url("../images/pillow.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-pillow-2 {
+	background: url("../images/pillow.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-pillow-3 {
+	background: url("../images/pillow.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-rest-1 {
+	background: url("../images/rest.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-rest-2 {
+	background: url("../images/rest.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-rest-3 {
+	background: url("../images/rest.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-target-1 {
+	background: url("../images/target.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-target-2 {
+	background: url("../images/target.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-target-3 {
+	background: url("../images/target.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-technic-1 {
+	background: url("../images/technic.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-technic-2 {
+	background: url("../images/technic.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-technic-3 {
+	background: url("../images/technic.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .img-wedding-1 {
+	background: url("../images/wedding.jpg") no-repeat scroll 0 0 transparent;
+}
+.target-image .img-wedding-2 {
+	background: url("../images/wedding.jpg") no-repeat scroll -220px 0 transparent;
+}
+.target-image .img-wedding-3 {
+	background: url("../images/wedding.jpg") no-repeat scroll -430px 0 transparent;
+}
+.target-image .button-img {
+	display: block;
+	margin: 5px auto;
+	width: 100px;
+	height: 30px;
+	border-radius: 10px;
+	cursor: pointer;
+	background-color: #16A085;
+}
+.target-image .button-img:hover {
+	background-color: #10c4b2;
+}
+.target-image .button-img span {
+	display: block;
+	position: relative;
+	color: #ffffff;
+	font-size: 14px;
+	top: 6px;
+	text-align: center;
+}
 
+.operation-beat {
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #dee1e1;
+}
+.operation-time input {
+	width: 20px !important;
+	margin-left: 10px;
+}

@@ -19,7 +19,8 @@ class AccidentTable extends DataManager
 	{
 		return array(
 			'ID' => array(
-				'ms_icar_repair_parts' => 'ACCIDENT_ID'
+				'ms_icar_repair_parts' => 'ACCIDENT_ID',
+				'ms_icar_repair' => 'ACCIDENT_ID'
 			)
 		);
 	}
@@ -56,9 +57,9 @@ class AccidentTable extends DataManager
 			new Entity\StringField('DAMAGE_PARTS',array(
 				'title' => 'Поврежденные детали'
 			)),
-			new Entity\IntegerField('EXECUTORS_ID',array(
+			new Entity\IntegerField('EXECUTOR_ID',array(
 				'required' => true,
-				'link' => 'ms_icar_executors.ID',
+				'link' => 'ms_icar_executor.ID',
 				'title' => 'ID исполнителя работ'
 			)),
 			new Entity\IntegerField('WHO_PAID_ID',array(

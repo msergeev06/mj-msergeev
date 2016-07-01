@@ -25,7 +25,8 @@ class MyCarTable extends DataManager {
 				'ms_icar_optional_equip' => 'MY_CAR_ID',
 				'ms_icar_credit' => 'MY_CAR_ID',
 				'ms_icar_planer' => 'MY_CAR_ID',
-				'ms_icar_income' => 'MY_CAR_ID'
+				'ms_icar_income' => 'MY_CAR_ID',
+				'ms_icar_repair' => 'MY_CAR_ID'
 			)
 		);
 	}

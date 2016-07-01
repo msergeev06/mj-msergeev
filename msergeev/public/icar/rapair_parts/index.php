@@ -13,7 +13,7 @@ use MSergeev\Core\Lib as CoreLib;
 Общие затраты на запчасти: <? echo Lib\RepairParts::getTotalRepairPartsCostsFormatted(); ?> руб.<br><br></p>
 <p><a href="add.php?car=<?=$carID?>">Добавить запись</a><br><br></p>
 
-
+<? Lib\RepairParts::showListTable($carID); ?>
 
 <p><a href="add.php?car=<?=$carID?>">Добавить запись</a><br><br></p>
 <? $curDir = basename(__DIR__); ?>

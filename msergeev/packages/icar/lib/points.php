@@ -274,13 +274,20 @@ class Points
 		}
 
 		$arCoords = array();
-		$xmlStr = file_get_contents ("https://geocode-maps.yandex.ru/1.x/?geocode=".urlencode ($address));
-		$xml = simplexml_load_string ($xmlStr);
-		$arValues = $xml->GeoObjectCollection->featureMember;
-		$arCoords["all"] = $arValues->GeoObject->Point->pos;
-		list($arCoords["lon"], $arCoords["lat"]) = explode (" ", $arCoords["all"]);
+		$xmlStr = @file_get_contents ("https://geocode-maps.yandex.ru/1.x/?geocode=".urlencode ($address));
+		if ($xmlStr)
+		{
+			$xml = simplexml_load_string ($xmlStr);
+			$arValues = $xml->GeoObjectCollection->featureMember;
+			$arCoords["all"] = $arValues->GeoObject->Point->pos;
+			list($arCoords["lon"], $arCoords["lat"]) = explode (" ", $arCoords["all"]);
 
-		return $arCoords;
+			return $arCoords;
+		}
+		else
+		{
+			return false;
+		}
 
 	}
 

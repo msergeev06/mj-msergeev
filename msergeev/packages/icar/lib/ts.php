@@ -100,6 +100,25 @@ class Ts
 		return $arRes;
 	}
 
+	public static function showSelectTsList ($carID, $strBoxName, $strDetText='Не выбрано', $strSelectedVal = "null", $field1="class=\"tslistselect\"")
+	{
+		$arRes = self::getTsList($carID);
+		if ($arRes)
+		{
+			$arValue = array();
+			foreach ($arRes as $ar_res)
+			{
+				$arValue[] = array(
+					'NAME' => $ar_res['DATE'].' ТО-'.$ar_res['TS_NUM'],
+					'VALUE' => $ar_res['ID']
+				);
+			}
+
+			return SelectBox($strBoxName, $arValue, $strDetText, $strSelectedVal, $field1);
+		}
+
+	}
+
 	public static function showListTable ($carID=null)
 	{
 		if (is_null($carID))
@@ -107,66 +126,74 @@ class Ts
 			$carID = MyCar::getDefaultCarID();
 		}
 
-		echo '<div id="tsList"></div><div id="tsPager"></div>';
-
-		$dateHelper = new CoreLib\DateHelper();
 		$arList = static::getTsList($carID);
-		$imgSrcPath = CoreLib\Tools::getSitePath(CoreLib\Loader::getTemplate('icar')."images/");
-		//msDebug($arList);
-
-		$arDatas = array();
-		foreach ($arList as $list)
+		if ($arList)
 		{
-			$arDatas[] = array(
-				'id' => $list['ID'],
-				'ts' => "ТО-".$list['TS_NUM'],
-				'date' => $list['DATE'],
-				'timestamp' => "=".$dateHelper->getDateTimestamp($list['DATE']),
-				'odo' => "=".$list['ODO'],
-				'cost' => "=".$list['COST'],
-				'executors_name' => $list['EXECUTORS_NAME'],
-				'point_name' => $list['POINT_NAME'],
-				'point_latitude' => $list['POINT_LATITUDE'],
-				'point_longitude' => $list['POINT_LONGITUDE'],
-				'yandex_map' => "<img src='https://static-maps.yandex.ru/1.x/?l=map&z=12&size=600,450&pt=".$list['POINT_LONGITUDE'].",".$list['POINT_LATITUDE'].",pm2blm'>",
-				'point_type' => $list['POINT_TYPE_NAME'],
-				'info' => (strlen($list['INFO'])>0)?"<img src='".$imgSrcPath."info.png'>":"",
-				'comment' => $list['INFO'],
-				'edit' => "<a href='edit.php?id=".$list['ID']."'><img src='".$imgSrcPath."edit.png'></a>",
-				'delete' => "<a href='delete.php?id=".$list['ID']."'><img src='".$imgSrcPath."delete.png'></a>"
-			);
-		}
+			echo '<div id="tsList"></div><div id="tsPager"></div>';
 
-		$webixHelper = new IcarWebixHelper();
+			$dateHelper = new CoreLib\DateHelper();
+			$imgSrcPath = CoreLib\Tools::getSitePath(CoreLib\Loader::getTemplate('icar')."images/");
+			//msDebug($arList);
 
-		$webixHelper->addFunctionSortByTimestamp();
+			$arDatas = array();
+			foreach ($arList as $list)
+			{
+				$arDatas[] = array(
+					'id' => $list['ID'],
+					'ts' => "ТО-".$list['TS_NUM'],
+					'date' => $list['DATE'],
+					'timestamp' => "=".$dateHelper->getDateTimestamp($list['DATE']),
+					'odo' => "=".$list['ODO'],
+					'cost' => "=".$list['COST'],
+					'executors_name' => $list['EXECUTORS_NAME'],
+					'point_name' => $list['POINT_NAME'],
+					'point_latitude' => $list['POINT_LATITUDE'],
+					'point_longitude' => $list['POINT_LONGITUDE'],
+					'yandex_map' => "<img src='https://static-maps.yandex.ru/1.x/?l=map&z=12&size=600,450&pt=".$list['POINT_LONGITUDE'].",".$list['POINT_LATITUDE'].",pm2blm'>",
+					'point_type' => $list['POINT_TYPE_NAME'],
+					'info' => (strlen($list['INFO'])>0)?"<img src='".$imgSrcPath."info.png'>":"",
+					'comment' => $list['INFO'],
+					'edit' => "<a href='edit.php?id=".$list['ID']."'><img src='".$imgSrcPath."edit.png'></a>",
+					'delete' => "<a href='delete.php?id=".$list['ID']."'><img src='".$imgSrcPath."delete.png'></a>"
+				);
+			}
 
-		$arData = array(
-			'grid' => 'tsGrid',
-			'container' => 'tsList',
-			'footer' => true,
-			'tooltip' => true,
-			'pager' => array('container'=>'tsPager'),
-			'columns' => array(
-				$webixHelper->getColumnArray('DATE',array(
-					'footer'=>'={text:"Итого:", colspan:3}'
-				)),
-				$webixHelper->getColumnArray('TS'),
-				$webixHelper->getColumnArray('ODO'),
-				$webixHelper->getColumnArray('EXECUTORS'),
-				$webixHelper->getColumnArray('COST', array(
-						'footer'=>'={ content:"summColumn" }'
-					)
+			$webixHelper = new IcarWebixHelper();
+
+			$webixHelper->addFunctionSortByTimestamp();
+
+			$arData = array(
+				'grid' => 'tsGrid',
+				'container' => 'tsList',
+				'footer' => true,
+				'tooltip' => true,
+				'pager' => array('container'=>'tsPager'),
+				'columns' => array(
+					$webixHelper->getColumnArray('DATE',array(
+						'footer'=>'={text:"Итого:", colspan:3}'
+					)),
+					$webixHelper->getColumnArray('TS'),
+					$webixHelper->getColumnArray('ODO'),
+					$webixHelper->getColumnArray('EXECUTORS'),
+					$webixHelper->getColumnArray('COST', array(
+							'footer'=>'={ content:"summColumn" }'
+						)
+					),
+					$webixHelper->getColumnArray('POINT'),
+					$webixHelper->getColumnArray('INFO'),
+					$webixHelper->getColumnArray('EDIT'),
+					$webixHelper->getColumnArray('DELETE')
 				),
-				$webixHelper->getColumnArray('POINT'),
-				$webixHelper->getColumnArray('INFO'),
-				$webixHelper->getColumnArray('EDIT'),
-				$webixHelper->getColumnArray('DELETE')
-			),
-			'data' => $arDatas
-		);
+				'data' => $arDatas
+			);
 
-		return CoreLib\Webix::showDataTable($arData);
+			return CoreLib\Webix::showDataTable($arData);
+		}
+		else
+		{
+			echo 'Нет данных о прохождении ТО';
+			return false;
+		}
 	}
 
 	public static function showSelectTsNum ($selectName, $selected = "null")

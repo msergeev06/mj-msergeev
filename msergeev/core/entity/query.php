@@ -827,6 +827,7 @@ class Query
 			$bFirst = true;
 			foreach ($arWhere as $field=>$value)
 			{
+				$oldField = $field;
 				if ($arMask = $this->maskField($field))
 				{
 					$field = $arMask['field'];
@@ -843,18 +844,39 @@ class Query
 					}
 					else
 					{
-						$value = $arMap[$field]->saveDataModification($value);
+						if (!is_array($value))
+						{
+							$value = $arMap[$field]->saveDataModification($value);
+						}
 						$bEquating_str = false;
 
 						if ($arMap[$field] instanceof IntegerField)
 						{
 							if (isset($mask))
 							{
-								$equating = ' '.$mask.' ';
+								if (!is_array($value))
+								{
+									$equating = ' '.$mask.' ';
+								}
+								elseif ($mask == "!")
+								{
+									$equating = ' NOT IN ';
+								}
+								else
+								{
+									throw new Exception\ArgumentOutOfRangeException('arMap['.$oldField.']');
+								}
 							}
 							else
 							{
-								$equating = " = ";
+								if (!is_array($value))
+								{
+									$equating = " = ";
+								}
+								else
+								{
+									$equating = ' IN ';
+								}
 							}
 						}
 						elseif ($arMap[$field] instanceof BooleanField)
@@ -873,11 +895,29 @@ class Query
 						{
 							if (isset($mask))
 							{
-								$equating = ' '.$mask.' ';
+								if (!is_array($value))
+								{
+									$equating = ' '.$mask.' ';
+								}
+								elseif ($mask == "!")
+								{
+									$equating = ' NOT IN ';
+								}
+								else
+								{
+									throw new Exception\ArgumentOutOfRangeException('arMap['.$oldField.']');
+								}
 							}
 							else
 							{
-								$equating = " = ";
+								if (!is_array($value))
+								{
+									$equating = " = ";
+								}
+								else
+								{
+									$equating = ' IN ';
+								}
 							}
 							$bEquating_str = true;
 						}
@@ -885,11 +925,29 @@ class Query
 						{
 							if (isset($mask))
 							{
-								$equating = ' '.$mask.' ';
+								if (!is_array($value))
+								{
+									$equating = ' '.$mask.' ';
+								}
+								elseif ($mask == "!")
+								{
+									$equating = ' NOT IN ';
+								}
+								else
+								{
+									throw new Exception\ArgumentOutOfRangeException('arMap['.$oldField.']');
+								}
 							}
 							else
 							{
-								$equating = " = ";
+								if (!is_array($value))
+								{
+									$equating = " = ";
+								}
+								else
+								{
+									$equating = ' IN ';
+								}
 							}
 							$bEquating_str = true;
 						}
@@ -921,11 +979,29 @@ class Query
 						{
 							if (isset($mask))
 							{
-								$equating = ' '.$mask.' ';
+								if (!is_array($value))
+								{
+									$equating = ' '.$mask.' ';
+								}
+								elseif ($mask == "!")
+								{
+									$equating = ' NOT IN ';
+								}
+								else
+								{
+									throw new Exception\ArgumentOutOfRangeException('arMap['.$oldField.']');
+								}
 							}
 							else
 							{
-								$equating = " = ";
+								if (!is_array($value))
+								{
+									$equating = " = ";
+								}
+								else
+								{
+									$equating = ' IN ';
+								}
 							}
 						}
 						elseif ($arMap[$field] instanceof ReferenceField)
@@ -965,25 +1041,79 @@ class Query
 							$bEquating_str = true;
 						}
 
-						if ($bFirst)
+						if (!is_array($value))
 						{
-							$sqlWhere .= $helper->wrapQuotes($tableName).'.'
-								.$helper->wrapQuotes($field).$equating;
-							if ($bEquating_str)
-								$sqlWhere .= "'".$value."'";
+							if ($bFirst)
+							{
+								$sqlWhere .= $helper->wrapQuotes($tableName).'.'
+									.$helper->wrapQuotes($field).$equating;
+								if ($bEquating_str)
+									$sqlWhere .= "'".$value."'";
+								else
+									$sqlWhere .= $value;
+								$bFirst = false;
+							}
 							else
-								$sqlWhere .= $value;
-							$bFirst = false;
+							{
+								$sqlWhere .= ' '.$this->getFilterLogic()."\n\t"
+									.$helper->wrapQuotes($tableName).'.'
+									.$helper->wrapQuotes($field).$equating;
+								if ($bEquating_str)
+									$sqlWhere .= "'".$value."'";
+								else
+									$sqlWhere .= $value;
+							}
 						}
 						else
 						{
-							$sqlWhere .= ' '.$this->getFilterLogic()."\n\t"
-								.$helper->wrapQuotes($tableName).'.'
-								.$helper->wrapQuotes($field).$equating;
-							if ($bEquating_str)
-								$sqlWhere .= "'".$value."'";
+							if ($bFirst)
+							{
+								$sqlWhere .= $helper->wrapQuotes($tableName).'.'
+									.$helper->wrapQuotes($field).$equating;
+								$sqlWhere .= '(';
+								$bFFirst = true;
+								for ($i=0; $i<count($value); $i++)
+								{
+									if ($bFFirst)
+									{
+										$bFFirst = false;
+									}
+									else
+									{
+										$sqlWhere .= ', ';
+									}
+									if ($bEquating_str)
+										$sqlWhere .= "'".$value[$i]."'";
+									else
+										$sqlWhere .= $value[$i];
+								}
+								$sqlWhere .= ')';
+								$bFirst = false;
+							}
 							else
-								$sqlWhere .= $value;
+							{
+								$sqlWhere .= ' '.$this->getFilterLogic()."\n\t"
+									.$helper->wrapQuotes($tableName).'.'
+									.$helper->wrapQuotes($field).$equating;
+								$sqlWhere .= '(';
+								$bFFirst = true;
+								for ($i=0; $i<count($value); $i++)
+								{
+									if ($bFFirst)
+									{
+										$bFFirst = false;
+									}
+									else
+									{
+										$sqlWhere .= ', ';
+									}
+									if ($bEquating_str)
+										$sqlWhere .= "'".$value[$i]."'";
+									else
+										$sqlWhere .= $value[$i];
+								}
+								$sqlWhere .= ')';
+							}
 						}
 					}
 				}

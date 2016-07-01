@@ -104,6 +104,20 @@ class IcarWebixHelper extends CoreLib\WebixHelper
 				'tooltip'=>'=false',
 				'adjust'=>'=true'
 			),
+			'NAME' => array(
+				'id'=>'name',
+				'header'=>'Название',
+				'sort'=>'string',
+				'tooltip'=>'=false',
+				'adjust'=>'=true'
+			),
+			'CATALOG_NUMBER' => array(
+				'id'=>'catalog_num',
+				'header'=>'Каталог №',
+				'sort'=>'string',
+				'tooltip'=>'=false',
+				'adjust'=>'=true'
+			),
 			'EXECUTORS' => array(
 				'id'=>'executors_name',
 				'header'=>'Исполнитель работ',
@@ -114,6 +128,32 @@ class IcarWebixHelper extends CoreLib\WebixHelper
 			'COST' => array(
 				'id'=>'cost',
 				'header'=>'Стоимость',
+				'sort'=>'int',
+				'tooltip'=>'=false',
+				'format' => '=webix.Number.numToStr({
+						groupDelimiter:" ",
+						groupSize:3,
+						decimalDelimiter:",",
+						decimalSize:2
+					})',
+				'adjust'=>'true'
+			),
+			'SUM' => array(
+				'id'=>'sum',
+				'header'=>'Сумма',
+				'sort'=>'int',
+				'tooltip'=>'=false',
+				'format' => '=webix.Number.numToStr({
+						groupDelimiter:" ",
+						groupSize:3,
+						decimalDelimiter:",",
+						decimalSize:2
+					})',
+				'adjust'=>'true'
+			),
+			'NUMBER' => array(
+				'id'=>'number',
+				'header'=>'Количество',
 				'sort'=>'int',
 				'tooltip'=>'=false',
 				'adjust'=>'true'

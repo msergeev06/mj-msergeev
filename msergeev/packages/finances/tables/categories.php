@@ -21,7 +21,8 @@ class CategoriesTable extends Lib\DataManager
 	{
 		return array(
 			'ID' => array(
-				'ms_finances_categories' => 'PARENT_SECTION_ID'
+				'ms_finances_categories' => 'PARENT_SECTION_ID',
+				'ms_finances_procedures' => 'CATEGORY_ID'
 			)
 		);
 	}

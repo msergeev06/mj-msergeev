@@ -330,4 +330,21 @@ class Tools {
 		return $dateHelper->getNameMonth($month);
 	}
 
+	public static function validateFloatVal ($strFloat)
+	{
+		$temp = str_replace(' ','',$strFloat);
+		$temp = str_replace(',','.',$temp);
+		$temp = floatval($temp);
+
+		return $temp;
+	}
+
+	public static function validateIntVal ($strInt)
+	{
+		$temp = str_replace(' ','',$strInt);
+		$temp = str_replace(',','.',$temp);
+		$temp = intval($temp);
+
+		return $temp;
+	}
 }

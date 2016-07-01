@@ -27,7 +27,7 @@ $path=Lib\Loader::getSitePublic('finances');
 	<tr>
 		<td class="left">
 			<div class="buttons">
-				<a href="#" class="left-button button-op">Добавить в учет</a>
+				<a href="<?=$path?>operation/add_operation.php" class="left-button button-op">Добавить в учет</a>
 				<a href="#" class="left-button button-cal">Добавить в календарь</a>
 			</div>
 			<div class="left-tabs">

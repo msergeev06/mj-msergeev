@@ -81,7 +81,7 @@ if (isset($_POST['action']) && intval($_POST['action'])==1)
 			<td><?=InputType('text','comment','','',false,'','class="comment"')?></td>
 		</tr>
 		<tr>
-			<td class="center" colspan="2"><input type="hidden" name="action" value="1"><input type="submit" value="<?=GetMessage("SUBMIT_ADD")?>"></td>
+			<td class="center" colspan="2"><input type="hidden" name="action" value="1"><input type="submit" value="Добавить запись"></td>
 		</tr>
 	</table>
 </form>

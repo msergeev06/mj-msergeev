@@ -16,7 +16,8 @@ class TsTable extends DataManager {
 	{
 		return array(
 			'ID' => array(
-				'ms_icar_repair_parts' => 'TS_ID'
+				'ms_icar_repair_parts' => 'TS_ID',
+				'ms_icar_repair' => 'TS_ID'
 			)
 		);
 	}

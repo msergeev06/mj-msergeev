@@ -17,7 +17,8 @@ class ExecutorTable extends DataManager {
 		return array(
 			'ID' => array(
 				'ms_icar_accident' => 'EXECUTOR_ID',
-				'ms_icar_ts' => 'EXECUTOR_ID'
+				'ms_icar_ts' => 'EXECUTOR_ID',
+				'ms_icar_repair' => 'EXECUTOR_ID'
 			)
 		);
 	}

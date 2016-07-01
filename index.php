@@ -9,7 +9,7 @@ header('Content-type: text/html; charset=utf-8');
 //MSergeev\Core\Lib\Loader::IncludePackage("apihelp");
 //MSergeev\Core\Lib\Loader::IncludePackage("products");
 //MSergeev\Core\Lib\Loader::IncludePackage("tasks");
-MSergeev\Core\Lib\Loader::IncludePackage("finances");
+//MSergeev\Core\Lib\Loader::IncludePackage("finances");
 
 use MSergeev\Packages\Dates\Tables;
 use MSergeev\Packages\ICar\Tables\CarGearboxTable;
@@ -56,6 +56,7 @@ $res = WorkCalendarTable::getList(array(
 //\MSergeev\Packages\Currency\Lib\Currency::getRates("RUB",array("USD","EUR"));
 //msDebug(\MSergeev\Packages\Currency\Lib\Currency::getCurrencyRate("RUB","JPY"));
 //msDebug(\MSergeev\Packages\Currency\Lib\Currency::convertCurrency(10,"USD","RUB"));
+//$res = MSergeev\Packages\Icar\Tables\RepairTable::createTable();
 /*
 $res = MSergeev\Packages\Products\Tables\FreezerTable::createTable();
 msDebug($res);
