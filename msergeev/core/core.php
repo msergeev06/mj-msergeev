@@ -12,6 +12,10 @@ Lib\Options::init();
 __include_once(Lib\Config::getConfig('CORE_ROOT')."lib/loader.php");
 Lib\Loader::init();
 
+__include_once(Lib\Config::getConfig('CORE_ROOT')."lib/users.php");
+$USER = new Lib\Users();
+$GLOBALS['USER'] = $USER;
+
 //***** Exception ********
 Lib\Loader::includeFiles(
 	Lib\Config::getConfig('CORE_ROOT')."exception/",
@@ -32,7 +36,8 @@ Lib\Loader::includeFiles(
 		"data_base.php",
 		"options.php",
 		"config.php",
-		"loader.php"
+		"loader.php",
+		"users.php"
 	)
 );
 

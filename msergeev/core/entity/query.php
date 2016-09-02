@@ -1272,8 +1272,17 @@ class Query
 
 		$primaryField="";
 		$sql = "CREATE TABLE IF NOT EXISTS ".$this->getTableName()." (\n\t";
+		$bFirst = true;
 		foreach ($arMap as $fields=>$objData) {
 			//var_dump ($objData);
+			if ($bFirst)
+			{
+				$bFirst = false;
+			}
+			else
+			{
+				$sql .= ",\n\t";
+			}
 			if ($objData->isPrimary()) $primaryField = $objData->getColumnName();
 			$field = $objData->getColumnName();
 			$sql .= $helper->wrapQuotes($field)." ".$objData->getDataType();
@@ -1355,11 +1364,11 @@ class Query
 				$sql .= "AUTO_INCREMENT ";
 			}
 			if (!is_null($objData->getTitle())) {
-				$sql .= "COMMENT '".$objData->getTitle()."',\n\t";
+				$sql .= "COMMENT '".$objData->getTitle()."'";
 			}
 		}
-		if ($primaryField != "") $sql .= "PRIMARY KEY (".$helper->wrapQuotes($primaryField).")\n";
-		$sql .= ") ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=".$this->getAutoIncrement()." ;";
+		if ($primaryField != "") $sql .= ",\n\tPRIMARY KEY (".$helper->wrapQuotes($primaryField).")";
+		$sql .= "\n\t) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=".$this->getAutoIncrement()." ;";
 
 		return $sql;
 	}

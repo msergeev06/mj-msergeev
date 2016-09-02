@@ -2,7 +2,8 @@
 
 namespace MSergeev\Core\Entity;
 
-class ScalarField extends Field {
+class ScalarField extends Field
+{
 
 	protected $is_primary = false;
 
@@ -14,7 +15,7 @@ class ScalarField extends Field {
 
 	protected $column_name = '';
 
-    protected $arRun = null;
+	protected $arRun = null;
 
 	/** @var null|callable|mixed  */
 	protected $default_value = null;
@@ -30,7 +31,10 @@ class ScalarField extends Field {
 
 		$this->column_name = isset($parameters['column_name']) ? $parameters['column_name'] : $this->name;
 		$this->default_value = isset($parameters['default_value']) ? $parameters['default_value'] : null;
-        if (isset($parameters["run"])) $this->arRun = $parameters["run"];
+		if (isset($parameters["run"]))
+		{
+			$this->arRun = $parameters["run"];
+		}
 	}
 
 	public function isPrimary()
@@ -58,9 +62,10 @@ class ScalarField extends Field {
 		return $this->column_name;
 	}
 
-    public function getRun () {
-        return $this->arRun;
-    }
+	public function getRun ()
+	{
+		return $this->arRun;
+	}
 
 
 	public function setColumnName($column_name)
@@ -68,7 +73,7 @@ class ScalarField extends Field {
 		$this->column_name = $column_name;
 	}
 
-    /*
+	/*
 	abstract function isValueEmpty($value);
 	{
 		/*
@@ -80,7 +85,7 @@ class ScalarField extends Field {
 
 		return (strval($value) === '');
 	}
-    */
+	*/
 
 	public function getDefaultValue()
 	{
@@ -94,39 +99,50 @@ class ScalarField extends Field {
 		}
 	}
 
-    /*
-    public function getArray() {
-        $arData = array();
-        $arData['columnName'] = self::getColumnName();
-        $arData['required'] = self::isRequired();
-        $arData['primary'] = self::isPrimary();
-        $arData['autocomplete'] = self::isAutocomplete();
-        $arData['unique'] = self::isUnique();
-        $arData['run'] = self::getRun();
-        $arData['default_value'] = self::getDefaultValue();
+	/*
+	public function getArray()
+	{
+		$arData = array();
+		$arData['columnName'] = self::getColumnName();
+		$arData['required'] = self::isRequired();
+		$arData['primary'] = self::isPrimary();
+		$arData['autocomplete'] = self::isAutocomplete();
+		$arData['unique'] = self::isUnique();
+		$arData['run'] = self::getRun();
+		$arData['default_value'] = self::getDefaultValue();
 
-        return $arData;
-    }
-    */
-    public function saveDataModification ($value)
-    {
-        $additionalSaveDataModification = parent::getSaveDataModification();
-        if (!is_null($additionalSaveDataModification) && is_callable($additionalSaveDataModification)) {
-            $value = call_user_func($additionalSaveDataModification,$value);
-        }
+		return $arData;
+	}
+	*/
+	public function saveDataModification ($value)
+	{
+		$additionalSaveDataModification = parent::getSaveDataModification();
+		if (!is_null($additionalSaveDataModification) && is_callable($additionalSaveDataModification))
+		{
+			$value = call_user_func($additionalSaveDataModification,$value);
+		}
+		if (static::isSerialized())
+		{
+			$value = static::serialize($value);
+		}
 
-        return $value;
-    }
+		return $value;
+	}
 
-    public function fetchDataModification ($value)
-    {
-        $additionalFetchDataModification = parent::getFetchDataModification();
-        if (!is_null($additionalFetchDataModification) && is_callable($additionalFetchDataModification)) {
-            $value = call_user_func($additionalFetchDataModification,$value);
-        }
+	public function fetchDataModification ($value)
+	{
+		$additionalFetchDataModification = parent::getFetchDataModification();
+		if (!is_null($additionalFetchDataModification) && is_callable($additionalFetchDataModification))
+		{
+			$value = call_user_func($additionalFetchDataModification,$value);
+		}
+		if (static::isSerialized())
+		{
+			$value = static::unserialize($value);
+		}
 
-        return $value;
-    }
+		return $value;
+	}
 
 	public function validate ($value)
 	{

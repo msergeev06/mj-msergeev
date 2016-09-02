@@ -163,7 +163,7 @@ function InputCalendar ($strName, $strValue="", $field1="", $strId="")
 		{
 			throw new Exception\ArgumentNullException("strName");
 		}
-		if (strlen($strValue)==0) $strValue = date("d.m.Y");
+		if (strlen($strValue)==0 && !is_null($strValue)) $strValue = date("d.m.Y");
 		Lib\Buffer::addJS(Lib\Config::getConfig("CORE_ROOT")."js/calendar.js");
 		$strReturnBox = "<input ".$field1." type=\"text\" id=\"".(($strId!="")?$strId:$strName);
 		$strReturnBox.= "\" name=\"".$strName."\" value=\"".$strValue."\"";

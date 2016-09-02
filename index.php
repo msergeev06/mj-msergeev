@@ -10,6 +10,7 @@ header('Content-type: text/html; charset=utf-8');
 //MSergeev\Core\Lib\Loader::IncludePackage("products");
 //MSergeev\Core\Lib\Loader::IncludePackage("tasks");
 //MSergeev\Core\Lib\Loader::IncludePackage("finances");
+MSergeev\Core\Lib\Loader::IncludePackage("calendar");
 
 use MSergeev\Packages\Dates\Tables;
 use MSergeev\Packages\ICar\Tables\CarGearboxTable;
@@ -52,11 +53,13 @@ $res = WorkCalendarTable::getList(array(
 //$code = Tools::generateCode("Михаил Сергеев");
 //CarGearboxTable::insertDefaultRows();
 //$res = Tools::getClassNameByTableName("ms_icar_car_gearbox");
-//Installer::createPackageTables("currency");
+//Installer::createPackageTables("calendar");
 //\MSergeev\Packages\Currency\Lib\Currency::getRates("RUB",array("USD","EUR"));
 //msDebug(\MSergeev\Packages\Currency\Lib\Currency::getCurrencyRate("RUB","JPY"));
 //msDebug(\MSergeev\Packages\Currency\Lib\Currency::convertCurrency(10,"USD","RUB"));
 //$res = MSergeev\Packages\Icar\Tables\RepairTable::createTable();
+//$res = MSergeev\Packages\Calendar\Tables\EventsTable::createTable();
+$res = MSergeev\Packages\Calendar\Tables\UsersTable::createTable();
 /*
 $res = MSergeev\Packages\Products\Tables\FreezerTable::createTable();
 msDebug($res);
@@ -83,7 +86,43 @@ msDebug($res);
 //msDebug($res);
 
 
+/** Одноклассники */
+/*
+$user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.0; ru; rv:1.9.2.13) ' .
+	'Gecko/20101203 Firefox/3.6.13 ( .NET CLR 3.5.30729)';
+ignore_user_abort(true);
+//set_time_limit(0);
 
+	$login = '+79055969738';
+	$password = '1qz2wx3';
+	$ch = curl_init();
+
+	curl_setopt($ch, CURLOPT_POST, true);
+	curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/botok1.txt');
+	curl_setopt($ch, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/botok1.txt');
+	curl_setopt($ch, CURLOPT_HEADER, true);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLOPT_URL, 'http://www.odnoklasniki.ru/dk?cmd=AnonymLogin&st.cmd=anonymLogin'/*&tkn=941'*);
+
+	$post = array(
+		'st.redirect' => '',
+		'st.posted' => 'set',
+		'st.email' => $login,
+		'st.password' => $password,
+		'st.screenSize' => '',
+		'st.browserSize' => '',
+		'st.flashVer' => ''
+	);
+
+	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
+	$answer = curl_exec($ch);
+
+	curl_close($ch);
+	msDebug($answer);
+*/
 
 ?>
 <?//echo InputCalendar("calendar"); ?>

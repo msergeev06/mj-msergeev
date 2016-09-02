@@ -39,6 +39,7 @@ class Loader {
 						{
 							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/.default/";
 						}
+						static::$arPackage[$file]["SITE_TEMPLATE"] = str_replace(Config::getConfig("SITE_ROOT"),"",static::$arPackage[$file]["TEMPLATE"]);
 					}
 				}
 				@closedir($dh);
@@ -129,6 +130,18 @@ class Loader {
 		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
 		{
 			return static::$arPackage[$namePackage]["TEMPLATE"];
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static function getSiteTemplate ($namePackage=null)
+	{
+		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]))
+		{
+			return static::$arPackage[$namePackage]["SITE_TEMPLATE"];
 		}
 		else
 		{
