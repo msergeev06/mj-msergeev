@@ -17,6 +17,8 @@ class ScalarField extends Field
 
 	protected $arRun = null;
 
+	protected $values = null;
+
 	/** @var null|callable|mixed  */
 	protected $default_value = null;
 
@@ -29,6 +31,7 @@ class ScalarField extends Field
 		$this->is_required = (isset($parameters['required']) && $parameters['required']);
 		$this->is_autocomplete = (isset($parameters['autocomplete']) && $parameters['autocomplete']);
 
+		$this->values = isset($parameters['values']) ? $parameters['values'] : null;
 		$this->column_name = isset($parameters['column_name']) ? $parameters['column_name'] : $this->name;
 		$this->default_value = isset($parameters['default_value']) ? $parameters['default_value'] : null;
 		if (isset($parameters["run"]))

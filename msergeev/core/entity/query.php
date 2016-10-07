@@ -480,26 +480,33 @@ class Query
 	 *
 	 * @return Lib\DBResult $res
 	 */
-	public function exec ()
+	public function exec ($debug=false)
 	{
 		if ($this->getQueryBuildParts() == '')
 		{
 			$this->setQueryBuildParts(static::BuildQuery());
 		}
-		$DB = $GLOBALS['DB'];
-		try
+		if ($debug)
 		{
-			$res = $DB->query ($this);
-			if (!$res->getResult ())
-			{
-				throw new Exception\SqlQueryException("Error ".$this->getType ()." query", $res->getResultErrorText (),
-											$this->getQueryBuildParts ());
-			}
-			return $res;
+			return $this->getQueryBuildParts();
 		}
-		catch (Exception\SqlQueryException $e)
+		else
 		{
-			echo $e->showException();
+			$DB = $GLOBALS['DB'];
+			try
+			{
+				$res = $DB->query ($this);
+				if (!$res->getResult ())
+				{
+					throw new Exception\SqlQueryException("Error ".$this->getType ()." query", $res->getResultErrorText (),
+												$this->getQueryBuildParts ());
+				}
+				return $res;
+			}
+			catch (Exception\SqlQueryException $e)
+			{
+				echo $e->showException();
+			}
 		}
 	}
 

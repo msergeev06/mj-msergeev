@@ -51,16 +51,8 @@ class DateHelper
 		return date('Y-m-d',$time);
 	}
 
-	public function strToTime ($time=null, $str=null, $type=null)
+	public function strToTime ($time=null, $str='+1 day', $type='site')
 	{
-		if (is_null($type))
-		{
-			$type='site';
-		}
-		if (is_null($str))
-		{
-			$str = '+1 day';
-		}
 		if (is_null($time))
 		{
 			if ($type === 'site')

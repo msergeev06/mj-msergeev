@@ -35,6 +35,11 @@ class Options {
 		return floatval(static::getOption($optionName));
 	}
 
+	public static function setPackageDefaultOption ($optionName, $optionValue)
+	{
+		static::$arOptions[$optionName] = $optionValue;
+	}
+
 	public static function setOption ($optionName, $optionValue)
 	{
 		$optionName = strtoupper($optionName);

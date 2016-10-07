@@ -2,8 +2,6 @@
 
 namespace MSergeev\Core\Lib;
 
-use MSergeev\Core\Lib\Loc;
-
 class Loader {
 
 	protected static $arPackage;
@@ -24,13 +22,22 @@ class Loader {
 				{
 					if ($file != "." && $file != ".." && $file != "packages.php")
 					{
+						//Основной подключаемый файл пакета
 						static::$arPackage[$file]["INCLUDE"] = static::$packagesRoot.$file."/include.php";
+						//Список обязательных и дополнительных пакетов
 						static::$arPackage[$file]["REQUIRED"] = static::$packagesRoot.$file."/required.php";
+						//Список опций по-умолчанию пакета
+						static::$arPackage[$file]["DEFAULT_OPTIONS"] = static::$packagesRoot.$file."/default_options.php";
+						//Путь к публичной директории
 						static::$arPackage[$file]["PUBLIC"] = static::$publicRoot.$file."/";
+						//Относительный путь к публичной директории
 						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace(Config::getConfig('SITE_ROOT'),"",static::$arPackage[$file]["PUBLIC"]);
 						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace('\\',"/",static::$arPackage[$file]["SITE_PUBLIC"]);
 						//msDebug(static::$arPackage[$file]["SITE_PUBLIC"]);
+						//Путь к загружаемым файлам пакета
 						static::$arPackage[$file]["UPLOAD"] = static::$uploadRoot.$file."/";
+						//TODO: Условие всегда будет FALSE (проверить)
+						//Путь к действующему шаблону пакета
 						if ($temp = Config::getConfig($file."_TEMPLATE"))
 						{
 							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/".$temp."/";
@@ -39,6 +46,7 @@ class Loader {
 						{
 							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/.default/";
 						}
+						//Относительный путь к действующему шаблону пакета
 						static::$arPackage[$file]["SITE_TEMPLATE"] = str_replace(Config::getConfig("SITE_ROOT"),"",static::$arPackage[$file]["TEMPLATE"]);
 					}
 				}
@@ -80,8 +88,20 @@ class Loader {
 				}
 			}
 			__include_once(static::$arPackage[$namePackage]["INCLUDE"]);
-			static::$arIncludedPackages[$namePackage] = true;
+			if (file_exists(static::$arPackage[$namePackage]["DEFAULT_OPTIONS"]))
+			{
+				$arPackageDefaultOptions = array();
+				include_once(static::$arPackage[$namePackage]["DEFAULT_OPTIONS"]);
+				if (isset($arPackageDefaultOptions) && !empty($arPackageDefaultOptions))
+				{
+					foreach ($arPackageDefaultOptions as $optionName=>$optionValue)
+					{
+						Options::setPackageDefaultOption($optionName,$optionValue);
+					}
+				}
+			}
 			Loc::setModuleMessages($namePackage);
+			static::$arIncludedPackages[$namePackage] = true;
 			return true;
 		}
 		else
