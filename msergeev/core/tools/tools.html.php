@@ -1,9 +1,11 @@
 <?php
 /**
- * Majordomo MSergeev
+ * MSergeev
  * @package core
- * @copyright 2016 MSergeev
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
  */
+
 
 use \MSergeev\Core\Lib\DBResult;
 use \MSergeev\Core\Exception;

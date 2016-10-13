@@ -1,4 +1,10 @@
 <?php
+/**
+ * MSergeev
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
 
 namespace MSergeev\Core\Entity;
 use MSergeev\Core\Exception;
@@ -1886,39 +1892,6 @@ class Query
 		//return array("field"=>$field,"mask"=>$op,"operation"=>$single_char[$op]);
 		return false;
 
-/*		$arMask = array();
-		$arMask['field'] = $field;
-		$first = substr($field,0,1);
-		$count = strlen($field);
-		if (
-			$first == '<'
-			|| $first == '>'
-			|| $first == '!'
-			|| $first == '='
-		)
-		{
-			$second = substr($field,1,1);
-			if (
-				$second == '<'
-				|| $second == '>'
-				|| $second == '='
-			)
-			{
-				$arMask['mask'] = $first.$second;
-				$arMask['field'] = substr($field,2,$count-2);
-			}
-			else
-			{
-				$arMask['mask'] = $first;
-				$arMask['field'] = substr($field,1,$count-1);
-			}
-
-			return $arMask;
-		}
-		else
-		{
-			return false;
-		}*/
 
 	}
 }

@@ -1,4 +1,10 @@
 <?php
+/**
+ * MSergeev
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
 
 $arConfig = array(
 	'DB_HOST' => 'localhost',
@@ -10,7 +16,7 @@ $arConfig = array(
 	'MSERGEEV_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/',
 	'CORE_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/core/',
 	'PACKAGES_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/packages/',
-	'PUBLIC_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/public/',
+	//'PUBLIC_ROOT' => $_SERVER["DOCUMENT_ROOT"].'/msergeev/public/',
 	'LANG' => 'ru'
 );
 

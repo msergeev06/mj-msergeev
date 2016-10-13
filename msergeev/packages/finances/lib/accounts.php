@@ -913,7 +913,10 @@ class Accounts
 				($arValue['SUM']>0)?floor($arValue['SUM']):ceil($arValue['SUM']),
 				0
 			);
-			$arValue['RATE'] = Curr::getCurrencyRate($defaultCurrency,$currency);
+			if (CoreLib\Loader::IncludePackage("currency"))
+			{
+				$arValue['RATE'] = Curr::getCurrencyRate($defaultCurrency,$currency);
+			}
 			$arValue['SIGN'] = Currency::getCurrencySign($currency);
 			$arValue[$defaultCurrency] = $arValue['SUM'] * $arValue['RATE'];
 			$arValue[$defaultCurrency.'_SHOW'] = static::numberFormat(

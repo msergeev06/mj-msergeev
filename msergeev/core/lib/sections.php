@@ -1,6 +1,12 @@
 <?php
-//http://www.getinfo.ru/article610.html
+/**
+ * MSergeev
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
 
+//http://www.getinfo.ru/article610.html
 namespace MSergeev\Core\Lib;
 
 use MSergeev\Core\Entity\Query;

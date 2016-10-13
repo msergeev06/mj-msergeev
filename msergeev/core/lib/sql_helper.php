@@ -1,4 +1,10 @@
 <?php
+/**
+ * MSergeev
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
 
 namespace MSergeev\Core\Lib;
 
@@ -35,30 +41,57 @@ class SqlHelper
 		return self::QUOTES;
 	}
 
-	public function getCountFunction ($params="*")
+	public function getCountFunction ($params="*", $newColumn=null)
 	{
-		return 'COUNT('.$params.')';
+		if (is_null($newColumn))
+		{
+			if ($params=="*")
+			{
+				$newColumn = 'COUNT';
+			}
+			else
+			{
+				$newColumn = 'COUNT_'.$params;
+			}
+		}
+
+		return 'COUNT('.$params.') '.$this->wrapQuotes($newColumn);
 	}
 
-	public function getMaxFunction ($column="")
+	public function getMaxFunction ($column="", $newColumn=null)
 	{
 		if ($column=="") return "";
 
-		return 'MAX('.$this->wrapQuotes($column).')';
+		if (is_null($newColumn))
+		{
+			$newColumn = 'MAX_'.$column;
+		}
+
+		return 'MAX('.$this->wrapQuotes($column).') '.$this->wrapQuotes($newColumn);
 	}
 
-	public function getMinFunction ($column="")
+	public function getMinFunction ($column="", $newColumn=null)
 	{
 		if ($column=="") return "";
 
-		return 'MIN('.$this->wrapQuotes($column).')';
+		if (is_null($newColumn))
+		{
+			$newColumn = 'MIN_'.$column;
+		}
+
+		return 'MIN('.$this->wrapQuotes($column).') '.$this->wrapQuotes($newColumn);
 	}
 
-	public function getSumFunction ($column="")
+	public function getSumFunction ($column="", $newColumn=null)
 	{
 		if ($column=="") return "";
 
-		return 'SUM('.$this->wrapQuotes($column).')';
+		if (is_null($newColumn))
+		{
+			$newColumn = 'SUM_'.$column;
+		}
+
+		return 'SUM('.$this->wrapQuotes($column).') '.$this->wrapQuotes($newColumn);
 	}
 
 }

@@ -20,7 +20,7 @@ class Ts
 		}
 		$helper = new SqlHelper();
 		$query = new Query('select');
-		$sql = "SELECT\n\t".$helper->getSumFunction('COST')." as SUM\nFROM\n\t"
+		$sql = "SELECT\n\t".$helper->getSumFunction('COST','SUM')."\nFROM\n\t"
 			.$helper->wrapQuotes(Tables\TsTable::getTableName())."\nWHERE\n\t"
 			.$helper->wrapQuotes('MY_CAR_ID')." = ".$carID;
 		$query->setQueryBuildParts($sql);

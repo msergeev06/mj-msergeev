@@ -1,53 +1,32 @@
 <?php
+/**
+ * MSergeev
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
 
 namespace MSergeev\Core\Lib;
 
 class Loader {
 
-	protected static $arPackage;
-	protected static $packagesRoot;
-	protected static $publicRoot;
-	protected static $uploadRoot;
-	protected static $arIncludedPackages;
+	private static $arPackage;
+	private static $packagesRoot;
+	private static $uploadRoot;
+	private static $arIncludedPackages;
 
 	public static function init () {
-		static::$packagesRoot = Config::getConfig("PACKAGES_ROOT");
-		static::$publicRoot = Config::getConfig("PUBLIC_ROOT");
-		static::$uploadRoot = Config::getConfig("MSERGEEV_ROOT")."upload/";
-		if (is_dir(static::$packagesRoot))
+		self::$packagesRoot = Config::getConfig("PACKAGES_ROOT");
+		self::$uploadRoot = Config::getConfig("MSERGEEV_ROOT")."upload/";
+		if (is_dir(self::$packagesRoot))
 		{
-			if ($dh = opendir(static::$packagesRoot))
+			if ($dh = opendir(self::$packagesRoot))
 			{
 				while (($file = @readdir($dh)) !== false)
 				{
 					if ($file != "." && $file != ".." && $file != "packages.php")
 					{
-						//Основной подключаемый файл пакета
-						static::$arPackage[$file]["INCLUDE"] = static::$packagesRoot.$file."/include.php";
-						//Список обязательных и дополнительных пакетов
-						static::$arPackage[$file]["REQUIRED"] = static::$packagesRoot.$file."/required.php";
-						//Список опций по-умолчанию пакета
-						static::$arPackage[$file]["DEFAULT_OPTIONS"] = static::$packagesRoot.$file."/default_options.php";
-						//Путь к публичной директории
-						static::$arPackage[$file]["PUBLIC"] = static::$publicRoot.$file."/";
-						//Относительный путь к публичной директории
-						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace(Config::getConfig('SITE_ROOT'),"",static::$arPackage[$file]["PUBLIC"]);
-						static::$arPackage[$file]["SITE_PUBLIC"] = str_replace('\\',"/",static::$arPackage[$file]["SITE_PUBLIC"]);
-						//msDebug(static::$arPackage[$file]["SITE_PUBLIC"]);
-						//Путь к загружаемым файлам пакета
-						static::$arPackage[$file]["UPLOAD"] = static::$uploadRoot.$file."/";
-						//TODO: Условие всегда будет FALSE (проверить)
-						//Путь к действующему шаблону пакета
-						if ($temp = Config::getConfig($file."_TEMPLATE"))
-						{
-							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/".$temp."/";
-						}
-						else
-						{
-							static::$arPackage[$file]["TEMPLATE"] = static::$packagesRoot.$file."/templates/.default/";
-						}
-						//Относительный путь к действующему шаблону пакета
-						static::$arPackage[$file]["SITE_TEMPLATE"] = str_replace(Config::getConfig("SITE_ROOT"),"",static::$arPackage[$file]["TEMPLATE"]);
+						self::$arPackage[$file] = array();
 					}
 				}
 				@closedir($dh);
@@ -57,51 +36,93 @@ class Loader {
 
 	public static function IncludePackage ($namePackage=null)
 	{
-		if (!is_null($namePackage) && isset(static::$arPackage[$namePackage]) && !isset(static::$arIncludedPackages[$namePackage]))
+		//Если имя пакета задано, пакет установлен и не был загружен ранее
+		if (!is_null($namePackage) && isset(self::$arPackage[$namePackage]) && !isset(self::$arIncludedPackages[$namePackage]))
 		{
-			if (file_exists(static::$arPackage[$namePackage]["REQUIRED"]))
+			//Существует ли файл зависимостей пакетов
+			if (file_exists(self::$packagesRoot.$namePackage."/required.php"))
 			{
-				include_once(static::$arPackage[$namePackage]["REQUIRED"]);
+				//Подключаем файл зависимостей пакетов
+				__include_once(self::$packagesRoot.$namePackage."/required.php");
+				//Если массив обязательных пакетов не пуст
 				if (!empty($arRequiredPackages))
 				{
+					//Смотрим все описанные пакеты
 					foreach ($arRequiredPackages as $required)
 					{
-						if (isset(static::$arPackage[$required]) && !isset(static::$arIncludedPackages[$required]))
+						//Если требуемый пакет установлен
+						if (isset(self::$arPackage[$required]))
 						{
-							static::IncludePackage($required);
+							//Если требуемый пакет не был еще подключен
+							if (!isset(self::$arIncludedPackages[$required]))
+							{
+								//Запускаем сами себя для подключения требуемого пакета
+								self::IncludePackage($required);
+							}
 						}
+						//Если пакет не установлен - умираем с ошибкой.
 						else
 						{
 							die("ERROR-[".$namePackage."]: Необходимо установить обязательный пакет [".$required."]");
 						}
 					}
 				}
+				//Если массив дополнительных пакетов не пуст
 				if (!empty($arAdditionalPackages))
 				{
+					//Смотрим все описанные пакеты
 					foreach ($arAdditionalPackages as $additional)
 					{
-						if (isset(static::$arPackage[$additional]) && !isset(static::$arIncludedPackages[$additional]))
+						//Если требуемый пакет не установлен и не был еще подключен
+						if (isset(self::$arPackage[$additional]) && !isset(self::$arIncludedPackages[$additional]))
 						{
-							static::IncludePackage($additional);
+							//Запускаем сами себя для подключения требуемого пакета
+							self::IncludePackage($additional);
 						}
 					}
 				}
 			}
-			__include_once(static::$arPackage[$namePackage]["INCLUDE"]);
-			if (file_exists(static::$arPackage[$namePackage]["DEFAULT_OPTIONS"]))
+			//Подключаем основной файл пакета
+			__include_once(self::$packagesRoot.$namePackage."/include.php");
+			$defTempl = false;
+			//Если у пакета есть файл Опций по-умолчанию
+			if (file_exists(self::$packagesRoot.$namePackage."/default_options.php"))
 			{
+				//Сохраняем их
 				$arPackageDefaultOptions = array();
-				include_once(static::$arPackage[$namePackage]["DEFAULT_OPTIONS"]);
+				__include_once(self::$packagesRoot.$namePackage."/default_options.php");
 				if (isset($arPackageDefaultOptions) && !empty($arPackageDefaultOptions))
 				{
 					foreach ($arPackageDefaultOptions as $optionName=>$optionValue)
 					{
+						if ($optionName=="TEMPLATE")
+						{
+							$defTempl = $optionValue;
+						}
 						Options::setPackageDefaultOption($optionName,$optionValue);
 					}
 				}
 			}
+			//Если код шаблона не был установлен, устанавливаем шаблон по-умолчанию .default
+			if (!$defTempl)
+			{
+				$defTempl = '.default';
+			}
+			//Загружаем языковые файлы для пакета
 			Loc::setModuleMessages($namePackage);
-			static::$arIncludedPackages[$namePackage] = true;
+			//Путь к публичной директории
+			self::$arPackage[$namePackage]["PUBLIC"] = self::$packagesRoot.$namePackage."/public/";
+			//Относительный путь к публичной директории
+			self::$arPackage[$namePackage]["SITE_PUBLIC"] = str_replace(Config::getConfig('SITE_ROOT'),"",self::$arPackage[$namePackage]["PUBLIC"]);
+			self::$arPackage[$namePackage]["SITE_PUBLIC"] = str_replace('\\',"/",self::$arPackage[$namePackage]["SITE_PUBLIC"]);
+			//Путь к загружаемым файлам пакета
+			self::$arPackage[$namePackage]["UPLOAD"] = static::$uploadRoot.$namePackage."/";
+			//Путь к действующему шаблону пакета
+			static::$arPackage[$namePackage]["TEMPLATE"] = static::$packagesRoot.$namePackage."/templates/".$defTempl."/";
+			//Относительный путь к действующему шаблону пакета
+			static::$arPackage[$namePackage]["SITE_TEMPLATE"] = str_replace(Config::getConfig("SITE_ROOT"),"",static::$arPackage[$namePackage]["TEMPLATE"]);
+			//Устанавливаем флаг успешной загрузки пакета
+			self::$arIncludedPackages[$namePackage] = true;
 			return true;
 		}
 		else

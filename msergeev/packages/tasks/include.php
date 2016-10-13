@@ -1,15 +1,20 @@
 <?php
 
+// ---- SETUP ----
+$packageName = "tasks";
+// ---------------
+
 use \MSergeev\Core\Lib\Config;
 use \MSergeev\Core\Lib\Loader;
 
-Config::addConfig('TASKS_ROOT',Config::getConfig('PACKAGES_ROOT')."tasks/");
-Config::addConfig('TASKS_PUBLIC_ROOT',Config::getConfig('PUBLIC_ROOT')."tasks/");
-//Config::addConfig('PRODUCTS_TOOLS_ROOT',str_replace(Config::getConfig("SITE_ROOT"),"",Config::getConfig('PACKAGES_ROOT')."products/tools/"));
+$packageNameToUpper = strtoupper($packageName);
+Config::addConfig($packageNameToUpper.'_ROOT',Config::getConfig('PACKAGES_ROOT').$packageName."/");
+Config::addConfig($packageNameToUpper.'_PUBLIC_ROOT',Config::getConfig('PUBLIC_ROOT').$packageName."/");
+//Config::addConfig($packageNameToUpper.'_TOOLS_ROOT',str_replace(Config::getConfig("SITE_ROOT"),"",Config::getConfig('PACKAGES_ROOT').$packageName."/tools/"));
 
 //***** Tables ********
-Loader::includeFiles(Config::getConfig('TASKS_ROOT')."tables/");
+Loader::includeFiles(Config::getConfig($packageNameToUpper.'_ROOT')."tables/");
 
 //***** Lib ********
-Loader::includeFiles(Config::getConfig('TASKS_ROOT')."lib/");
+Loader::includeFiles(Config::getConfig($packageNameToUpper.'_ROOT')."lib/");
 

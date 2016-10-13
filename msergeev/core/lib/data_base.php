@@ -1,4 +1,10 @@
 <?php
+/**
+ * MSergeev\Core\Lib
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
 
 namespace MSergeev\Core\Lib;
 

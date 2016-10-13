@@ -1,15 +1,20 @@
 <?php
 
+// ---- SETUP ----
+$packageName = "wonthave";
+// ---------------
+
 use \MSergeev\Core\Lib\Config;
 use \MSergeev\Core\Lib\Loader;
 
-Config::addConfig('WANTHAVE_ROOT',Config::getConfig('PACKAGES_ROOT')."products/");
-Config::addConfig('WANTHAVE_PUBLIC_ROOT',Config::getConfig('PUBLIC_ROOT')."products/");
-//Config::addConfig('PRODUCTS_TOOLS_ROOT',str_replace(Config::getConfig("SITE_ROOT"),"",Config::getConfig('PACKAGES_ROOT')."products/tools/"));
+$packageNameToUpper = strtoupper($packageName);
+Config::addConfig($packageNameToUpper.'_ROOT',Config::getConfig('PACKAGES_ROOT').$packageName."/");
+Config::addConfig($packageNameToUpper.'_PUBLIC_ROOT',Config::getConfig('PUBLIC_ROOT').$packageName."/");
+//Config::addConfig($packageNameToUpper.'_TOOLS_ROOT',str_replace(Config::getConfig("SITE_ROOT"),"",Config::getConfig('PACKAGES_ROOT').$packageName."/tools/"));
 
 //***** Tables ********
-Loader::includeFiles(Config::getConfig('WANTHAVE_ROOT')."tables/");
+Loader::includeFiles(Config::getConfig($packageNameToUpper.'_ROOT')."tables/");
 
 //***** Lib ********
-//Loader::includeFiles(Config::getConfig('RECIPES_ROOT')."lib/");
+//Loader::includeFiles(Config::getConfig($packageNameToUpper.'_ROOT')."lib/");
 

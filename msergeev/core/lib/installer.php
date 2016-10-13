@@ -1,4 +1,10 @@
 <?php
+/**
+ * MSergeev
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
 
 namespace MSergeev\Core\Lib;
 
@@ -7,7 +13,7 @@ use MSergeev\Core\Lib\Loader;
 
 class Installer
 {
-	public function createPackageTables ($strPackageName)
+	public static function createPackageTables ($strPackageName)
 	{
 		$strPackageName = strtolower($strPackageName);
 		Loader::IncludePackage($strPackageName);

@@ -719,6 +719,13 @@ function nf_pp_init( id, autoCollapsed, autoOpen ){
 	}
 }
 
+/**
+ * MSergeev
+ * @package core
+ * @author Mikhail Sergeev
+ * @copyright 2016 Mikhail Sergeev
+ */
+
 function msDebug ()
 {
 		$options = func_get_args ();
